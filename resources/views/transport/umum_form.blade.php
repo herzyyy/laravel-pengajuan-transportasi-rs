@@ -67,13 +67,13 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs text-emerald-800 mb-1">Tanggal</label>
-                                    <input type="date" name="tanggal" value="{{ old('tanggal') }}"
+                                    <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}"
                                         class="w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                         required>
                                 </div>
                                 <div>
                                     <label class="block text-xs text-emerald-800 mb-1">Jam</label>
-                                    <input type="text" name="jam" value="{{ old('jam') }}" placeholder="00.00" pattern="\d{2}\.\d{2}" maxlength="5" inputmode="numeric"
+                                    <input type="text" name="jam" value="{{ old('jam') }}" placeholder="00:00" pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                         class="w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                         required>
                                 </div>
@@ -88,13 +88,13 @@
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs text-emerald-800 mb-1">Tanggal</label>
-                                    <input type="date" name="tanggal_sampai" value="{{ old('tanggal_sampai') }}"
+                                    <input type="date" name="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}"
                                         class="w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                         required>
                                 </div>
                                 <div>
                                     <label class="block text-xs text-emerald-800 mb-1">Jam</label>
-                                    <input type="text" name="jam_sampai" value="{{ old('jam_sampai') }}" placeholder="00.00" pattern="\d{2}\.\d{2}" maxlength="5" inputmode="numeric"
+                                    <input type="text" name="jam_sampai" value="{{ old('jam_sampai') }}" placeholder="00:00" pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                         class="w-full rounded-lg border border-emerald-200 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                         required>
                                 </div>
@@ -248,15 +248,30 @@
 
             btn.addEventListener('click', check);
         })();
-        // auto-format and restrict time inputs to digits with fixed dot
+        // auto-format and restrict time inputs to digits with fixed colon and valid 24h format
         document.addEventListener('DOMContentLoaded', function() {
             function setupTimeInput(el) {
                 el.addEventListener('input', function() {
                     let v = el.value.replace(/[^0-9]/g, '');
                     if (v.length > 2) {
-                        v = v.slice(0,2) + '.' + v.slice(2,4);
+                        v = v.slice(0,2) + ':' + v.slice(2,4);
                     }
                     el.value = v;
+                });
+                el.addEventListener('blur', function() {
+                    let v = el.value;
+                    if (v.length === 4 && !v.includes(':')) {
+                        v = v.slice(0,2) + ':' + v.slice(2,4);
+                        el.value = v;
+                    }
+                    if (v.includes(':')) {
+                        let parts = v.split(':');
+                        let h = parseInt(parts[0]) || 0;
+                        let m = parseInt(parts[1]) || 0;
+                        if (h > 23) h = 23;
+                        if (m > 59) m = 59;
+                        el.value = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m);
+                    }
                 });
                 el.addEventListener('keypress', function(e) {
                     if (!/[0-9]/.test(e.key)) e.preventDefault();

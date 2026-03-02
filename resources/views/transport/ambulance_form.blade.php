@@ -39,10 +39,10 @@
                         <label class="block text-sm font-semibold text-slate-700 mb-2">
                             Unit Mobil
                         </label>
-                        <input type="text" name="unit_mobil" value="Mobil Ambulance" readonly
+                        <input type="text" value="Ambulans" readonly
                            class="w-full rounded-xl border border-slate-300 px-4 py-2.5 bg-white text-slate-700 font-medium shadow-sm">
-                    <!-- hidden field to ensure value submitted -->
-                    <input type="hidden" name="unit_mobil" value="mobil ambulance">
+                        <!-- hidden field to ensure value submitted -->
+                        <input type="hidden" name="unit_mobil" value="ambulans">
                     </div>
                 </div>
 
@@ -90,10 +90,10 @@
                                 Dari
                             </div>
                             <div class="grid grid-cols-2 gap-4">
-                                <input type="date" name="tanggal" required
+                                <input type="date" name="tanggal" required value="{{ old('tanggal', date('Y-m-d')) }}"
                                     class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm shadow-sm focus:ring-2 focus:ring-emerald-400">
-                                <input type="text" name="jam" placeholder="00.00" required
-                                    pattern="\d{2}\.\d{2}" maxlength="5" inputmode="numeric"
+                                <input type="text" name="jam" placeholder="00:00" required
+                                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                     class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm shadow-sm focus:ring-2 focus:ring-emerald-400">
                             </div>
                         </div>
@@ -104,10 +104,10 @@
                                 Sampai
                             </div>
                             <div class="grid grid-cols-2 gap-4">
-                                <input type="date" name="tanggal_sampai" required
+                                <input type="date" name="tanggal_sampai" required value="{{ old('tanggal_sampai', date('Y-m-d')) }}"
                                     class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm shadow-sm focus:ring-2 focus:ring-emerald-400">
-                                <input type="text" name="jam_sampai" placeholder="00.00" required
-                                    pattern="\d{2}\.\d{2}" maxlength="5" inputmode="numeric"
+                                <input type="text" name="jam_sampai" placeholder="00:00" required
+                                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                     class="rounded-xl border border-slate-300 px-3 py-2.5 text-sm shadow-sm focus:ring-2 focus:ring-emerald-400">
                             </div>
                         </div>
@@ -315,16 +315,31 @@
             btn.addEventListener('click', check);
         })();
 
-        // auto-format and restrict time fields to digits with fixed dot
+        // auto-format and restrict time fields to digits with fixed colon and valid 24h format
         document.addEventListener('DOMContentLoaded', function() {
             function setupTimeInput(el) {
                 el.addEventListener('input', function(e) {
                     // remove non-digits
                     let v = el.value.replace(/[^0-9]/g, '');
                     if (v.length > 2) {
-                        v = v.slice(0,2) + '.' + v.slice(2,4);
+                        v = v.slice(0,2) + ':' + v.slice(2,4);
                     }
                     el.value = v;
+                });
+                el.addEventListener('blur', function(e) {
+                    let v = el.value;
+                    if (v.length === 4 && !v.includes(':')) {
+                        v = v.slice(0,2) + ':' + v.slice(2,4);
+                        el.value = v;
+                    }
+                    if (v.includes(':')) {
+                        let parts = v.split(':');
+                        let h = parseInt(parts[0]) || 0;
+                        let m = parseInt(parts[1]) || 0;
+                        if (h > 23) h = 23;
+                        if (m > 59) m = 59;
+                        el.value = (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m);
+                    }
                 });
                 el.addEventListener('keypress', function(e) {
                     // allow only digits

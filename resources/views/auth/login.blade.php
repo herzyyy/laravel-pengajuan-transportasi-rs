@@ -3,7 +3,7 @@
         <div class="max-w-md w-full bg-white/95 backdrop-blur-lg rounded-3xl shadow-2xl overflow-hidden">
             <!-- Header with logo and title -->
             <div class="flex flex-col items-center py-6 bg-emerald-600">
-                <div class="bg-white rounded-full p-2 mb-2">
+                <div class="bg-white rounded-md p-2 mb-2">
                     <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-16 w-auto">
                 </div>
                 <h1 class="text-2xl font-bold text-white">Sistem Pengajuan Transportasi</h1>

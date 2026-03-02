@@ -16,7 +16,7 @@
         <header class="sticky top-0 z-40 backdrop-blur-md bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 text-white shadow-lg shadow-emerald-900/10">
             <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                 <div class="flex items-center gap-3 min-w-0">
-                    <div class="bg-white rounded-full p-1">
+                    <div class="bg-white rounded-md p-1">
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-10 w-auto">
                     </div>
                     <div>

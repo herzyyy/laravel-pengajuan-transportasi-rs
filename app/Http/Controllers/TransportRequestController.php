@@ -16,10 +16,17 @@ class TransportRequestController extends Controller
 
     public function index(Request $request)
     {
-        $items = $request->user()
-            ->transportRequests()
-            ->latest()
-            ->paginate(10);
+        $query = $request->user()->transportRequests()->latest();
+
+        if ($request->filled('jenis')) {
+            $query->where('jenis', $request->jenis);
+        }
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->tanggal);
+        }
+
+        $items = $query->paginate(10)->withQueryString();
 
         return view('transport.index', compact('items'));
     }

@@ -23,6 +23,37 @@
             </a>
         </div>
 
+        <!-- Filter Form -->
+        <div class="bg-white border border-slate-200 rounded-2xl shadow-sm p-4 mb-2">
+            <form action="{{ route('pengajuan.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4 items-end">
+                <div class="flex-1 w-full">
+                    <label for="jenis" class="block text-sm font-medium text-slate-700 mb-1">Jenis Transportasi</label>
+                    <select name="jenis" id="jenis" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm">
+                        <option value="">Semua Jenis</option>
+                        <option value="ambulance" {{ request('jenis') == 'ambulance' ? 'selected' : '' }}>Ambulance</option>
+                        <option value="umum" {{ request('jenis') == 'umum' ? 'selected' : '' }}>Umum</option>
+                    </select>
+                </div>
+                
+                <div class="flex-1 w-full">
+                    <label for="tanggal" class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label>
+                    <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}" 
+                           class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm">
+                </div>
+
+                <div class="flex gap-2 w-full sm:w-auto mt-4 sm:mt-0">
+                    <button type="submit" class="flex-1 sm:flex-none bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-900 transition shadow-sm">
+                        Filter
+                    </button>
+                    @if(request()->hasAny(['jenis', 'tanggal']) && (request('jenis') != '' || request('tanggal') != ''))
+                        <a href="{{ route('pengajuan.index') }}" class="flex-none bg-slate-100 text-slate-600 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-200 transition border border-slate-200">
+                            Reset
+                        </a>
+                    @endif
+                </div>
+            </form>
+        </div>
+
         <!-- Table Card -->
         <div class="bg-white border border-slate-200 rounded-3xl shadow-sm overflow-hidden">
             

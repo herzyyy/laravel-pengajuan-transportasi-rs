@@ -1,178 +1,129 @@
 <x-app-layout>
-    <div class="space-y-8 max-w-6xl mx-auto px-6 py-8">
-
-        <!-- Success Header -->
-        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 p-[1px] shadow-xl">
-            <div class="bg-white rounded-2xl px-8 py-6">
-                <div class="flex items-center gap-4">
-                    <div class="flex items-center justify-center w-14 h-14 rounded-xl bg-emerald-50">
-                        <svg class="w-7 h-7 text-emerald-600" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                        </svg>
-                    </div>
-                    <div>
-                        <h1 class="text-3xl font-bold tracking-tight text-slate-900">
-                            Pengajuan Berhasil Dikirim
-                        </h1>
-                        <p class="text-slate-500 mt-1">
-                            Nomor referensi:
-                            <span class="font-semibold text-emerald-600">#{{ $item->id }}</span>
-                        </p>
-                    </div>
+    <div class="max-w-2xl mx-auto px-4 py-8">
+        <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Header -->
+            <div class="bg-emerald-50 px-5 py-4 flex items-center gap-4 border-b border-emerald-100">
+                <div class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-emerald-100 flex-shrink-0">
+                    <svg class="w-5 h-5 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
                 </div>
-            </div>
-        </div>
-
-        <!-- Details Grid -->
-        <div class="grid md:grid-cols-2 gap-6">
-
-            <!-- Card Style Upgrade -->
-            <div class="card-accent bg-white border border-slate-200/70 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="p-6 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 flex items-center justify-center rounded-lg bg-emerald-50 text-emerald-600">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
-                            </svg>
-                        </div>
-                        <span class="text-sm font-semibold tracking-wide text-slate-700 uppercase">
-                            Jenis Pengajuan
-                        </span>
-                    </div>
-
-                    <div class="space-y-2">
-                        <div class="inline-flex items-center px-4 py-1.5 rounded-full text-xs font-semibold tracking-wide
-                            @if($item->jenis === 'ambulance') 
-                                bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200
-                            @else 
-                                bg-amber-50 text-amber-700 ring-1 ring-amber-200
-                            @endif">
-                            {{ strtoupper($item->jenis) }}
-                        </div>
-
-                        @if ($item->keperluan)
-                            <p class="text-sm text-slate-600 leading-relaxed">
-                                <span class="font-medium text-slate-800">Keperluan:</span>
-                                {{ $item->keperluan }}
-                            </p>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Jadwal -->
-            <div class="card-accent bg-white border border-slate-200/70 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="p-6 space-y-4">
-                    <div class="flex items-center gap-3">
-                        <div class="w-9 h-9 flex items-center justify-center rounded-lg bg-teal-50 text-teal-600">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5z"/>
-                            </svg>
-                        </div>
-                        <span class="text-sm font-semibold tracking-wide text-slate-700 uppercase">
-                            Jadwal Penggunaan
-                        </span>
-                    </div>
-
-                    <div class="text-sm space-y-2">
-                        <div>
-                            <span class="text-slate-400">Dari</span>
-                            <p class="font-semibold text-slate-900">
-                                {{ $item->tanggal?->format('d/m/Y') }}
-                                {{ substr($item->jam, 0, 5) }}
-                            </p>
-                        </div>
-
-                        @if ($item->tanggal_sampai && $item->jam_sampai)
-                        <div>
-                            <span class="text-slate-400">Sampai</span>
-                            <p class="font-semibold text-slate-900">
-                                {{ $item->tanggal_sampai?->format('d/m/Y') }}
-                                {{ substr($item->jam_sampai, 0, 5) }}
-                            </p>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Kontak -->
-            <div class="card-accent bg-white border border-slate-200/70 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="p-6 space-y-3">
-                    <span class="text-sm font-semibold tracking-wide text-slate-700 uppercase">
-                        Kontak
-                    </span>
-                    <p class="text-base font-semibold text-slate-900">
-                        {{ $item->kontak }}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Rute -->
-            <div class="card-accent bg-white border border-slate-200/70 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
-                <div class="p-6 space-y-3">
-                    <span class="text-sm font-semibold tracking-wide text-slate-700 uppercase">
-                        Rute Perjalanan
-                    </span>
-
-                    <div class="text-sm space-y-2">
-                        <p>
-                            <span class="text-slate-400">Asal:</span>
-                            <span class="font-medium text-slate-800">
-                                {{ $item->alamat_asal ?? '-' }}
-                            </span>
-                        </p>
-                        <p>
-                            <span class="text-slate-400">Tujuan:</span>
-                            <span class="font-medium text-slate-800">
-                                {{ $item->alamat_tujuan ?? '-' }}
-                            </span>
-                        </p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Alamat Pasien -->
-            @if ($item->jenis === 'ambulance' && $item->alamat_pasien)
-                <div class="card-accent md:col-span-2 bg-white border border-slate-200/70 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300">
-                    <div class="p-6 space-y-3">
-                        <span class="text-sm font-semibold tracking-wide text-slate-700 uppercase">
-                            Alamat Pasien
-                        </span>
-                        <p class="text-sm text-slate-600 leading-relaxed">
-                            {{ $item->alamat_pasien }}
-                        </p>
-                    </div>
-                </div>
-            @endif
-        </div>
-
-        <!-- Status Section -->
-        <div class="rounded-2xl bg-emerald-50 border border-emerald-100 p-6 shadow-sm">
-            <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm text-slate-500 font-medium">
-                        Status Pengajuan
-                    </p>
-                    <p class="text-xl font-bold text-emerald-700 mt-1">
-                        {{ ucfirst($item->status) }}
-                    </p>
+                    <h1 class="text-lg font-bold text-slate-900 mb-0.5">Pengajuan Berhasil</h1>
+                    <p class="text-slate-500 text-sm">Nomor Referensi: <span class="font-semibold text-emerald-600">#{{ $item->id }}</span></p>
                 </div>
             </div>
+
+            <!-- Details -->
+            <div class="px-6 py-2">
+                <dl class="divide-y divide-slate-100 text-sm">
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-4">
+                        <dt class="text-slate-500">Jenis Pengajuan</dt>
+                        <dd class="font-medium text-slate-900">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold uppercase tracking-wide {{ $item->jenis === 'ambulance' ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700' }}">
+                                {{ $item->jenis }}
+                            </span>
+                        </dd>
+                    </div>
+
+                    @if ($item->unit_mobil)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Unit Mobil</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right uppercase">{{ str_replace('_', ' ', $item->unit_mobil) }}</dd>
+                    </div>
+                    @endif
+
+                    @if ($item->prioritas)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Prioritas</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">
+                            @if($item->prioritas === 'segera')
+                                <span class="bg-red-50 text-red-600 font-bold uppercase text-xs px-2.5 py-0.5 rounded-full inline-flex items-center ring-1 ring-red-200">Segera / Cito</span>
+                            @else
+                                <span class="bg-slate-50 text-slate-600 font-bold uppercase text-xs px-2.5 py-0.5 rounded-full inline-flex items-center ring-1 ring-slate-200">Biasa</span>
+                            @endif
+                        </dd>
+                    </div>
+                    @endif
+
+                    @if ($item->keperluan)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Keperluan</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">{{ $item->keperluan }}</dd>
+                    </div>
+                    @endif
+
+                    @if ($item->keterangan)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Keterangan Tambahan</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">{{ $item->keterangan }}</dd>
+                    </div>
+                    @endif
+
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Jadwal Penggunaan</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">
+                            {{ $item->tanggal?->format('d/m/Y') }} {{ substr($item->jam, 0, 5) }}
+                            @if ($item->tanggal_sampai && $item->jam_sampai)
+                                <span class="text-slate-400 font-normal mx-1">s/d</span>
+                                {{ $item->tanggal_sampai?->format('d/m/Y') }} {{ substr($item->jam_sampai, 0, 5) }}
+                            @endif
+                        </dd>
+                    </div>
+
+                    @if ($item->kontak)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Kontak Pemohon</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">{{ $item->kontak }}</dd>
+                    </div>
+                    @endif
+
+                    @if ($item->alamat_asal || $item->alamat_tujuan)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Rute Perjalanan</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">
+                            @if($item->alamat_asal) {{ $item->alamat_asal }} @else - @endif
+                            <span class="text-slate-400 mx-1">&rarr;</span> 
+                            @if($item->alamat_tujuan) {{ $item->alamat_tujuan }} @else - @endif
+                        </dd>
+                    </div>
+                    @endif
+
+                    @if ($item->jenis === 'ambulance' && $item->pasien_nama)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Identitas Pasien</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">
+                            {{ $item->pasien_nama }}
+                            @if ($item->pasien_no_rm)
+                                <span class="text-slate-500 font-normal ml-1">(RM: {{ $item->pasien_no_rm }})</span>
+                            @endif
+                        </dd>
+                    </div>
+                    @endif
+
+                    @if ($item->jenis === 'ambulance' && $item->alamat_pasien)
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between gap-1 sm:gap-4">
+                        <dt class="text-slate-500 sm:whitespace-nowrap">Alamat Pasien</dt>
+                        <dd class="font-medium text-slate-900 sm:text-right">{{ $item->alamat_pasien }}</dd>
+                    </div>
+                    @endif
+
+                    <div class="py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 sm:gap-4">
+                        <dt class="text-slate-500">Status</dt>
+                        <dd class="font-bold text-emerald-600">{{ ucfirst($item->status) }}</dd>
+                    </div>
+                </dl>
+            </div>
+
+            <!-- Actions -->
+            <div class="bg-slate-50 px-6 py-5 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+                <a href="{{ route('pengajuan.index') }}" class="inline-flex justify-center items-center px-5 py-2.5 border border-slate-300 shadow-sm text-sm font-semibold rounded-xl text-slate-700 bg-white hover:bg-slate-50 transition-colors w-full sm:w-auto">
+                    Lihat Riwayat
+                </a>
+                <a href="{{ route('dashboard') }}" class="inline-flex justify-center items-center px-5 py-2.5 border border-transparent shadow-sm text-sm font-semibold rounded-xl text-white bg-emerald-600 hover:bg-emerald-700 transition-colors w-full sm:w-auto">
+                    Buat Pengajuan Baru
+                </a>
+            </div>
         </div>
-
-        <!-- Action Buttons -->
-        <div class="flex flex-wrap items-center gap-4 pt-2">
-            <a href="{{ route('dashboard') }}"
-               class="inline-flex items-center rounded-xl bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 font-semibold shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
-                Buat Pengajuan Baru
-            </a>
-
-            <a href="{{ route('pengajuan.index') }}"
-               class="inline-flex items-center rounded-xl border border-slate-300 px-6 py-3 text-slate-700 font-semibold hover:bg-slate-50 hover:border-slate-400 transition-all duration-300">
-                Lihat Riwayat
-            </a>
-        </div>
-
     </div>
 </x-app-layout>
