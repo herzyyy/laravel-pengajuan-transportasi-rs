@@ -3,13 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransportRequestController;
+use App\Http\Controllers\Admin\TransportRequestController as AdminTransportController;
 
 Route::get('/', function () {
     if (! auth()->check()) {
         return redirect()->route('login');
     }
 
-    // Jika sudah login, langsung arahkan ke dashboard
+    // Jika sudah login, arahkan sesuai role
+    if (auth()->user()->isAdmin()) {
+        return redirect()->route('admin.dashboard');
+    }
     return redirect()->route('dashboard');
 })->name('home');
 
@@ -55,4 +59,20 @@ Route::middleware('auth')->group(function () {
         Route::get('/riwayat', [TransportRequestController::class, 'index'])
             ->name('index');
     });
+});
+
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [AdminTransportController::class, 'dashboard'])->name('dashboard');
+    
+    // Transport Requests
+    Route::get('/transport', [AdminTransportController::class, 'index'])->name('transport.index');
+    Route::get('/transport/{transportRequest}', [AdminTransportController::class, 'show'])->name('transport.show');
+    Route::put('/transport/{transportRequest}', [AdminTransportController::class, 'update'])->name('transport.update');
+    Route::get('/transport/{transportRequest}/print', [AdminTransportController::class, 'print'])->name('transport.print');
+    
+    // Master Data
+    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+    Route::resource('vehicles', \App\Http\Controllers\Admin\VehicleController::class);
+    Route::resource('drivers', \App\Http\Controllers\Admin\DriverController::class);
 });

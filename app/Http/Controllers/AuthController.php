@@ -10,7 +10,10 @@ class AuthController extends Controller
     public function create()
     {
         if (Auth::check()) {
-            // Jika sudah login dan akses /login, langsung ke dashboard
+            // Jika sudah login dan akses /login, arahkan sesuai role
+            if (Auth::user()->isAdmin()) {
+                return redirect()->route('admin.transport.index');
+            }
             return redirect()->route('dashboard');
         }
 
@@ -34,7 +37,11 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
 
-        // Setelah login berhasil, langsung ke dashboard
+        // Setelah login berhasil, arahkan sesuai role
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin.transport.index');
+        }
+        
         return redirect()->route('dashboard');
     }
 

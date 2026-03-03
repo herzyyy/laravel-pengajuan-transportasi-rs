@@ -23,6 +23,7 @@ class User extends Authenticatable
         'unit_kerja',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -51,5 +52,10 @@ class User extends Authenticatable
     public function transportRequests()
     {
         return $this->hasMany(TransportRequest::class);
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
     }
 }

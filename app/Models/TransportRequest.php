@@ -21,6 +21,10 @@ class TransportRequest extends Model
         'jumlah_penumpang',
 
         'unit_mobil',
+        'driver_id',
+        'plat_nomor',
+        'km_awal',
+        'km_akhir',
 
         // umum + ambulance (umum dipakai untuk tujuan)
         'tanggal',
@@ -39,6 +43,7 @@ class TransportRequest extends Model
         'kondisi_pasien',
         'alamat_pasien',
         'pendamping_nama',
+        'status',
     ];
 
     protected $casts = [
@@ -50,6 +55,11 @@ class TransportRequest extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function driver()
+    {
+        return $this->belongsTo(Driver::class);
     }
 }
 

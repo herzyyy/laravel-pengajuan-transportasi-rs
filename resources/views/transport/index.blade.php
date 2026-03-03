@@ -34,6 +34,17 @@
                         <option value="umum" {{ request('jenis') == 'umum' ? 'selected' : '' }}>Umum</option>
                     </select>
                 </div>
+
+                <div class="flex-1 w-full">
+                    <label for="status" class="block text-sm font-medium text-slate-700 mb-1">Status</label>
+                    <select name="status" id="status" class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm">
+                        <option value="">Semua Status</option>
+                        <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
+                        <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                        <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
+                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                    </select>
+                </div>
                 
                 <div class="flex-1 w-full">
                     <label for="tanggal" class="block text-sm font-medium text-slate-700 mb-1">Tanggal</label>
@@ -45,7 +56,7 @@
                     <button type="submit" class="flex-1 sm:flex-none bg-slate-800 text-white px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-900 transition shadow-sm">
                         Filter
                     </button>
-                    @if(request()->hasAny(['jenis', 'tanggal']) && (request('jenis') != '' || request('tanggal') != ''))
+                    @if(request()->hasAny(['jenis', 'status', 'tanggal']) && (request('jenis') != '' || request('status') != '' || request('tanggal') != ''))
                         <a href="{{ route('pengajuan.index') }}" class="flex-none bg-slate-100 text-slate-600 px-5 py-2.5 rounded-lg text-sm font-medium hover:bg-slate-200 transition border border-slate-200">
                             Reset
                         </a>
@@ -88,11 +99,16 @@
                                         <span class="font-medium text-slate-800">
                                             {{ strtoupper($item->jenis) }}
                                         </span>
+                                        @if($item->prioritas === 'segera')
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700 border border-red-200">
+                                                ★ CITO
+                                            </span>
+                                        @endif
                                     </div>
 
                                     @if ($item->keperluan)
                                         <div class="text-xs text-slate-500 mt-1">
-                                            {{ $item->keperluan }}
+                                            {{ ucfirst($item->keperluan) }}
                                         </div>
                                     @endif
                                 </td>
@@ -115,17 +131,52 @@
                                 <!-- Status -->
                                 <td class="px-6 py-4">
                                     @php
-                                        $statusColor = match($item->status) {
-                                            'pending' => 'bg-yellow-100 text-yellow-700',
-                                            'approved' => 'bg-emerald-100 text-emerald-700',
-                                            'rejected' => 'bg-red-100 text-red-700',
-                                            default => 'bg-blue-100 text-blue-700'
+                                        $statusConfig = match($item->status) {
+                                            'diajukan' => [
+                                                'bg' => 'bg-amber-100',
+                                                'text' => 'text-amber-800',
+                                                'border' => 'border-amber-200',
+                                                'label' => 'Diajukan',
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/></svg>'
+                                            ],
+                                            'diproses' => [
+                                                'bg' => 'bg-blue-100',
+                                                'text' => 'text-blue-800',
+                                                'border' => 'border-blue-200',
+                                                'label' => 'Diproses',
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v3.586L7.707 9.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L11 10.586V7z" clip-rule="evenodd"/></svg>'
+                                            ],
+                                            'selesai' => [
+                                                'bg' => 'bg-emerald-100',
+                                                'text' => 'text-emerald-800',
+                                                'border' => 'border-emerald-200',
+                                                'label' => 'Selesai',
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>'
+                                            ],
+                                            'ditolak' => [
+                                                'bg' => 'bg-red-100',
+                                                'text' => 'text-red-800',
+                                                'border' => 'border-red-200',
+                                                'label' => 'Ditolak',
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                                            ],
+                                            default => [
+                                                'bg' => 'bg-slate-100',
+                                                'text' => 'text-slate-800',
+                                                'border' => 'border-slate-200',
+                                                'label' => ucfirst($item->status),
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/></svg>'
+                                            ]
                                         };
                                     @endphp
 
-                                    <span class="inline-flex items-center px-3 py-1 
-                                                 rounded-full text-xs font-medium {{ $statusColor }}">
-                                        {{ ucfirst($item->status) }}
+                                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 
+                                                 rounded-full text-xs font-semibold border
+                                                 {{ $statusConfig['bg'] }} 
+                                                 {{ $statusConfig['text'] }}
+                                                 {{ $statusConfig['border'] }}">
+                                        {!! $statusConfig['icon'] !!}
+                                        {{ $statusConfig['label'] }}
                                     </span>
                                 </td>
 

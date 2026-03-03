@@ -37,49 +37,119 @@
             <!-- Navigation -->
             <nav class="flex-1 px-3 py-5 space-y-2">
 
-                <a href="{{ route('dashboard') }}"
-                   class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
-                          transition-all duration-200
-                          {{ request()->routeIs('dashboard') 
-                              ? 'bg-emerald-50 text-emerald-700 shadow-sm' 
-                              : 'hover:bg-emerald-50/70 text-slate-600' }}">
+                @if(request()->routeIs('admin.*'))
+                    <!-- Menu Admin -->
+                    <div class="px-2 mb-2 text-xs font-semibold text-emerald-800/70 uppercase tracking-wider">
+                        Panel Admin
+                    </div>
 
-                    <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg 
-                                 {{ request()->routeIs('dashboard') 
-                                     ? 'bg-emerald-100 text-emerald-600' 
-                                     : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600' }}">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4">
-                            <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"
-                                  class="fill-none stroke-current"
-                                  stroke-width="1.6"
-                                  stroke-linejoin="round" />
-                        </svg>
-                    </span>
+                    <a href="{{ route('admin.transport.index') }}"
+                       class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
+                              transition-all duration-200
+                              {{ request()->routeIs('admin.transport.*') 
+                                  ? 'bg-emerald-50 text-emerald-700 shadow-sm' 
+                                  : 'hover:bg-emerald-50/70 text-slate-600' }}">
 
-                    <span class="font-medium">Dashboard</span>
-                </a>
+                        <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg 
+                                     {{ request()->routeIs('admin.transport.*') 
+                                         ? 'bg-emerald-100 text-emerald-600' 
+                                         : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                                      class="fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <span class="font-medium">Daftar Pengajuan</span>
+                    </a>
 
-                <a href="{{ route('pengajuan.index') }}"
-                   class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
-                          transition-all duration-200
-                          {{ request()->routeIs('pengajuan.*') 
-                              ? 'bg-emerald-50 text-emerald-700 shadow-sm' 
-                              : 'hover:bg-emerald-50/70 text-slate-600' }}">
+                    <div class="my-4 border-t border-slate-100"></div>
+                    
+                    <div class="px-2 mb-2 text-xs font-semibold text-emerald-800/70 uppercase tracking-wider">
+                        Lainnya
+                    </div>
 
-                    <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg 
-                                 {{ request()->routeIs('pengajuan.*') 
-                                     ? 'bg-emerald-100 text-emerald-600' 
-                                     : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600' }}">
-                        <svg viewBox="0 0 24 24" class="w-4 h-4">
-                            <path d="M6 7h12M6 12h12M6 17h8"
-                                  class="fill-none stroke-current"
-                                  stroke-width="1.6"
-                                  stroke-linecap="round" />
-                        </svg>
-                    </span>
+                    <a href="{{ route('dashboard') }}"
+                       class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
+                              transition-all duration-200 hover:bg-slate-50 text-slate-600">
+                        <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                <path d="M10 19l-7-7m0 0l7-7m-7 7h18" class="fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <span class="font-medium">Kembali ke User</span>
+                    </a>
 
-                    <span class="font-medium">Riwayat Pengajuan</span>
-                </a>
+                @else
+                    <!-- Menu User -->
+                    <div class="px-2 mb-2 text-xs font-semibold text-emerald-800/70 uppercase tracking-wider">
+                        Menu Utama
+                    </div>
+
+                    <a href="{{ route('dashboard') }}"
+                       class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
+                              transition-all duration-200
+                              {{ request()->routeIs('dashboard') 
+                                  ? 'bg-emerald-50 text-emerald-700 shadow-sm' 
+                                  : 'hover:bg-emerald-50/70 text-slate-600' }}">
+
+                        <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg 
+                                     {{ request()->routeIs('dashboard') 
+                                         ? 'bg-emerald-100 text-emerald-600' 
+                                         : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"
+                                      class="fill-none stroke-current" stroke-width="1.6" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+
+                    <a href="{{ route('pengajuan.index') }}"
+                       class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
+                              transition-all duration-200
+                              {{ request()->routeIs('pengajuan.*') 
+                                  ? 'bg-emerald-50 text-emerald-700 shadow-sm' 
+                                  : 'hover:bg-emerald-50/70 text-slate-600' }}">
+
+                        <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg 
+                                     {{ request()->routeIs('pengajuan.*') 
+                                         ? 'bg-emerald-100 text-emerald-600' 
+                                         : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                <path d="M6 7h12M6 12h12M6 17h8"
+                                      class="fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" />
+                            </svg>
+                        </span>
+                        <span class="font-medium">Riwayat Pengajuan</span>
+                    </a>
+
+                    @if(auth()->user() && auth()->user()->isAdmin())
+                    <div class="my-4 border-t border-slate-100"></div>
+                    
+                    <div class="px-2 mb-2 text-xs font-semibold text-emerald-800/70 uppercase tracking-wider">
+                        Administrator
+                    </div>
+
+                    <a href="{{ route('admin.transport.index') }}"
+                       class="group flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl 
+                              transition-all duration-200
+                              {{ request()->routeIs('admin.transport.*') 
+                                  ? 'bg-emerald-50 text-emerald-700 shadow-sm' 
+                                  : 'hover:bg-emerald-50/70 text-slate-600' }}">
+
+                        <span class="inline-flex w-8 h-8 items-center justify-center rounded-lg 
+                                     {{ request()->routeIs('admin.transport.*') 
+                                         ? 'bg-emerald-100 text-emerald-600' 
+                                         : 'bg-slate-100 text-slate-500 group-hover:bg-emerald-100 group-hover:text-emerald-600' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"
+                                      class="fill-none stroke-current" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                        </span>
+                        <span class="font-medium">Panel Admin</span>
+                    </a>
+                    @endif
+                @endif
 
             </nav>
 

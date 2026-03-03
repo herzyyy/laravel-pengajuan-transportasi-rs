@@ -9,6 +9,17 @@
             <span class="font-semibold text-teal-600">jemput</span> pasien,
             kemudian lengkapi semua data yang diperlukan.
         </p>
+
+        @if ($errors->any())
+            <div class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+                <div class="font-semibold mb-1">Periksa kembali data yang diisi:</div>
+                <ul class="list-disc ml-4 space-y-0.5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
 
     <form method="POST" action="{{ route('pengajuan.ambulance.store') }}" class="mt-10 space-y-8">
@@ -37,12 +48,29 @@
                     <!-- Unit Mobil -->
                     <div class="bg-emerald-50/70 border border-emerald-100 rounded-xl p-5">
                         <label class="block text-sm font-semibold text-slate-700 mb-2">
-                            Unit Mobil
+                            Unit Ambulance
                         </label>
-                        <input type="text" value="Ambulans" readonly
-                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 bg-white text-slate-700 font-medium shadow-sm">
-                        <!-- hidden field to ensure value submitted -->
-                        <input type="hidden" name="unit_mobil" value="ambulans">
+                        <select name="unit_mobil" required
+                                class="w-full rounded-xl border border-slate-300 px-4 py-2.5 bg-white text-slate-700 font-medium shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="" disabled selected>Pilih unit ambulance</option>
+                            @forelse($vehicles as $vehicle)
+                                <option value="{{ $vehicle->name }}" @selected(old('unit_mobil') === $vehicle->name)>
+                                    {{ $vehicle->name }}
+                                    @if($vehicle->brand || $vehicle->model)
+                                        - {{ $vehicle->brand }} {{ $vehicle->model }}
+                                    @endif
+                                    ({{ $vehicle->plate_number }})
+                                </option>
+                            @empty
+                                <option value="" disabled>Tidak ada ambulance tersedia</option>
+                            @endforelse
+                        </select>
+                        @error('unit_mobil')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                        <p class="mt-2 text-xs text-slate-500">
+                            Pilih unit ambulance yang akan digunakan
+                        </p>
                     </div>
                 </div>
 
@@ -272,8 +300,8 @@
                 statusEl.className = 'text-sm font-medium text-slate-600';
 
                 const form = btn.closest('form');
-                // unit_mobil is now a readonly input instead of a select
-                const unit = form.querySelector('input[name="unit_mobil"]').value;
+                // unit_mobil is now a select instead of readonly input
+                const unit = form.querySelector('select[name="unit_mobil"]').value;
                 const tanggal = form.querySelector('input[name="tanggal"]').value;
                 const jam = form.querySelector('input[name="jam"]').value;
                 const tanggal_sampai = form.querySelector('input[name="tanggal_sampai"]').value;
@@ -298,17 +326,25 @@
                     const data = await res.json();
 
                     if (data.available) {
-                        statusEl.textContent = 'Tersedia';
+                        statusEl.textContent = '✓ Tersedia';
                         statusEl.className = 'text-sm font-semibold text-emerald-700';
                         if (submitBtn) submitBtn.disabled = false;
                     } else {
-                        statusEl.textContent = 'Tidak tersedia (' + (data.conflicts_count || 0) + ' konflik)';
+                        let msg = '✗ Tidak tersedia';
+                        if (data.conflicts && data.conflicts.length > 0) {
+                            const conflict = data.conflicts[0];
+                            msg += ` - Bentrok dengan pengajuan ${conflict.jenis} (${conflict.status})`;
+                        } else {
+                            msg += ` (${data.conflicts_count || 0} konflik)`;
+                        }
+                        statusEl.textContent = msg;
                         statusEl.className = 'text-sm font-semibold text-red-600';
                         if (submitBtn) submitBtn.disabled = true;
                     }
                 } catch (err) {
-                    statusEl.textContent = 'Terjadi kesalahan saat memeriksa.';
+                    statusEl.textContent = '⚠ Terjadi kesalahan saat memeriksa.';
                     statusEl.className = 'text-sm font-medium text-red-600';
+                    console.error('Availability check error:', err);
                 }
             }
 

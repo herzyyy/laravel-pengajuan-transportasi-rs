@@ -6,6 +6,17 @@
         <p class="text-sm text-emerald-800/90 mt-1">
             Lengkapi data berikut untuk pengajuan mobil umum Anda.
         </p>
+
+        @if ($errors->any())
+            <div class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+                <div class="font-semibold mb-1">Periksa kembali data yang diisi:</div>
+                <ul class="list-disc ml-4 space-y-0.5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
     </div>
 
     <form method="POST" action="{{ route('pengajuan.umum.store') }}"
@@ -39,15 +50,24 @@
                             class="w-full rounded-xl border border-emerald-200 bg-white px-4 py-3 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition"
                             required>
                             <option value="" disabled selected>Pilih unit mobil yang tersedia</option>
-                            <option value="mobil_umum_1" @selected(old('unit_mobil') === 'mobil_umum_1')>Mobil Umum 1</option>
-                            <option value="mobil_umum_2" @selected(old('unit_mobil') === 'mobil_umum_2')>Mobil Umum 2</option>
-                            <option value="ambulans" @selected(old('unit_mobil') === 'ambulans')>Ambulans</option>
-                            <option value="taksi" @selected(old('unit_mobil') === 'taksi')>Taksi</option>
-                            <option value="lainnya" @selected(old('unit_mobil') === 'lainnya')>Lainnya</option>
+                            @forelse($vehicles as $vehicle)
+                                <option value="{{ $vehicle->name }}" @selected(old('unit_mobil') === $vehicle->name)>
+                                    {{ $vehicle->name }}
+                                    @if($vehicle->brand || $vehicle->model)
+                                        - {{ $vehicle->brand }} {{ $vehicle->model }}
+                                    @endif
+                                    ({{ $vehicle->plate_number }})
+                                </option>
+                            @empty
+                                <option value="" disabled>Tidak ada kendaraan tersedia</option>
+                            @endforelse
                         </select>
                         @error('unit_mobil')
                             <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
                         @enderror
+                        <p class="mt-1 text-xs text-emerald-800/70">
+                            Pilih kendaraan yang akan digunakan
+                        </p>
                     </div>
                 </div>
 
@@ -232,17 +252,25 @@
                     const data = await res.json();
 
                     if (data.available) {
-                        statusEl.textContent = 'Tersedia';
+                        statusEl.textContent = '✓ Tersedia';
                         statusEl.className = 'text-sm font-semibold text-emerald-700';
                         if (submitBtn) submitBtn.disabled = false;
                     } else {
-                        statusEl.textContent = 'Tidak tersedia (' + (data.conflicts_count || 0) + ' konflik)';
+                        let msg = '✗ Tidak tersedia';
+                        if (data.conflicts && data.conflicts.length > 0) {
+                            const conflict = data.conflicts[0];
+                            msg += ` - Bentrok dengan pengajuan ${conflict.jenis} (${conflict.status})`;
+                        } else {
+                            msg += ` (${data.conflicts_count || 0} konflik)`;
+                        }
+                        statusEl.textContent = msg;
                         statusEl.className = 'text-sm font-semibold text-red-600';
                         if (submitBtn) submitBtn.disabled = true;
                     }
                 } catch (err) {
-                    statusEl.textContent = 'Terjadi kesalahan saat memeriksa.';
+                    statusEl.textContent = '⚠ Terjadi kesalahan saat memeriksa.';
                     statusEl.className = 'text-sm font-medium text-red-600';
+                    console.error('Availability check error:', err);
                 }
             }
 

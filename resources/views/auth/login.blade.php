@@ -65,9 +65,10 @@
                     Masuk
                 </button>
 
-                <p class="text-xs text-center text-emerald-800/80">
-                    Akun demo: <span class="font-semibold">Test User</span> / <span class="font-semibold">password</span>
-                </p>
+                <div class="space-y-1 text-xs text-center text-emerald-800/80">
+                    <p>Akun User: <span class="font-semibold">Test User</span> / <span class="font-semibold">password</span></p>
+                    <p>Akun Admin: <span class="font-semibold">Administrator</span> / <span class="font-semibold">password123</span></p>
+                </div>
             </form>
         </div>
     </div>

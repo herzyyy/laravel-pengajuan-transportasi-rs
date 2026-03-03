@@ -19,11 +19,22 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
 
         User::updateOrCreate(
-            ['email' => 'test@example.com'],
+            ['name' => 'Test User'],
             [
-                'name' => 'Test User',
+                'email' => 'test@example.com',
                 'unit_kerja' => 'IGD',
                 'password' => Hash::make('password'),
+                'role' => 'user',
+            ]
+        );
+
+        User::updateOrCreate(
+            ['name' => 'Administrator'],
+            [
+                'email' => 'admin@example.com',
+                'unit_kerja' => 'Umum',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
             ]
         );
     }

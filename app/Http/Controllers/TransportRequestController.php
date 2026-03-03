@@ -22,6 +22,10 @@ class TransportRequestController extends Controller
             $query->where('jenis', $request->jenis);
         }
 
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
         if ($request->filled('tanggal')) {
             $query->whereDate('tanggal', $request->tanggal);
         }
@@ -33,13 +37,18 @@ class TransportRequestController extends Controller
 
     public function createUmum()
     {
-        return view('transport.umum_form');
+        $vehicles = \App\Models\Vehicle::where('type', 'umum')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+        
+        return view('transport.umum_form', compact('vehicles'));
     }
 
     public function storeUmum(Request $request)
     {
         $data = $request->validate([
-            'unit_mobil' => ['required', 'string', 'in:mobil_umum_1,mobil_umum_2,ambulans,taksi,lainnya'],
+            'unit_mobil' => ['required', 'string', 'exists:vehicles,name'],
             'tanggal' => ['required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
             'tanggal_sampai' => ['required', 'date'],
@@ -56,10 +65,33 @@ class TransportRequestController extends Controller
         $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
         // If sampai is before mulai, interpret sampai as next day (support overnight trips)
-        if ($sampai->lt($mulai)) {
+        if ($sampai->lte($mulai)) {
             $sampai->addDay();
             // also update tanggal_sampai so saved model reflects next-day date
             $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
+        }
+
+        // Check availability before creating
+        $conflicts = TransportRequest::where('unit_mobil', $data['unit_mobil'])
+            ->whereIn('status', ['diajukan', 'diproses'])
+            ->get()
+            ->filter(function ($r) use ($mulai, $sampai) {
+                $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                    ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                    : $rMulai->copy()->addHour();
+
+                if ($rSampai->lte($rMulai)) {
+                    $rSampai->addDay();
+                }
+
+                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+            });
+
+        if ($conflicts->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'unit_mobil' => 'Unit mobil tidak tersedia pada waktu yang dipilih. Silakan pilih waktu lain atau unit mobil lain.'
+            ]);
         }
 
         $transportRequest = TransportRequest::create([
@@ -80,7 +112,7 @@ class TransportRequestController extends Controller
     public function checkAvailability(Request $request)
     {
         $data = $request->validate([
-            'unit_mobil' => ['required', 'string', 'in:mobil_umum_1,mobil_umum_2,ambulans,taksi,lainnya'],
+            'unit_mobil' => ['required', 'string', 'exists:vehicles,name'],
             'tanggal' => ['required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
             'tanggal_sampai' => ['required', 'date'],
@@ -89,33 +121,50 @@ class TransportRequestController extends Controller
 
         $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
+        
         // Support overnight: if sampai less than mulai, assume next day
-        if ($sampai->lt($mulai)) {
+        if ($sampai->lte($mulai)) {
             $sampai->addDay();
         }
 
-        $conflicts = TransportRequest::where('jenis', 'umum')
-            ->where('unit_mobil', $data['unit_mobil'])
-            ->where('status', 'diproses') // only consider approved/ongoing requests
-            ->get()
-            ->filter(function ($r) use ($mulai, $sampai) {
-                $rMulai = Carbon::parse($r->tanggal.' '.$r->jam);
-                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
-                    ? Carbon::parse($r->tanggal_sampai.' '.$r->jam_sampai)
-                    : $rMulai;
+        // Check all transport requests (both umum and ambulance) that use the same unit_mobil
+        $allRequests = TransportRequest::where('unit_mobil', $data['unit_mobil'])
+            ->whereIn('status', ['diajukan', 'diproses'])
+            ->get();
 
-                if ($rSampai->lt($rMulai)) {
-                    $rSampai->addDay();
-                }
+        $conflicts = $allRequests->filter(function ($r) use ($mulai, $sampai) {
+            // Parse existing request time range
+            $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+            $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                : $rMulai->copy()->addHour(); // default 1 hour if no end time
 
-                // consider intervals overlapping only when they truly intersect
-                // allow back-to-back bookings where one ends exactly when another starts
-                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
-            });
+            // Handle overnight for existing request
+            if ($rSampai->lte($rMulai)) {
+                $rSampai->addDay();
+            }
+
+            // Check if time ranges overlap
+            // Two ranges overlap if: start1 < end2 AND start2 < end1
+            $overlaps = $mulai->lt($rSampai) && $rMulai->lt($sampai);
+
+            return $overlaps;
+        });
 
         return response()->json([
             'available' => $conflicts->isEmpty(),
             'conflicts_count' => $conflicts->count(),
+            'conflicts' => $conflicts->map(function($r) {
+                return [
+                    'id' => $r->id,
+                    'jenis' => $r->jenis,
+                    'status' => $r->status,
+                    'tanggal' => $r->tanggal->format('Y-m-d'),
+                    'jam' => $r->jam,
+                    'tanggal_sampai' => $r->tanggal_sampai ? $r->tanggal_sampai->format('Y-m-d') : null,
+                    'jam_sampai' => $r->jam_sampai,
+                ];
+            })->values(),
         ]);
     }
 
@@ -123,9 +172,15 @@ class TransportRequestController extends Controller
     {
         // Default ke "antar", tapi tetap mempertahankan pilihan terakhir user (old input)
         $purpose = old('purpose', 'antar');
+        
+        $vehicles = \App\Models\Vehicle::where('type', 'ambulance')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
 
         return view('transport.ambulance_form', [
             'purpose' => $purpose,
+            'vehicles' => $vehicles,
         ]);
     }
 
@@ -133,7 +188,7 @@ class TransportRequestController extends Controller
     {
         $data = $request->validate([
             'purpose' => ['required', 'in:antar,jemput'],
-            'unit_mobil' => ['required', 'string', 'in:ambulans,lainnya'],
+            'unit_mobil' => ['required', 'string', 'exists:vehicles,name'],
             'pasien_nama' => ['required', 'string', 'max:255'],
             'pasien_no_rm' => ['nullable', 'string', 'max:50'],
             'alamat_pasien' => ['required', 'string', 'max:2000'],
@@ -160,9 +215,32 @@ class TransportRequestController extends Controller
 
         $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
-        if ($sampai->lt($mulai)) {
+        if ($sampai->lte($mulai)) {
             $sampai->addDay();
             $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
+        }
+
+        // Check availability before creating
+        $conflicts = TransportRequest::where('unit_mobil', $data['unit_mobil'])
+            ->whereIn('status', ['diajukan', 'diproses'])
+            ->get()
+            ->filter(function ($r) use ($mulai, $sampai) {
+                $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                    ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                    : $rMulai->copy()->addHour();
+
+                if ($rSampai->lte($rMulai)) {
+                    $rSampai->addDay();
+                }
+
+                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+            });
+
+        if ($conflicts->isNotEmpty()) {
+            throw ValidationException::withMessages([
+                'unit_mobil' => 'Ambulans tidak tersedia pada waktu yang dipilih. Silakan pilih waktu lain.'
+            ]);
         }
 
         $alamatAsal = $purpose === 'antar' ? 'RS' : ($data['alamat_asal'] ?? 'RS');
@@ -188,7 +266,7 @@ class TransportRequestController extends Controller
     public function checkAmbulanceAvailability(Request $request)
     {
         $data = $request->validate([
-            'unit_mobil' => ['required', 'string', 'in:ambulans,lainnya'],
+            'unit_mobil' => ['required', 'string', 'exists:vehicles,name'],
             'tanggal' => ['required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
             'tanggal_sampai' => ['required', 'date'],
@@ -197,32 +275,50 @@ class TransportRequestController extends Controller
 
         $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
-        if ($sampai->lt($mulai)) {
+        
+        // Support overnight: if sampai less than or equal to mulai, assume next day
+        if ($sampai->lte($mulai)) {
             $sampai->addDay();
         }
 
-        $conflicts = TransportRequest::where('jenis', 'ambulance')
-            ->where('unit_mobil', $data['unit_mobil'])
-            ->where('status', 'diproses')
-            ->get()
-            ->filter(function ($r) use ($mulai, $sampai) {
-                $rMulai = Carbon::parse($r->tanggal.' '.$r->jam);
-                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
-                    ? Carbon::parse($r->tanggal_sampai.' '.$r->jam_sampai)
-                    : $rMulai;
+        // Check all transport requests (both umum and ambulance) that use the same unit_mobil
+        $allRequests = TransportRequest::where('unit_mobil', $data['unit_mobil'])
+            ->whereIn('status', ['diajukan', 'diproses'])
+            ->get();
 
-                if ($rSampai->lt($rMulai)) {
-                    $rSampai->addDay();
-                }
+        $conflicts = $allRequests->filter(function ($r) use ($mulai, $sampai) {
+            // Parse existing request time range
+            $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+            $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                : $rMulai->copy()->addHour(); // default 1 hour if no end time
 
-                // consider intervals overlapping only when they truly intersect
-                // allow back-to-back bookings where one ends exactly when another starts
-                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
-            });
+            // Handle overnight for existing request
+            if ($rSampai->lte($rMulai)) {
+                $rSampai->addDay();
+            }
+
+            // Check if time ranges overlap
+            // Two ranges overlap if: start1 < end2 AND start2 < end1
+            $overlaps = $mulai->lt($rSampai) && $rMulai->lt($sampai);
+
+            return $overlaps;
+        });
 
         return response()->json([
             'available' => $conflicts->isEmpty(),
             'conflicts_count' => $conflicts->count(),
+            'conflicts' => $conflicts->map(function($r) {
+                return [
+                    'id' => $r->id,
+                    'jenis' => $r->jenis,
+                    'status' => $r->status,
+                    'tanggal' => $r->tanggal->format('Y-m-d'),
+                    'jam' => $r->jam,
+                    'tanggal_sampai' => $r->tanggal_sampai ? $r->tanggal_sampai->format('Y-m-d') : null,
+                    'jam_sampai' => $r->jam_sampai,
+                ];
+            })->values(),
         ]);
     }
 
