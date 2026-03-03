@@ -21,98 +21,98 @@
 
         body {
             font-family: 'Times New Roman', Times, serif;
-            font-size: 11pt;
-            line-height: 1.4;
+            font-size: 10pt;
+            line-height: 1.3;
             color: #000;
             max-width: 21cm;
             margin: 0 auto;
-            padding: 15px;
+            padding: 12px;
         }
 
         .header {
             text-align: center;
-            border-bottom: 3px solid #000;
-            padding-bottom: 8px;
-            margin-bottom: 15px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 6px;
+            margin-bottom: 10px;
         }
 
         .header h1 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 14pt;
             font-weight: bold;
             text-transform: uppercase;
         }
 
         .header p {
-            margin: 3px 0 0 0;
-            font-size: 10pt;
+            margin: 2px 0 0 0;
+            font-size: 9pt;
         }
 
         .title {
             text-align: center;
-            margin: 20px 0 15px 0;
+            margin: 12px 0 10px 0;
         }
 
         .title h2 {
             margin: 0;
-            font-size: 13pt;
+            font-size: 12pt;
             font-weight: bold;
             text-decoration: underline;
         }
 
         .title p {
-            margin: 3px 0 0 0;
-            font-size: 10pt;
+            margin: 2px 0 0 0;
+            font-size: 9pt;
         }
 
         .content {
-            margin: 15px 0;
+            margin: 10px 0;
         }
 
         .section {
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             page-break-inside: avoid;
         }
 
         .section-title {
             font-weight: bold;
-            margin-bottom: 6px;
-            font-size: 11pt;
-            border-bottom: 2px solid #000;
-            padding-bottom: 2px;
+            margin-bottom: 4px;
+            font-size: 10pt;
+            border-bottom: 1.5px solid #000;
+            padding-bottom: 1px;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
         }
 
         table td {
-            padding: 3px 8px;
+            padding: 2px 6px;
             vertical-align: top;
-            font-size: 10.5pt;
+            font-size: 9.5pt;
         }
 
         table td:first-child {
-            width: 30%;
+            width: 28%;
             font-weight: normal;
         }
 
         table td:nth-child(2) {
-            width: 3%;
+            width: 2%;
         }
 
         table td:last-child {
-            width: 67%;
+            width: 70%;
         }
 
         /* Two column layout */
         .two-columns {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 15px;
-            margin-bottom: 12px;
+            gap: 12px;
+            margin-bottom: 8px;
         }
 
         .column {
@@ -120,36 +120,37 @@
         }
 
         .column table td:first-child {
-            width: 45%;
+            width: 42%;
         }
 
         .column table td:last-child {
-            width: 52%;
+            width: 55%;
         }
 
         .signature-section {
-            margin-top: 25px;
-            display: flex;
-            justify-content: space-between;
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
         }
 
         .signature-box {
-            width: 45%;
             text-align: center;
+            padding: 0 4px;
         }
 
         .signature-box p {
-            margin: 3px 0;
-            font-size: 10pt;
+            margin: 2px 0;
+            font-size: 8.5pt;
         }
 
         .signature-space {
-            height: 60px;
+            height: 45px;
         }
 
         .footer {
-            margin-top: 20px;
-            font-size: 9pt;
+            margin-top: 12px;
+            font-size: 8pt;
             font-style: italic;
             text-align: center;
             color: #666;
@@ -172,24 +173,6 @@
 
         .print-button:hover {
             background-color: #059669;
-        }
-
-        .badge {
-            display: inline-block;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 9pt;
-            font-weight: bold;
-        }
-
-        .badge-cito {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-
-        .badge-biasa {
-            background-color: #f1f5f9;
-            color: #475569;
         }
 
         @media print {
@@ -238,9 +221,9 @@
                             <td>:</td>
                             <td>
                                 @if($transportRequest->prioritas === 'segera')
-                                    <span class="badge badge-cito">★ CITO</span>
+                                    <strong>CITO / SEGERA</strong>
                                 @else
-                                    <span class="badge badge-biasa">BIASA</span>
+                                    BIASA
                                 @endif
                             </td>
                         </tr>
@@ -248,11 +231,6 @@
                             <td>Tanggal Ajuan</td>
                             <td>:</td>
                             <td>{{ $transportRequest->created_at->format('d/m/Y H:i') }}</td>
-                        </tr>
-                        <tr>
-                            <td>Status</td>
-                            <td>:</td>
-                            <td><strong>{{ strtoupper($transportRequest->status) }}</strong></td>
                         </tr>
                     </table>
                 </div>
@@ -272,11 +250,6 @@
                             <td>Unit Kerja</td>
                             <td>:</td>
                             <td>{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</td>
-                        </tr>
-                        <tr>
-                            <td>Kontak</td>
-                            <td>:</td>
-                            <td>{{ $transportRequest->kontak }}</td>
                         </tr>
                         @if($transportRequest->jenis === 'umum' && $transportRequest->jumlah_penumpang)
                         <tr>
@@ -306,37 +279,20 @@
                             <td>:</td>
                             <td>{{ $transportRequest->pasien_no_rm ?? '-' }}</td>
                         </tr>
-                        <tr>
-                            <td>Ruangan</td>
-                            <td>:</td>
-                            <td>{{ $transportRequest->ruangan ?? '-' }}</td>
-                        </tr>
                     </table>
                 </div>
                 <div class="column">
+                    @if($transportRequest->alamat_pasien)
                     <table>
                         <tr>
-                            <td>Kondisi</td>
+                            <td>Alamat Pasien</td>
                             <td>:</td>
-                            <td>{{ $transportRequest->kondisi_pasien ?? '-' }}</td>
-                        </tr>
-                        <tr>
-                            <td>Pendamping</td>
-                            <td>:</td>
-                            <td>{{ $transportRequest->pendamping_nama ?? '-' }}</td>
+                            <td>{{ $transportRequest->alamat_pasien }}</td>
                         </tr>
                     </table>
+                    @endif
                 </div>
             </div>
-            @if($transportRequest->alamat_pasien)
-            <table>
-                <tr>
-                    <td style="width: 30%;">Alamat Pasien</td>
-                    <td style="width: 3%;">:</td>
-                    <td>{{ $transportRequest->alamat_pasien }}</td>
-                </tr>
-            </table>
-            @endif
         </div>
         @endif
 
@@ -360,23 +316,25 @@
                 <div class="column">
                     <table>
                         <tr>
-                            <td>Alamat Asal</td>
-                            <td>:</td>
-                            <td>{{ $transportRequest->alamat_asal ?? '-' }}</td>
-                        </tr>
-                        <tr>
                             <td>Alamat Tujuan</td>
                             <td>:</td>
                             <td>{{ $transportRequest->alamat_tujuan ?? '-' }}</td>
                         </tr>
+                        @if($transportRequest->jenis === 'umum' && $transportRequest->keperluan)
+                        <tr>
+                            <td>Keperluan</td>
+                            <td>:</td>
+                            <td>{{ $transportRequest->keperluan }}</td>
+                        </tr>
+                        @endif
                     </table>
                 </div>
             </div>
             @if($transportRequest->keterangan)
             <table>
                 <tr>
-                    <td style="width: 30%;">Keterangan</td>
-                    <td style="width: 3%;">:</td>
+                    <td style="width: 28%;">Keterangan</td>
+                    <td style="width: 2%;">:</td>
                     <td>{{ $transportRequest->keterangan }}</td>
                 </tr>
             </table>
@@ -403,7 +361,7 @@
                             <td>:</td>
                             <td><strong>{{ $transportRequest->driver->name ?? '-' }}</strong>
                                 @if($transportRequest->driver && $transportRequest->driver->phone)
-                                    <br><span style="font-size: 9pt; font-weight: normal;">{{ $transportRequest->driver->phone }}</span>
+                                    ({{ $transportRequest->driver->phone }})
                                 @endif
                             </td>
                         </tr>
@@ -436,17 +394,33 @@
 
     <div class="signature-section">
         <div class="signature-box">
-            <p style="font-size: 10pt;">Pemohon,</p>
+            <p style="font-weight: bold; margin-bottom: 3px;">Yang Mengajukan</p>
             <div class="signature-space"></div>
-            <p style="font-weight: bold;">{{ $transportRequest->user->name ?? $transportRequest->pemohon_nama }}</p>
-            <p style="font-size: 9pt;">{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</p>
+            <p style="font-weight: bold; text-decoration: underline; margin: 0;">{{ $transportRequest->user->name ?? $transportRequest->pemohon_nama }}</p>
+            <p style="font-size: 7.5pt; margin: 1px 0 0 0;">{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</p>
         </div>
+        
         <div class="signature-box">
-            <p style="font-size: 10pt;">Mengetahui,</p>
-            <p style="font-size: 10pt;">Admin Transportasi</p>
+            <p style="font-weight: bold; margin-bottom: 3px;">Diketahui</p>
+            <p style="font-size: 8pt; margin: 0 0 3px 0;">Kepala/DO</p>
             <div class="signature-space"></div>
-            <p style="font-weight: bold;">(...........................)</p>
-            <p style="font-size: 9pt;">{{ $transportRequest->updated_at->format('d/m/Y') }}</p>
+            <p style="font-weight: bold; margin: 0;">(.......................)</p>
+        </div>
+
+        <div class="signature-box">
+            <p style="font-weight: bold; margin-bottom: 3px;">Pengemudi</p>
+            <div class="signature-space"></div>
+            <p style="font-weight: bold; text-decoration: underline; margin: 0;">{{ $transportRequest->driver->name ?? '(.....................)' }}</p>
+            @if($transportRequest->driver && $transportRequest->driver->phone)
+                <p style="font-size: 7.5pt; margin: 1px 0 0 0;">{{ $transportRequest->driver->phone }}</p>
+            @endif
+        </div>
+        
+        <div class="signature-box">
+            <p style="font-weight: bold; margin-bottom: 3px;">Diketahui</p>
+            <p style="font-size: 8pt; margin: 0 0 3px 0;">Keamanan RS Azra</p>
+            <div class="signature-space"></div>
+            <p style="font-weight: bold; margin: 0;">(.......................)</p>
         </div>
     </div>
 

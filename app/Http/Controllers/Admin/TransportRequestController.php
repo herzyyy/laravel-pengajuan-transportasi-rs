@@ -52,7 +52,8 @@ class TransportRequestController extends Controller
     public function show(TransportRequest $transportRequest)
     {
         $drivers = \App\Models\Driver::where('is_active', true)->orderBy('name')->get();
-        return view('admin.transport.show', compact('transportRequest', 'drivers'));
+        $vehicles = \App\Models\Vehicle::where('is_active', true)->orderBy('name')->get();
+        return view('admin.transport.show', compact('transportRequest', 'drivers', 'vehicles'));
     }
 
     public function update(Request $request, TransportRequest $transportRequest)
@@ -71,9 +72,6 @@ class TransportRequestController extends Controller
             if (empty($data['unit_mobil'])) {
                 throw ValidationException::withMessages(['unit_mobil' => 'Unit kendaraan wajib diisi saat disetujui / sedang digunakan.']);
             }
-            if (empty($data['plat_nomor'])) {
-                throw ValidationException::withMessages(['plat_nomor' => 'Plat nomor wajib diisi saat diproses.']);
-            }
             if (! isset($data['km_awal'])) {
                 throw ValidationException::withMessages(['km_awal' => 'KM Awal wajib diisi saat diproses.']);
             }
@@ -82,9 +80,6 @@ class TransportRequestController extends Controller
         if ($data['status'] === 'selesai') {
             if (! isset($data['km_akhir'])) {
                 throw ValidationException::withMessages(['km_akhir' => 'KM Akhir wajib diisi saat selesai.']);
-            }
-            if (empty($data['jam_sampai'])) {
-                throw ValidationException::withMessages(['jam_sampai' => 'Jam kedatangan wajib diisi saat selesai.']);
             }
         }
 

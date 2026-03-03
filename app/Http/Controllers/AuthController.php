@@ -12,7 +12,7 @@ class AuthController extends Controller
         if (Auth::check()) {
             // Jika sudah login dan akses /login, arahkan sesuai role
             if (Auth::user()->isAdmin()) {
-                return redirect()->route('admin.transport.index');
+                return redirect()->route('admin.dashboard');
             }
             return redirect()->route('dashboard');
         }
@@ -39,7 +39,7 @@ class AuthController extends Controller
 
         // Setelah login berhasil, arahkan sesuai role
         if (Auth::user()->isAdmin()) {
-            return redirect()->route('admin.transport.index');
+            return redirect()->route('admin.dashboard');
         }
         
         return redirect()->route('dashboard');

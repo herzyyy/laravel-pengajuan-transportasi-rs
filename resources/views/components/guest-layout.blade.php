@@ -9,8 +9,8 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 text-slate-800 antialiased @if($hideHeader ?? false) overflow-hidden @endif">
-    <div class="min-h-screen flex flex-col @if($hideHeader ?? false) h-screen @endif">
+<body class="min-h-screen @if($hideHeader ?? false) bg-white @else bg-gradient-to-br from-emerald-50 via-white to-teal-50 @endif text-slate-800 antialiased">
+    <div class="min-h-screen flex flex-col @if($hideHeader ?? false) h-screen overflow-hidden @endif">
 
         @unless($hideHeader ?? false)
             <header class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 
@@ -28,10 +28,11 @@
             </header>
         @endunless
 
-        <div class="flex-1 flex items-center justify-center px-4 sm:px-6 @if($hideHeader ?? false) py-0 @else py-8 @endif">
-            <div class="w-full max-w-md">
-
-                @unless($hideHeader ?? false)
+        <div class="flex-1 @if($hideHeader ?? false) flex @else flex items-center justify-center px-4 sm:px-6 py-8 @endif">
+            @if($hideHeader ?? false)
+                {{ $slot }}
+            @else
+                <div class="w-full max-w-md">
                     <div class="mb-8 text-center">
                         <!-- <div class="inline-flex items-center gap-2 rounded-full 
                                     bg-gradient-to-r from-emerald-100 to-teal-100 
@@ -48,20 +49,19 @@
                             Silakan login menggunakan akun unit kerja Anda.
                         </div> -->
                     </div>
-                @endunless
 
-                <div class="bg-white/95 backdrop-blur-md 
-                            shadow-xl shadow-emerald-900/5 
-                            ring-1 ring-slate-200 
-                            rounded-2xl p-7 sm:p-8 transition-all duration-300">
-                    {{ $slot }}
+                    <div class="bg-white/95 backdrop-blur-md 
+                                shadow-xl shadow-emerald-900/5 
+                                ring-1 ring-slate-200 
+                                rounded-2xl p-7 sm:p-8 transition-all duration-300">
+                        {{ $slot }}
+                    </div>
+
+                    <div class="mt-8 text-center text-xs text-slate-400">
+                        {{ config('app.name', 'Laravel') }}
+                    </div>
                 </div>
-
-                <div class="mt-8 text-center text-xs text-slate-400">
-                    {{ config('app.name', 'Laravel') }}
-                </div>
-
-            </div>
+            @endif
         </div>
     </div>
 </body>

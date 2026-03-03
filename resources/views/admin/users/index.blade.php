@@ -31,7 +31,7 @@
             <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col sm:flex-row gap-4">
                 <div class="flex-1">
                     <input type="text" name="search" value="{{ request('search') }}" 
-                           placeholder="Cari nama, email, atau unit kerja..."
+                           placeholder="Cari nama atau unit kerja..."
                            class="w-full rounded-lg border-slate-300 shadow-sm focus:border-emerald-500 focus:ring-emerald-500 text-sm">
                 </div>
                 <div class="w-full sm:w-48">
@@ -61,7 +61,6 @@
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr class="text-xs font-semibold text-slate-600 uppercase tracking-wide">
                             <th class="py-3 px-4 text-left">Nama</th>
-                            <th class="py-3 px-4 text-left">Email</th>
                             <th class="py-3 px-4 text-left">Unit Kerja</th>
                             <th class="py-3 px-4 text-left">Telepon</th>
                             <th class="py-3 px-4 text-left">Role</th>
@@ -74,7 +73,6 @@
                                 <td class="py-3 px-4">
                                     <div class="font-medium text-slate-900">{{ $user->name }}</div>
                                 </td>
-                                <td class="py-3 px-4 text-slate-700">{{ $user->email }}</td>
                                 <td class="py-3 px-4 text-slate-700">{{ $user->unit_kerja ?? '-' }}</td>
                                 <td class="py-3 px-4 text-slate-700">{{ $user->phone ?? '-' }}</td>
                                 <td class="py-3 px-4">
@@ -108,7 +106,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-8 text-center text-slate-500 text-sm">
+                                <td colspan="5" class="py-8 text-center text-slate-500 text-sm">
                                     Tidak ada data user
                                 </td>
                             </tr>

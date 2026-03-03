@@ -1,111 +1,148 @@
 <x-app-layout>
-    <div class="max-w-5xl space-y-8">
+    <div class="space-y-6">
         <!-- Welcome Header -->
-        <div class="section-divider">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="space-y-3">
-                    <h1 class="text-3xl md:text-4xl font-bold">
-                        <span class="text-gradient">Selamat datang</span>
-                        <span class="text-slate-900 block">di Aplikasi Pengajuan Transportasi</span>
+        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-6 text-white shadow-lg">
+            <div class="flex items-start justify-between gap-4">
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-3">
+                        <svg class="w-5 h-5 text-emerald-100" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10.394 2.08a1 1 0 00-.788 0l-7 3a1 1 0 000 1.84L5.25 8.051a.999.999 0 01.356-.257l4-1.714a1 1 0 11.788 1.838L7.667 9.088l1.94.831a1 1 0 00.787 0l7-3a1 1 0 000-1.838l-7-3zM3.31 9.397L5 10.12v4.102a8.969 8.969 0 00-1.05-.174 1 1 0 01-.89-.89 11.115 11.115 0 01.25-3.762zM9.3 16.573A9.026 9.026 0 007 14.935v-3.957l1.818.78a3 3 0 002.364 0l5.508-2.361a11.026 11.026 0 01.25 3.762 1 1 0 01-.89.89 8.968 8.968 0 00-5.35 2.524 1 1 0 01-1.4 0zM6 18a1 1 0 001-1v-2.065a8.935 8.935 0 00-2-.712V17a1 1 0 001 1z"></path>
+                        </svg>
+                        <span class="text-sm font-medium text-emerald-100">Dashboard Pengajuan</span>
+                    </div>
+                    <h1 class="text-2xl font-bold mb-2">
+                        Selamat Datang, {{ auth()->user()->name }}!
                     </h1>
-                    <p class="text-base text-slate-600">
-                        Aplikasi ini membantu unit kerja mengajukan kebutuhan 
-                        <span class="font-semibold text-slate-800">Mobil Umum</span> dan
-                        <span class="font-semibold text-slate-800">Ambulance</span> secara terencana, tercatat, dan mudah dipantau.
+                    <p class="text-emerald-50 text-sm leading-relaxed">
+                        Kelola pengajuan transportasi Mobil Umum dan Ambulance dengan mudah, terencana, dan terpantau.
                     </p>
                 </div>
-                <div class="shrink-0">
-                    <div class="card-left-accent card-left-accent-green p-5 max-w-xs">
-                        <div class="flex items-center gap-2 mb-3">
-                            <div class="icon-wrapper">
-                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
-                                </svg>
-                            </div>
-                            <div class="font-semibold text-slate-900">Status Akun</div>
-                        </div>
-                        <div class="text-sm space-y-1">
-                            <div>
-                                <span class="font-medium text-slate-900">{{ auth()->user()->name }}</span>
-                            </div>
-                            <div class="text-slate-600 text-xs">
-                                📍 {{ auth()->user()->unit_kerja ?? 'Unit kerja belum diisi' }}
-                            </div>
-                        </div>
+                <div class="hidden sm:block">
+                    <div class="bg-white/20 backdrop-blur-sm rounded-lg px-4 py-3 border border-white/30">
+                        <div class="text-xs text-emerald-100 mb-1">Unit Kerja</div>
+                        <div class="text-sm font-semibold">{{ auth()->user()->unit_kerja ?? 'Belum diisi' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-white rounded-lg border border-slate-200 p-4 hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs text-slate-500 font-medium mb-1">Total Pengajuan</div>
+                        <div class="text-2xl font-bold text-slate-900">{{ auth()->user()->transportRequests()->count() }}</div>
+                    </div>
+                    <div class="bg-slate-100 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-slate-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                            <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg border border-amber-200 p-4 hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs text-amber-600 font-medium mb-1">Menunggu</div>
+                        <div class="text-2xl font-bold text-amber-700">{{ auth()->user()->transportRequests()->where('status', 'diajukan')->count() }}</div>
+                    </div>
+                    <div class="bg-amber-100 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-lg border border-emerald-200 p-4 hover:shadow-md transition">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <div class="text-xs text-emerald-600 font-medium mb-1">Selesai</div>
+                        <div class="text-2xl font-bold text-emerald-700">{{ auth()->user()->transportRequests()->where('status', 'selesai')->count() }}</div>
+                    </div>
+                    <div class="bg-emerald-100 rounded-lg p-3">
+                        <svg class="w-6 h-6 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                        </svg>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Service Cards -->
-        <div class="grid md:grid-cols-3 gap-5">
-            <!-- Mobil Umum Card -->
-            <div class="card-accent overflow-hidden group">
-                <div class="p-5 space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="icon-wrapper-yellow">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.22.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm11 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zM5 11l1.5-4.5h11L19 11H5z"/>
+        <div>
+            <h2 class="text-lg font-semibold text-slate-900 mb-4">Pilih Jenis Transportasi</h2>
+            <div class="grid md:grid-cols-2 gap-4">
+                <!-- Mobil Umum Card -->
+                <a href="{{ route('pengajuan.choose', ['jenis' => 'umum']) }}" 
+                   class="group bg-white rounded-xl border-2 border-slate-200 hover:border-amber-400 p-6 transition-all hover:shadow-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-amber-100 rounded-xl p-3 group-hover:bg-amber-200 transition">
+                            <svg class="w-8 h-8 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
+                                <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3zM14 7a1 1 0 00-1 1v6.05A2.5 2.5 0 0115.95 16H17a1 1 0 001-1v-5a1 1 0 00-.293-.707l-2-2A1 1 0 0015 7h-1z"></path>
                             </svg>
                         </div>
-                        <div class="font-semibold text-slate-900">Mobil Umum</div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-amber-700 transition">Mobil Umum</h3>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                                Untuk keperluan pembelian/pengambilan obat, permintaan darah, pengantaran dokumen, dan logistik lainnya.
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
+                                    Umum
+                                </span>
+                                <span class="text-xs text-slate-500">• Non-medis</span>
+                            </div>
+                        </div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </div>
-                    <p class="text-sm text-slate-600">Untuk keperluan seperti pembelian/pengambilan obat, permintaan darah, pengantaran dokumen, dan logistik lainnya.</p>
-                    <div class="pt-2">
-                        <span class="inline-block px-3 py-1 bg-amber-100 text-amber-800 text-xs font-medium rounded-full">Umum</span>
-                    </div>
-                </div>
-            </div>
+                </a>
 
-            <!-- Ambulance Card -->
-            <div class="card-accent overflow-hidden group">
-                <div class="p-5 space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="icon-wrapper-teal">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M22 10.5V6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v4.5H0v3h2v7c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2v-7h2v-3h-2zM4 6h16v4.5H4V6zm8 15c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm8 0c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+                <!-- Ambulance Card -->
+                <a href="{{ route('pengajuan.choose', ['jenis' => 'ambulance']) }}" 
+                   class="group bg-white rounded-xl border-2 border-slate-200 hover:border-emerald-400 p-6 transition-all hover:shadow-lg">
+                    <div class="flex items-start gap-4">
+                        <div class="bg-emerald-100 rounded-xl p-3 group-hover:bg-emerald-200 transition">
+                            <svg class="w-8 h-8 text-emerald-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"></path>
                             </svg>
                         </div>
-                        <div class="font-semibold text-slate-900">Ambulance</div>
-                    </div>
-                    <p class="text-sm text-slate-600">Untuk antar / jemput pasien dari dan ke rumah sakit sesuai prosedur medis yang berlaku.</p>
-                    <div class="pt-2">
-                        <span class="inline-block px-3 py-1 bg-teal-100 text-teal-800 text-xs font-medium rounded-full">Medis</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Riwayat Card -->
-            <div class="card-accent overflow-hidden group">
-                <div class="p-5 space-y-3">
-                    <div class="flex items-center gap-3">
-                        <div class="icon-wrapper">
-                            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M11 17c0 .55-.45 1-1 1H8c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h2c.55 0 1 .45 1 1v4zm-2-3h-2v3h2v-3zm3-5h2c.55 0 1 .45 1 1v7c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-7c0-.55.45-1 1-1zm2 6h-2v-5h2v5zm3-9h2c.55 0 1 .45 1 1v10c0 .55-.45 1-1 1h-2c-.55 0-1-.45-1-1v-10c0-.55.45-1 1-1zm2 9h-2v-8h2v8zM5 5h2v2H5V5zm0 4h2v2H5V9z"/>
-                            </svg>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-bold text-slate-900 mb-2 group-hover:text-emerald-700 transition">Ambulance</h3>
+                            <p class="text-sm text-slate-600 leading-relaxed mb-3">
+                                Untuk antar/jemput pasien dari dan ke rumah sakit sesuai prosedur medis yang berlaku.
+                            </p>
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center px-2.5 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">
+                                    Medis
+                                </span>
+                                <span class="text-xs text-slate-500">• Prioritas tinggi</span>
+                            </div>
                         </div>
-                        <div class="font-semibold text-slate-900">Riwayat Pengajuan</div>
+                        <svg class="w-5 h-5 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </div>
-                    <p class="text-sm text-slate-600">Melihat daftar pengajuan transportasi yang pernah diajukan oleh unit kerja Anda.</p>
-                    <div class="pt-2">
-                        <span class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-medium rounded-full">Laporan</span>
-                    </div>
-                </div>
+                </a>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <div class="flex flex-wrap items-center gap-3 pt-4">
-            <a href="{{ route('dashboard') }}" class="inline-flex items-center rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 text-white px-6 py-3 text-sm font-medium hover:shadow-lg hover:opacity-90 transition-all">
-                <svg class="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+        <!-- Quick Actions -->
+        <div class="flex flex-wrap items-center gap-3">
+            <a href="{{ route('pengajuan.index') }}" 
+               class="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-sm font-medium transition border border-slate-200">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"></path>
+                    <path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"></path>
                 </svg>
-                Dashboard Pengajuan
-            </a>
-            <a href="{{ route('pengajuan.index') }}" class="text-sm text-emerald-700 hover:text-emerald-900 font-medium hover:underline decoration-2 underline-offset-2">
-                Lihat Riwayat Pengajuan →
+                Lihat Semua Riwayat
             </a>
         </div>
     </div>
 </x-app-layout>
-

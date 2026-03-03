@@ -110,27 +110,13 @@
                             <dd class="flex-1 text-slate-800">
                                 @if($transportRequest->prioritas === 'segera')
                                     <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
-                                        ★ Cito
+                                        Cito
                                     </span>
                                 @else
                                     <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
                                         Biasa
                                     </span>
                                 @endif
-                            </dd>
-                        </div>
-
-                        <div class="flex">
-                            <dt class="w-32 text-slate-500">Kontak</dt>
-                            <dd class="flex-1 text-slate-800">
-                                {{ $transportRequest->kontak }}
-                            </dd>
-                        </div>
-
-                        <div class="flex">
-                            <dt class="w-32 text-slate-500">Alamat Asal</dt>
-                            <dd class="flex-1 text-slate-800">
-                                {{ $transportRequest->alamat_asal ?? '-' }}
                             </dd>
                         </div>
 
@@ -242,10 +228,19 @@
                             <label class="block text-xs font-semibold text-slate-700 mb-1">
                                 Unit Kendaraan
                             </label>
-                            <input type="text" name="unit_mobil"
-                                   value="{{ old('unit_mobil', $transportRequest->unit_mobil) }}"
-                                   class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Misal: mobil_umum_1 / ambulance_igd">
+                            <select name="unit_mobil" id="unit_mobil"
+                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">-- Pilih Unit Kendaraan --</option>
+                                @foreach($vehicles as $vehicle)
+                                    <option value="{{ $vehicle->name }}" 
+                                            data-plate="{{ $vehicle->plate_number }}"
+                                            @selected(old('unit_mobil', $transportRequest->unit_mobil) == $vehicle->name)>
+                                        {{ $vehicle->name }} ({{ $vehicle->plate_number }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            <p class="text-[10px] text-slate-500 mt-1">Pilih unit kendaraan yang akan digunakan</p>
+                            <input type="hidden" name="plat_nomor" id="plat_nomor" value="{{ old('plat_nomor', $transportRequest->plat_nomor) }}">
                         </div>
 
                         <div>
@@ -266,16 +261,6 @@
                                 @endforeach
                             </select>
                             <p class="text-[10px] text-slate-500 mt-1">Pilih supir yang bertugas</p>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                Nomor Polisi
-                            </label>
-                            <input type="text" name="plat_nomor"
-                                   value="{{ old('plat_nomor', $transportRequest->plat_nomor) }}"
-                                   class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Contoh: B 1234 CD">
                         </div>
                     </div>
 
@@ -305,9 +290,9 @@
                                 Jam Kedatangan
                             </label>
                             <input type="text" name="jam_sampai" id="jam_sampai"
-                                   value="{{ old('jam_sampai', $transportRequest->jam_sampai ? substr($transportRequest->jam_sampai, 0, 5) : '') }}"
+                                   value="{{ old('jam_sampai', '') }}"
                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="00:00"
+                                   placeholder="Kosongkan jika belum selesai"
                                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
                                    maxlength="5"
                                    inputmode="numeric">
@@ -330,8 +315,25 @@
     </div>
 
     <script>
-        // Auto-format jam kedatangan input
+        // Auto-fill nomor polisi saat unit kendaraan dipilih
         document.addEventListener('DOMContentLoaded', function() {
+            const unitMobilSelect = document.getElementById('unit_mobil');
+            const platNomorInput = document.getElementById('plat_nomor');
+            
+            if (unitMobilSelect && platNomorInput) {
+                unitMobilSelect.addEventListener('change', function() {
+                    const selectedOption = this.options[this.selectedIndex];
+                    const plateNumber = selectedOption.getAttribute('data-plate');
+                    
+                    if (plateNumber) {
+                        platNomorInput.value = plateNumber;
+                    } else {
+                        platNomorInput.value = '';
+                    }
+                });
+            }
+            
+            // Auto-format jam kedatangan input
             const jamSampaiInput = document.getElementById('jam_sampai');
             
             if (jamSampaiInput) {

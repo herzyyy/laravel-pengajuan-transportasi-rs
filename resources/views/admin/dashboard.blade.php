@@ -69,7 +69,6 @@
                                 <th class="py-3 px-4">Pemohon</th>
                                 <th class="py-3 px-4">Jenis</th>
                                 <th class="py-3 px-4">Status</th>
-                                <th class="py-3 px-4 text-right">Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100">
@@ -90,7 +89,7 @@
                                         <span class="font-medium">{{ ucfirst($item->jenis) }}</span>
                                         @if($item->prioritas === 'segera')
                                             <span class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-700">
-                                                ★ CITO
+                                                CITO
                                             </span>
                                         @endif
                                     </td>
@@ -108,16 +107,10 @@
                                             {{ $statusConfig['label'] }}
                                         </span>
                                     </td>
-                                    <td class="py-3 px-4 text-right">
-                                        <a href="{{ route('admin.transport.show', $item) }}"
-                                           class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-emerald-500 hover:text-emerald-700 transition shadow-sm">
-                                            Detail
-                                        </a>
-                                    </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="py-8 text-center text-slate-500 text-sm">
+                                    <td colspan="4" class="py-8 text-center text-slate-500 text-sm">
                                         <div class="flex flex-col items-center gap-2">
                                             <svg class="w-12 h-12 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
