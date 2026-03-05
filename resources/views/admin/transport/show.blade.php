@@ -67,7 +67,7 @@
                         $color = $colors[$transportRequest->status] ?? 'bg-slate-100 text-slate-800';
                     @endphp
                     <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold {{ $color }}">
-                        Status: {{ ucfirst($transportRequest->status) }}
+                        Status: {{ $transportRequest->status === 'diproses' ? 'Disetujui' : ucfirst($transportRequest->status) }}
                     </span>
                 </div>
 
@@ -184,11 +184,11 @@
                 </div>
             </div>
 
-            {{-- Card 2: Diproses oleh Admin --}}
+            {{-- Card 2: Disetujui oleh Admin --}}
             <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
                 <div class="border-b border-slate-200 px-5 py-4">
                     <h2 class="text-sm font-semibold text-slate-800">
-                        Diproses oleh Admin
+                        Disetujui oleh Admin
                     </h2>
                     <p class="text-xs text-slate-500 mt-1">
                         Pilih status dan lengkapi data kendaraan secara singkat.

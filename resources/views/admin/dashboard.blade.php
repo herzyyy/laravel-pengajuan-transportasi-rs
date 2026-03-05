@@ -24,7 +24,7 @@
             </div>
 
             <div class="bg-white rounded-2xl shadow-sm ring-1 ring-blue-200 px-5 py-4">
-                <div class="text-xs font-medium text-blue-700 uppercase tracking-wide">Diproses</div>
+                <div class="text-xs font-medium text-blue-700 uppercase tracking-wide">Disetujui</div>
                 <div class="mt-2 text-3xl font-bold text-blue-900">
                     {{ $summary['diproses'] }}
                 </div>
@@ -97,7 +97,7 @@
                                         @php
                                             $statusConfig = match($item->status) {
                                                 'diajukan' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'label' => 'Diajukan'],
-                                                'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Diproses'],
+                                                'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Disetujui'],
                                                 'selesai' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'label' => 'Selesai'],
                                                 'ditolak' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Ditolak'],
                                                 default => ['bg' => 'bg-slate-100', 'text' => 'text-slate-800', 'label' => ucfirst($item->status)]

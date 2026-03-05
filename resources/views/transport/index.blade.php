@@ -40,7 +40,7 @@
                     <select name="status" id="status" class="w-full rounded-lg border-slate-300 text-sm focus:border-emerald-500 focus:ring-emerald-500">
                         <option value="">Semua</option>
                         <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
-                        <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Diproses</option>
+                        <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Disetujui</option>
                         <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                         <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
                     </select>
@@ -163,7 +163,7 @@
                                                 'bg' => 'bg-blue-50',
                                                 'text' => 'text-blue-700',
                                                 'border' => 'border-blue-200',
-                                                'label' => 'Diproses',
+                                                'label' => 'Disetujui',
                                                 'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"/></svg>'
                                             ],
                                             'selesai' => [

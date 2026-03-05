@@ -26,7 +26,7 @@
                     <select name="status" class="rounded-xl border border-slate-300 px-4 py-2 text-sm focus:ring-2 focus:ring-emerald-500" onchange="this.form.submit()">
                         <option value="">Semua Status</option>
                         <option value="diajukan" @selected(request('status') === 'diajukan')>Menunggu (Diajukan)</option>
-                        <option value="diproses" @selected(request('status') === 'diproses')>Diproses</option>
+                        <option value="diproses" @selected(request('status') === 'diproses')>Disetujui</option>
                         <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
                         <option value="ditolak" @selected(request('status') === 'ditolak')>Ditolak</option>
                     </select>
@@ -65,7 +65,7 @@
                                     $color = $colors[$item->status] ?? 'bg-slate-100 text-slate-800';
                                 @endphp
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold {{ $color }}">
-                                    {{ ucfirst($item->status) }}
+                                    {{ $item->status === 'diproses' ? 'Disetujui' : ucfirst($item->status) }}
                                 </span>
                             </div>
                             <div class="font-semibold text-sm text-slate-900 truncate">

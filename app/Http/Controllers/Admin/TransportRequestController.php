@@ -83,6 +83,14 @@ class TransportRequestController extends Controller
             }
         }
 
+        // Jika plat_nomor kosong tapi unit_mobil ada, ambil dari master vehicle
+        if (empty($data['plat_nomor']) && !empty($data['unit_mobil'])) {
+            $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
+            if ($vehicle) {
+                $data['plat_nomor'] = $vehicle->plate_number;
+            }
+        }
+
         $transportRequest->update($data);
 
         return redirect()->route('admin.transport.show', $transportRequest)
@@ -92,6 +100,15 @@ class TransportRequestController extends Controller
     public function print(TransportRequest $transportRequest)
     {
         $transportRequest->load('driver');
+        
+        // Jika plat_nomor kosong tapi unit_mobil ada, coba ambil dari master vehicle
+        if (empty($transportRequest->plat_nomor) && !empty($transportRequest->unit_mobil)) {
+            $vehicle = \App\Models\Vehicle::where('name', $transportRequest->unit_mobil)->first();
+            if ($vehicle) {
+                $transportRequest->plat_nomor = $vehicle->plate_number;
+            }
+        }
+        
         return view('admin.transport.print', compact('transportRequest'));
     }
 }
