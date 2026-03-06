@@ -19,9 +19,9 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-        'name',
+        'first_name',
+        'last_name',
         'unit_kerja',
-        'email',
         'password',
         'role',
     ];
@@ -57,5 +57,10 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function getFullNameAttribute(): string
+    {
+        return trim($this->first_name . ' ' . $this->last_name);
     }
 }

@@ -9,8 +9,8 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen @if($hideHeader ?? false) bg-white @else bg-gradient-to-br from-emerald-50 via-white to-teal-50 @endif text-slate-800 antialiased">
-    <div class="min-h-screen flex flex-col @if($hideHeader ?? false) h-screen overflow-hidden @endif">
+<body class="@if($hideHeader ?? false) h-screen overflow-hidden bg-white @else min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 @endif text-slate-800 antialiased">
+    <div class="@if($hideHeader ?? false) h-screen flex @else min-h-screen flex flex-col @endif">
 
         @unless($hideHeader ?? false)
             <header class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 
@@ -28,7 +28,7 @@
             </header>
         @endunless
 
-        <div class="flex-1 @if($hideHeader ?? false) flex @else flex items-center justify-center px-4 sm:px-6 py-8 @endif">
+        <div class="@if($hideHeader ?? false) flex-1 flex w-full @else flex-1 flex items-center justify-center px-4 sm:px-6 py-8 @endif">
             @if($hideHeader ?? false)
                 {{ $slot }}
             @else

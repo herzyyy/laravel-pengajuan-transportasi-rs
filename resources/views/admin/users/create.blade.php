@@ -9,42 +9,43 @@
             <form action="{{ route('admin.users.store') }}" method="POST" class="p-6 space-y-4">
                 @csrf
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap *</label>
-                    <input type="text" name="name" value="{{ old('name') }}" required
-                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    @error('name')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Depan *</label>
+                        <input type="text" name="first_name" value="{{ old('first_name') }}" required
+                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        @error('first_name')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Belakang *</label>
+                        <input type="text" name="last_name" value="{{ old('last_name') }}" required
+                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        @error('last_name')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Password *</label>
                     <input type="password" name="password" required
-                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                           placeholder="Minimal 8 karakter">
                     @error('password')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Unit Kerja</label>
-                        <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}"
-                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        @error('unit_kerja')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Telepon</label>
-                        <input type="text" name="phone" value="{{ old('phone') }}"
-                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        @error('phone')
-                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                        @enderror
-                    </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Unit Kerja</label>
+                    <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}"
+                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    @error('unit_kerja')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>

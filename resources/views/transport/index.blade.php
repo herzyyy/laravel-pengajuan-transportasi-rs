@@ -65,10 +65,11 @@
             </form>
         </div>
 
-        <!-- Table Card -->
+        <!-- Table Card (Desktop) / Card List (Mobile) -->
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
             
-            <div class="overflow-x-auto">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full text-sm">
                     
                     <thead class="bg-slate-50 border-b border-slate-200">
@@ -242,6 +243,107 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y divide-slate-200">
+                @forelse ($items as $item)
+                    <div class="p-4 hover:bg-slate-50 transition">
+                        <!-- Header with ID and Status -->
+                        <div class="flex items-start justify-between gap-3 mb-3">
+                            <span class="font-mono text-xs font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                #{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                            </span>
+                            @php
+                                $statusConfig = match($item->status) {
+                                    'diajukan' => ['bg' => 'bg-amber-50', 'text' => 'text-amber-700', 'border' => 'border-amber-200', 'label' => 'Diajukan'],
+                                    'diproses' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'label' => 'Disetujui'],
+                                    'selesai' => ['bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200', 'label' => 'Selesai'],
+                                    'ditolak' => ['bg' => 'bg-red-50', 'text' => 'text-red-700', 'border' => 'border-red-200', 'label' => 'Ditolak'],
+                                    default => ['bg' => 'bg-slate-50', 'text' => 'text-slate-700', 'border' => 'border-slate-200', 'label' => ucfirst($item->status)]
+                                };
+                            @endphp
+                            <span class="inline-flex items-center px-2 py-1 rounded-full text-[10px] font-bold border {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} {{ $statusConfig['border'] }}">
+                                {{ $statusConfig['label'] }}
+                            </span>
+                        </div>
+
+                        <!-- Jenis & Prioritas -->
+                        <div class="flex items-center gap-2 mb-3">
+                            @if($item->jenis === 'ambulance')
+                                <span class="inline-flex items-center gap-1.5 px-2 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-semibold rounded-full">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clip-rule="evenodd"></path>
+                                    </svg>
+                                    Ambulance
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1.5 px-2 py-1 bg-amber-100 text-amber-700 text-[10px] font-semibold rounded-full">
+                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"></path>
+                                        <path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3z"></path>
+                                    </svg>
+                                    Umum
+                                </span>
+                            @endif
+                            
+                            @if($item->prioritas === 'segera')
+                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-red-100 text-red-700 border border-red-300">
+                                    ⚡ CITO
+                                </span>
+                            @endif
+                        </div>
+
+                        <!-- Keperluan -->
+                        @if ($item->keperluan)
+                            <div class="text-xs text-slate-900 font-medium mb-3">
+                                {{ ucfirst($item->keperluan) }}
+                            </div>
+                        @endif
+
+                        <!-- Jadwal -->
+                        <div class="space-y-1.5 mb-3 text-xs">
+                            <div class="flex items-center gap-2 text-slate-700">
+                                <svg class="w-4 h-4 text-slate-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                                <span class="font-medium">{{ $item->tanggal?->format('d/m/Y') }}</span>
+                                <span class="text-slate-500">{{ substr($item->jam, 0, 5) }}</span>
+                            </div>
+                            @if ($item->tanggal_sampai && $item->jam_sampai)
+                                <div class="text-[10px] text-slate-500 pl-6">
+                                    s/d {{ $item->tanggal_sampai?->format('d/m/Y') }} {{ substr($item->jam_sampai, 0, 5) }}
+                                </div>
+                            @endif
+                        </div>
+
+                        <!-- Action Button -->
+                        <a href="{{ route('pengajuan.success', $item) }}" class="block w-full text-center rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                            Lihat Detail
+                        </a>
+                    </div>
+
+                @empty
+                    <div class="p-8 text-center">
+                        <div class="flex flex-col items-center gap-3">
+                            <div class="bg-slate-100 rounded-full p-4">
+                                <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-900 mb-1">Belum ada pengajuan</p>
+                                <p class="text-sm text-slate-600">Buat pengajuan transportasi untuk memulai</p>
+                            </div>
+                            <a href="{{ route('dashboard') }}" class="mt-2 inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-lg transition">
+                                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                                </svg>
+                                Buat Pengajuan
+                            </a>
+                        </div>
+                    </div>
+                @endforelse
             </div>
 
             <!-- Pagination -->

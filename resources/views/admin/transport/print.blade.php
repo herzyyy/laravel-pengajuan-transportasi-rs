@@ -244,7 +244,7 @@
                         <tr>
                             <td>Nama</td>
                             <td>:</td>
-                            <td>{{ $transportRequest->user->name ?? $transportRequest->pemohon_nama }}</td>
+                            <td>{{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}</td>
                         </tr>
                         <tr>
                             <td>Unit Kerja</td>
@@ -396,7 +396,7 @@
         <div class="signature-box">
             <p style="font-weight: bold; margin-bottom: 3px;">Yang Mengajukan</p>
             <div class="signature-space"></div>
-            <p style="font-weight: bold; text-decoration: underline; margin: 0;">{{ $transportRequest->user->name ?? $transportRequest->pemohon_nama }}</p>
+            <p style="font-weight: bold; text-decoration: underline; margin: 0;">{{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}</p>
             <p style="font-size: 7.5pt; margin: 1px 0 0 0;">{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</p>
         </div>
         

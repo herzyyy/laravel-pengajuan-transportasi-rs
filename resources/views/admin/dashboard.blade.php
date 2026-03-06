@@ -79,7 +79,7 @@
                                     </td>
                                     <td class="py-3 px-4">
                                         <div class="font-medium text-slate-900">
-                                            {{ $item->user->name ?? $item->pemohon_nama }}
+                                            {{ $item->user->full_name ?? $item->pemohon_nama }}
                                         </div>
                                         <div class="text-xs text-slate-500">
                                             {{ $item->user->unit_kerja ?? $item->pemohon_unit }}

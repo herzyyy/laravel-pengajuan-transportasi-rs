@@ -10,12 +10,18 @@
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="min-h-screen bg-slate-50 text-slate-800 antialiased">
+<body class="min-h-screen bg-slate-50 text-slate-800 antialiased" x-data="{ sidebarOpen: false }">
     <div class="min-h-screen flex flex-col">
 
         {{-- Header --}}
         <header class="sticky top-0 z-40 backdrop-blur-md bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 shadow-md">
-            <div class="px-6 py-3 flex items-center justify-between">
+            <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
+                {{-- Mobile Menu Button --}}
+                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="bg-white rounded-lg p-1.5 shadow-lg">
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-7 w-auto">
@@ -89,7 +95,7 @@
                                                 </div>
                                                 <div class="flex-1 min-w-0">
                                                     <p class="text-sm text-slate-900 font-medium">
-                                                        <span class="font-semibold">{{ $request->user->name ?? $request->pemohon_nama }}</span>
+                                                        <span class="font-semibold">{{ $request->user->full_name ?? $request->pemohon_nama }}</span>
                                                     </p>
                                                     <p class="text-xs text-slate-600 mt-0.5">
                                                         Mengajukan {{ ucfirst($request->jenis) }}
@@ -220,7 +226,7 @@
                         <div class="w-2 h-2 rounded-full bg-white shadow-sm"></div>
                         <div class="text-xs">
                             <span class="text-emerald-50">{{ auth()->user()->isAdmin() ? 'Admin' : 'User' }}:</span>
-                            <span class="font-semibold text-white ml-1">{{ auth()->user()->name }}</span>
+                            <span class="font-semibold text-white ml-1">{{ auth()->user()->full_name }}</span>
                         </div>
                     </div>
                     <form method="POST" action="{{ route('logout') }}">
@@ -239,10 +245,24 @@
             </div>
         </header>
 
-        <div class="flex flex-1">
+        <div class="flex flex-1 relative">
+
+            {{-- Mobile Sidebar Overlay --}}
+            <div x-show="sidebarOpen" 
+                 @click="sidebarOpen = false"
+                 x-transition:enter="transition-opacity ease-linear duration-300"
+                 x-transition:enter-start="opacity-0"
+                 x-transition:enter-end="opacity-100"
+                 x-transition:leave="transition-opacity ease-linear duration-300"
+                 x-transition:leave-start="opacity-100"
+                 x-transition:leave-end="opacity-0"
+                 class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+                 style="display: none;">
+            </div>
 
             {{-- Sidebar --}}
-            <aside class="w-56 bg-gradient-to-b from-emerald-50 to-white border-r border-emerald-100 flex flex-col">
+            <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
+                   class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-56 bg-gradient-to-b from-emerald-50 to-white border-r border-emerald-100 flex flex-col shadow-lg lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0">
                 <div class="px-3 py-4 border-b border-emerald-100">
                     <div class="rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 px-3 py-2.5 shadow-md text-white">
                         <div class="flex items-center gap-2 mb-1.5">
@@ -252,7 +272,7 @@
                             </div>
                         </div>
                         <div class="text-sm font-semibold truncate">
-                            {{ auth()->user()->name }}
+                            {{ auth()->user()->full_name }}
                         </div>
                         @if(auth()->user()->unit_kerja)
                         <div class="text-xs text-emerald-100 truncate mt-0.5">
@@ -381,18 +401,18 @@
             </aside>
 
             {{-- Main Content --}}
-            <main class="flex-1 px-6 py-6 bg-slate-50">
+            <main class="flex-1 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 lg:ml-0">
                 <div class="max-w-7xl mx-auto">
 
                     @if (session('status'))
                         <div class="mb-4 rounded-lg bg-emerald-50 
                                     text-emerald-800 border border-emerald-200 
-                                    px-4 py-3 text-sm shadow-sm">
+                                    px-3 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm shadow-sm">
                             {{ session('status') }}
                         </div>
                     @endif
 
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+                    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-4 sm:p-6">
                         {{ $slot }}
                     </div>
 

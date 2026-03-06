@@ -1,30 +1,30 @@
 <x-app-layout>
-    <div class="space-y-4">
+    <div class="space-y-2">
         <!-- Header -->
         <div class="flex items-start justify-between gap-4">
             <div>
-                <h1 class="text-2xl font-bold text-slate-900">
+                <h1 class="text-lg font-bold text-slate-900">
                     Form Pengajuan Mobil Umum
                 </h1>
-                <p class="text-sm text-slate-600 mt-1">
+                <p class="text-[10px] text-slate-600 mt-0.5">
                     Lengkapi data untuk pengajuan mobil umum
                 </p>
             </div>
             <a href="{{ route('dashboard') }}" 
-               class="text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+               class="text-[10px] font-medium text-slate-600 hover:text-slate-900 transition">
                 ← Kembali
             </a>
         </div>
 
         @if ($errors->any())
-            <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+            <div class="bg-red-50 border border-red-200 rounded-lg p-2">
+                <div class="flex items-start gap-2">
+                    <svg class="w-3 h-3 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"></path>
                     </svg>
                     <div class="flex-1">
-                        <div class="font-semibold text-red-900 text-sm mb-1">Periksa kembali data yang diisi:</div>
-                        <ul class="list-disc ml-4 space-y-0.5 text-sm text-red-700">
+                        <div class="font-semibold text-red-900 text-[10px] mb-0.5">Periksa kembali data yang diisi:</div>
+                        <ul class="list-disc ml-3 space-y-0.5 text-[10px] text-red-700">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -35,7 +35,7 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('pengajuan.umum.store') }}" class="mt-6 space-y-6">
+    <form method="POST" action="{{ route('pengajuan.umum.store') }}" class="mt-3 space-y-3">
         @csrf
 
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
@@ -43,20 +43,20 @@
             <!-- Accent Bar -->
             <div class="h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
 
-            <div class="p-6 space-y-6">
+            <div class="p-3 space-y-3">
 
-                <!-- Unit Kerja & Mobil -->
-                <div class="grid md:grid-cols-2 gap-4">
+                <!-- Unit Kerja & Mobil (2 kolom) -->
+                <div class="grid md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Unit Kerja</label>
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Kerja</label>
                         <input value="{{ auth()->user()->unit_kerja ?? '-' }}" readonly
-                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 font-medium">
+                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 font-medium">
                     </div>
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Unit Mobil <span class="text-red-500">*</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Mobil <span class="text-red-500">*</span></label>
                         <select name="unit_mobil" required
-                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="" disabled selected>Pilih mobil</option>
                             @forelse($vehicles as $vehicle)
                                 <option value="{{ $vehicle->name }}" @selected(old('unit_mobil') === $vehicle->name)>
@@ -67,113 +67,117 @@
                             @endforelse
                         </select>
                         @error('unit_mobil')
-                            <div class="mt-1 text-xs text-red-600">{{ $message }}</div>
+                            <div class="mt-0.5 text-[10px] text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
                 </div>
 
-                <!-- Waktu Penggunaan -->
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-4">
-                    <div class="text-sm font-semibold text-slate-900 mb-3">Waktu Penggunaan</div>
-
-                    <div class="grid md:grid-cols-2 gap-4">
-                        <!-- Dari -->
+                <!-- Waktu Penggunaan (4 kolom dalam 1 baris) -->
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2">
+                    <div class="text-xs font-semibold text-slate-900 mb-1.5">Waktu Penggunaan</div>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <div>
-                            <div class="text-xs font-semibold text-slate-600 mb-2">Dari</div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required
-                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500">
-                                <input type="text" name="jam" value="{{ old('jam') }}" placeholder="00:00" required
-                                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
-                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500">
-                            </div>
+                            <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Dari <span class="text-red-500">*</span></label>
+                            <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
                         </div>
-
-                        <!-- Sampai -->
                         <div>
-                            <div class="text-xs font-semibold text-slate-600 mb-2">Sampai</div>
-                            <div class="grid grid-cols-2 gap-2">
-                                <input type="date" name="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}" required
-                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500">
-                                <input type="text" name="jam_sampai" value="{{ old('jam_sampai') }}" placeholder="00:00" required
-                                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
-                                    class="rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500">
-                            </div>
+                            <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Dari <span class="text-red-500">*</span></label>
+                            <input type="text" name="jam" value="{{ old('jam') }}" placeholder="00:00" required
+                                pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Sampai <span class="text-red-500">*</span></label>
+                            <input type="date" name="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}" required
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Sampai <span class="text-red-500">*</span></label>
+                            <input type="text" name="jam_sampai" value="{{ old('jam_sampai') }}" placeholder="00:00" required
+                                pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
                         </div>
                     </div>
-
-                    <div class="mt-4 flex items-center gap-3">
+                    <div class="mt-2 flex items-center gap-2">
                         <button id="checkAvailabilityBtn" type="button"
-                            class="inline-flex items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 text-sm font-semibold transition">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-[10px] font-semibold transition">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
                             </svg>
                             Cek Ketersediaan
                         </button>
-                        <div id="availabilityStatus" class="text-sm font-semibold"></div>
+                        <div id="availabilityStatus" class="text-[10px] font-semibold"></div>
                     </div>
                 </div>
 
-                <!-- Prioritas -->
-                <div>
-                    <label class="block text-xs font-semibold text-slate-700 mb-2">Tingkat Kebutuhan <span class="text-red-500">*</span></label>
-                    <div class="grid md:grid-cols-2 gap-3">
-                        <label class="flex items-center gap-3 p-3 rounded-lg border-2 border-slate-200 hover:border-cyan-400 hover:bg-cyan-50 transition cursor-pointer">
-                            <input type="radio" name="prioritas" value="biasa" class="w-4 h-4 text-cyan-600"
-                                @checked(old('prioritas') === 'biasa')>
-                            <div class="flex-1">
-                                <div class="font-semibold text-sm text-slate-900">Biasa</div>
-                                <div class="text-xs text-slate-600">Kebutuhan rutin / normal</div>
-                            </div>
-                            <span class="text-xs px-2 py-0.5 bg-cyan-100 text-cyan-700 rounded-full font-bold">NORMAL</span>
-                        </label>
-
-                        <label class="flex items-center gap-3 p-3 rounded-lg border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 transition cursor-pointer">
-                            <input type="radio" name="prioritas" value="segera" class="w-4 h-4 text-red-600"
-                                @checked(old('prioritas') === 'segera')>
-                            <div class="flex-1">
-                                <div class="font-semibold text-sm text-slate-900">Segera</div>
-                                <div class="text-xs text-slate-600">Kebutuhan mendesak / urgent</div>
-                            </div>
-                            <span class="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded-full font-bold">URGENT</span>
-                        </label>
-                    </div>
-                </div>
-
-                <!-- Alamat & Keperluan -->
-                <div class="grid md:grid-cols-2 gap-4">
+                <!-- Prioritas & Alamat Tujuan (2 kolom) -->
+                <div class="grid md:grid-cols-2 gap-3">
+                    <!-- Prioritas -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Alamat Tujuan <span class="text-red-500">*</span></label>
-                        <textarea name="alamat_tujuan" rows="3" required
-                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Tingkat Kebutuhan <span class="text-red-500">*</span></label>
+                        <div class="space-y-1.5">
+                            <label class="flex items-center gap-2 p-1.5 rounded-lg border-2 border-slate-200 hover:border-cyan-400 hover:bg-cyan-50 transition cursor-pointer">
+                                <input type="radio" name="prioritas" value="biasa" class="w-3 h-3 text-cyan-600"
+                                    @checked(old('prioritas') === 'biasa')>
+                                <div class="flex-1">
+                                    <div class="font-semibold text-[10px] text-slate-900">Biasa</div>
+                                    <div class="text-[9px] text-slate-600">Kebutuhan rutin / normal</div>
+                                </div>
+                                <span class="text-[9px] px-1.5 py-0.5 bg-cyan-100 text-cyan-700 rounded-full font-bold">NORMAL</span>
+                            </label>
+
+                            <label class="flex items-center gap-2 p-1.5 rounded-lg border-2 border-slate-200 hover:border-red-400 hover:bg-red-50 transition cursor-pointer">
+                                <input type="radio" name="prioritas" value="segera" class="w-3 h-3 text-red-600"
+                                    @checked(old('prioritas') === 'segera')>
+                                <div class="flex-1">
+                                    <div class="font-semibold text-[10px] text-slate-900">Segera</div>
+                                    <div class="text-[9px] text-slate-600">Kebutuhan mendesak / urgent</div>
+                                </div>
+                                <span class="text-[9px] px-1.5 py-0.5 bg-red-100 text-red-700 rounded-full font-bold">URGENT</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Alamat Tujuan -->
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Alamat Tujuan <span class="text-red-500">*</span></label>
+                        <textarea name="alamat_tujuan" rows="4" required
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500"
                             placeholder="Alamat lengkap lokasi tujuan">{{ old('alamat_tujuan') }}</textarea>
                     </div>
+                </div>
 
+                <!-- Keperluan & Keterangan (2 kolom) -->
+                <div class="grid md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5">Keperluan <span class="text-red-500">*</span></label>
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Keperluan <span class="text-red-500">*</span></label>
                         <input name="keperluan" list="keperluan_list" required
                             value="{{ old('keperluan') }}"
-                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 mb-2"
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500"
                             placeholder="Contoh: Ambil obat, Antar dokumen">
-                        
-                        <label class="block text-xs font-semibold text-slate-700 mb-1.5 mt-3">Keterangan Tambahan</label>
-                        <textarea name="keterangan" rows="2"
-                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500"
-                            placeholder="Keterangan tambahan (opsional)">{{ old('keterangan') }}</textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Keterangan Tambahan</label>
+                        <input name="keterangan"
+                            value="{{ old('keterangan') }}"
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                            placeholder="Keterangan tambahan (opsional)">
                     </div>
                 </div>
 
             </div>
 
             <!-- Footer -->
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+            <div class="px-3 py-2 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
                 <a href="{{ route('dashboard') }}"
-                    class="text-sm font-medium text-slate-600 hover:text-slate-900 transition">
+                    class="text-[10px] font-medium text-slate-600 hover:text-slate-900 transition">
                     ← Kembali
                 </a>
                 <button id="submitBtn" type="submit"
-                    class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:shadow-lg text-white px-5 py-2.5 text-sm font-semibold transition">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:shadow-lg text-white px-4 py-2 text-xs font-semibold transition">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>
                     Kirim Pengajuan
@@ -192,7 +196,7 @@
 
             async function check() {
                 statusEl.textContent = 'Memeriksa…';
-                statusEl.className = 'text-sm font-semibold text-slate-600';
+                statusEl.className = 'text-[10px] font-semibold text-slate-600';
 
                 const form = btn.closest('form');
                 const unit = form.querySelector('select[name="unit_mobil"]').value;
@@ -203,7 +207,7 @@
 
                 if (!unit || !tanggal || !jam || !tanggal_sampai || !jam_sampai) {
                     statusEl.textContent = 'Lengkapi semua kolom terlebih dahulu';
-                    statusEl.className = 'text-sm font-semibold text-amber-600';
+                    statusEl.className = 'text-[10px] font-semibold text-amber-600';
                     return;
                 }
 
@@ -221,7 +225,7 @@
 
                     if (data.available) {
                         statusEl.textContent = '✓ Tersedia';
-                        statusEl.className = 'text-sm font-semibold text-emerald-600';
+                        statusEl.className = 'text-[10px] font-semibold text-emerald-600';
                         if (submitBtn) submitBtn.disabled = false;
                     } else {
                         let msg = '✗ Tidak tersedia';
@@ -230,12 +234,12 @@
                             msg += ` - Bentrok dengan ${conflict.jenis} (${conflict.status})`;
                         }
                         statusEl.textContent = msg;
-                        statusEl.className = 'text-sm font-semibold text-red-600';
+                        statusEl.className = 'text-[10px] font-semibold text-red-600';
                         if (submitBtn) submitBtn.disabled = true;
                     }
                 } catch (err) {
                     statusEl.textContent = '⚠ Terjadi kesalahan';
-                    statusEl.className = 'text-sm font-semibold text-red-600';
+                    statusEl.className = 'text-[10px] font-semibold text-red-600';
                 }
             }
 

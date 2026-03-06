@@ -22,19 +22,26 @@ class AuthController extends Controller
 
     public function store(Request $request)
     {
-        $credentials = $request->validate([
-            'name' => ['required', 'string'],
+        $request->validate([
+            'first_name' => ['required', 'string'],
+            'last_name' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
         $remember = $request->boolean('remember');
 
-        if (! Auth::attempt($credentials, $remember)) {
+        // Find user by first_name and last_name
+        $user = \App\Models\User::where('first_name', $request->first_name)
+            ->where('last_name', $request->last_name)
+            ->first();
+
+        if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
             return back()
-                ->withErrors(['name' => 'Nama atau password salah.'])
-                ->onlyInput('name');
+                ->withErrors(['first_name' => 'Nama atau password salah.'])
+                ->onlyInput('first_name', 'last_name');
         }
 
+        Auth::login($user, $remember);
         $request->session()->regenerate();
 
         // Setelah login berhasil, arahkan sesuai role

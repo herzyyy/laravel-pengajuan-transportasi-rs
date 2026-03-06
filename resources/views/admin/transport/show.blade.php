@@ -86,7 +86,7 @@
                         <div class="flex">
                             <dt class="w-32 text-slate-500">Pemohon</dt>
                             <dd class="flex-1 text-slate-800">
-                                {{ $transportRequest->user->name ?? $transportRequest->pemohon_nama }}
+                                {{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}
                                 <div class="text-xs text-slate-500">
                                     {{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}
                                 </div>

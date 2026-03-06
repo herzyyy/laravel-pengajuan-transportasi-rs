@@ -34,14 +34,18 @@ class TransportRequestController extends Controller
 
     public function index(Request $request)
     {
-        $query = TransportRequest::with('user')->latest();
+        $query = TransportRequest::with('user')->orderBy('created_at', 'asc'); // Urutkan berdasarkan waktu membuat ajuan (FIFO)
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
+        // Default filter: hanya tampilkan status 'diajukan' jika tidak ada filter status
+        $status = $request->filled('status') ? $request->status : 'diajukan';
+        $query->where('status', $status);
 
         if ($request->filled('jenis')) {
             $query->where('jenis', $request->jenis);
+        }
+
+        if ($request->filled('tanggal')) {
+            $query->whereDate('tanggal', $request->tanggal);
         }
 
         $items = $query->paginate(15)->withQueryString();

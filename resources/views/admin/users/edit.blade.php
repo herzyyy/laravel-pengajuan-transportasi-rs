@@ -10,13 +10,24 @@
                 @csrf
                 @method('PUT')
 
-                <div>
-                    <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Lengkap *</label>
-                    <input type="text" name="name" value="{{ old('name', $user->name) }}" required
-                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    @error('name')
-                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
-                    @enderror
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Depan *</label>
+                        <input type="text" name="first_name" value="{{ old('first_name', $user->first_name) }}" required
+                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        @error('first_name')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Nama Belakang *</label>
+                        <input type="text" name="last_name" value="{{ old('last_name', $user->last_name) }}" required
+                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        @error('last_name')
+                            <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
                 </div>
 
                 <div>
@@ -29,18 +40,10 @@
                     @enderror
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Unit Kerja</label>
-                        <input type="text" name="unit_kerja" value="{{ old('unit_kerja', $user->unit_kerja) }}"
-                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-slate-700 mb-2">Telepon</label>
-                        <input type="text" name="phone" value="{{ old('phone', $user->phone) }}"
-                               class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Unit Kerja</label>
+                    <input type="text" name="unit_kerja" value="{{ old('unit_kerja', $user->unit_kerja) }}"
+                           class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                 </div>
 
                 <div>

@@ -11,7 +11,7 @@
                         <span class="text-sm font-medium text-emerald-100">Dashboard Pengajuan</span>
                     </div>
                     <h1 class="text-2xl font-bold mb-2">
-                        Selamat Datang, {{ auth()->user()->name }}!
+                        Selamat Datang, {{ auth()->user()->full_name }}!
                     </h1>
                     <p class="text-emerald-50 text-sm leading-relaxed">
                         Kelola pengajuan transportasi Mobil Umum dan Ambulance dengan mudah, terencana, dan terpantau.

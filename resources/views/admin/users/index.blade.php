@@ -60,9 +60,9 @@
                 <table class="w-full text-sm">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr class="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                            <th class="py-3 px-4 text-left">Nama</th>
+                            <th class="py-3 px-4 text-left">Nama Depan</th>
+                            <th class="py-3 px-4 text-left">Nama Belakang</th>
                             <th class="py-3 px-4 text-left">Unit Kerja</th>
-                            <th class="py-3 px-4 text-left">Telepon</th>
                             <th class="py-3 px-4 text-left">Role</th>
                             <th class="py-3 px-4 text-right">Aksi</th>
                         </tr>
@@ -71,10 +71,12 @@
                         @forelse($users as $user)
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="py-3 px-4">
-                                    <div class="font-medium text-slate-900">{{ $user->name }}</div>
+                                    <div class="font-medium text-slate-900">{{ $user->first_name }}</div>
+                                </td>
+                                <td class="py-3 px-4">
+                                    <div class="font-medium text-slate-900">{{ $user->last_name }}</div>
                                 </td>
                                 <td class="py-3 px-4 text-slate-700">{{ $user->unit_kerja ?? '-' }}</td>
-                                <td class="py-3 px-4 text-slate-700">{{ $user->phone ?? '-' }}</td>
                                 <td class="py-3 px-4">
                                     @if($user->role === 'admin')
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-100 text-purple-800">
