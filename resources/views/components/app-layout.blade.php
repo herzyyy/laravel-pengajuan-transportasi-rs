@@ -85,8 +85,7 @@
                                 {{-- Notification List --}}
                                 <div class="max-h-96 overflow-y-auto">
                                     @forelse($pendingRequests as $request)
-                                        <a href="{{ route('admin.transport.show', $request) }}" 
-                                           class="block px-4 py-3 hover:bg-slate-50 transition border-b border-slate-100 last:border-0">
+                                        <div class="px-4 py-3 border-b border-slate-100 last:border-0">
                                             <div class="flex items-start gap-3">
                                                 <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,7 +117,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     @empty
                                         <div class="px-4 py-8 text-center">
                                             <svg class="w-12 h-12 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -182,8 +181,7 @@
                                 {{-- Notification List --}}
                                 <div class="max-h-96 overflow-y-auto">
                                     @forelse($approvedRequests as $request)
-                                        <a href="{{ route('pengajuan.index', ['status' => 'diproses']) }}" 
-                                           class="block px-4 py-3 hover:bg-slate-50 transition border-b border-slate-100 last:border-0">
+                                        <div class="px-4 py-3 border-b border-slate-100 last:border-0">
                                             <div class="flex items-start gap-3">
                                                 <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -207,7 +205,7 @@
                                                     </span>
                                                 </div>
                                             </div>
-                                        </a>
+                                        </div>
                                     @empty
                                         <div class="px-4 py-8 text-center">
                                             <svg class="w-12 h-12 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

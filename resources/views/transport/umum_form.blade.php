@@ -57,9 +57,10 @@
                         <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Mobil <span class="text-red-500">*</span></label>
                         <select name="unit_mobil" required
                             class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="" disabled selected>Pilih mobil</option>
+                            <option value="" disabled {{ count($vehicles) > 1 ? 'selected' : '' }}>Pilih mobil</option>
                             @forelse($vehicles as $vehicle)
-                                <option value="{{ $vehicle->name }}" @selected(old('unit_mobil') === $vehicle->name)>
+                                <option value="{{ $vehicle->name }}" 
+                                    @selected(old('unit_mobil') === $vehicle->name || (count($vehicles) === 1))>
                                     {{ $vehicle->name }} - {{ $vehicle->brand }} {{ $vehicle->model }} ({{ $vehicle->plate_number }})
                                 </option>
                             @empty
