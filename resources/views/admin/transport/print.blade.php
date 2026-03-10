@@ -386,6 +386,13 @@
                             <td><strong>{{ $transportRequest->km_akhir - $transportRequest->km_awal }} km</strong></td>
                         </tr>
                         @endif
+                        @if($transportRequest->jam_kedatangan)
+                        <tr>
+                            <td>Jam Kedatangan</td>
+                            <td>:</td>
+                            <td>{{ $transportRequest->jam_kedatangan }}</td>
+                        </tr>
+                        @endif
                     </table>
                 </div>
             </div>

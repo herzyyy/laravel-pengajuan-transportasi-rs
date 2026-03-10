@@ -19,8 +19,10 @@ class TransportRequestController extends Controller
             'total' => TransportRequest::count(),
             'diajukan' => $counts['diajukan'] ?? 0,
             'diproses' => $counts['diproses'] ?? 0,
+            'digunakan' => $counts['digunakan'] ?? 0,
             'selesai' => $counts['selesai'] ?? 0,
             'ditolak' => $counts['ditolak'] ?? 0,
+            'kadaluarsa' => $counts['kadaluarsa'] ?? 0,
         ];
 
         // Beberapa data terbaru untuk konteks cepat di dashboard
@@ -36,9 +38,19 @@ class TransportRequestController extends Controller
     {
         $query = TransportRequest::with('user')->orderBy('created_at', 'asc'); // Urutkan berdasarkan waktu membuat ajuan (FIFO)
 
-        // Default filter: hanya tampilkan status 'diajukan' jika tidak ada filter status
-        $status = $request->filled('status') ? $request->status : 'diajukan';
-        $query->where('status', $status);
+        // Filter status: default 'diajukan' hanya jika tidak ada parameter status sama sekali
+        // Jika user memilih "Semua Status" (value kosong), jangan filter status
+        if ($request->has('status')) {
+            // User sudah memilih filter status (bisa kosong untuk "Semua Status" atau value tertentu)
+            if ($request->filled('status')) {
+                // Ada value status yang dipilih
+                $query->where('status', $request->status);
+            }
+            // Jika status kosong (Semua Status), tidak perlu filter
+        } else {
+            // Tidak ada parameter status sama sekali (first load), default ke 'diajukan'
+            $query->where('status', 'diajukan');
+        }
 
         if ($request->filled('jenis')) {
             $query->where('jenis', $request->jenis);
@@ -62,37 +74,56 @@ class TransportRequestController extends Controller
 
     public function update(Request $request, TransportRequest $transportRequest)
     {
-        $data = $request->validate([
-            'status' => ['required', 'in:diproses,selesai,ditolak'],
-            'unit_mobil' => ['nullable', 'string', 'max:100'],
-            'driver_id' => ['nullable', 'exists:drivers,id'],
-            'plat_nomor' => ['nullable', 'string', 'max:20'],
-            'km_awal' => ['nullable', 'integer', 'min:0'],
-            'km_akhir' => ['nullable', 'integer', 'min:0'],
-            'jam_sampai' => ['nullable', 'string', 'max:10', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
-        ]);
-
-        if ($data['status'] === 'diproses') {
-            if (empty($data['unit_mobil'])) {
-                throw ValidationException::withMessages(['unit_mobil' => 'Unit kendaraan wajib diisi saat disetujui / sedang digunakan.']);
+        $currentStatus = $transportRequest->status;
+        $newStatus = $request->input('status');
+        
+        // Validasi berdasarkan transisi status
+        if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
+            // Diajukan -> Disetujui: Wajib isi unit kendaraan dan supir
+            $data = $request->validate([
+                'status' => ['required', 'in:diproses,ditolak'],
+                'unit_mobil' => ['required', 'string', 'max:100'],
+                'plat_nomor' => ['nullable', 'string', 'max:20'],
+                'driver_id' => ['required', 'exists:drivers,id'],
+            ]);
+            
+            // Auto-fill plat nomor jika kosong
+            if (empty($data['plat_nomor']) && !empty($data['unit_mobil'])) {
+                $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
+                if ($vehicle) {
+                    $data['plat_nomor'] = $vehicle->plate_number;
+                }
             }
-            if (! isset($data['km_awal'])) {
-                throw ValidationException::withMessages(['km_awal' => 'KM Awal wajib diisi saat diproses.']);
+            
+        } elseif ($currentStatus === 'diproses' && $newStatus === 'digunakan') {
+            // Disetujui -> Digunakan: Wajib isi KM keberangkatan
+            $data = $request->validate([
+                'status' => ['required', 'in:digunakan'],
+                'km_awal' => ['required', 'integer', 'min:0'],
+            ]);
+            
+        } elseif ($currentStatus === 'digunakan' && $newStatus === 'selesai') {
+            // Digunakan -> Selesai: Wajib isi KM tiba dan jam kedatangan
+            $data = $request->validate([
+                'status' => ['required', 'in:selesai'],
+                'km_akhir' => ['required', 'integer', 'min:0'],
+                'jam_kedatangan' => ['required', 'string', 'max:10', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
+            ]);
+            
+            // Validasi KM akhir harus lebih besar dari KM awal
+            if ($data['km_akhir'] <= $transportRequest->km_awal) {
+                throw ValidationException::withMessages(['km_akhir' => 'KM tiba harus lebih besar dari KM keberangkatan.']);
             }
-        }
-
-        if ($data['status'] === 'selesai') {
-            if (! isset($data['km_akhir'])) {
-                throw ValidationException::withMessages(['km_akhir' => 'KM Akhir wajib diisi saat selesai.']);
-            }
-        }
-
-        // Jika plat_nomor kosong tapi unit_mobil ada, ambil dari master vehicle
-        if (empty($data['plat_nomor']) && !empty($data['unit_mobil'])) {
-            $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
-            if ($vehicle) {
-                $data['plat_nomor'] = $vehicle->plate_number;
-            }
+            
+        } elseif ($currentStatus === 'diajukan' && $newStatus === 'ditolak') {
+            // Diajukan -> Ditolak
+            $data = $request->validate([
+                'status' => ['required', 'in:ditolak'],
+            ]);
+            
+        } else {
+            // Transisi status tidak valid
+            return redirect()->back()->withErrors(['status' => 'Transisi status tidak valid.']);
         }
 
         $transportRequest->update($data);

@@ -1,12 +1,12 @@
 <x-app-layout>
-    <div class="max-w-5xl mx-auto px-6 pt-8">
-        <div class="flex items-start justify-between gap-4 border-b border-dashed border-slate-200 pb-4">
+    <div class="max-w-5xl mx-auto px-3 sm:px-4 pt-4">
+        <div class="flex items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <div>
-                <h1 class="text-2xl font-bold text-slate-800">
-                    Surat Pengajuan Transportasi
+                <h1 class="text-lg font-bold text-slate-800">
+                    Detail Pengajuan Transportasi
                 </h1>
-                <p class="text-slate-500 mt-1 text-sm">
-                    Ringkasan singkat pengajuan dan proses oleh admin dalam satu lembar.
+                <p class="text-slate-500 text-xs mt-0.5">
+                    ID: #{{ str_pad($transportRequest->id, 4, '0', STR_PAD_LEFT) }}
                 </p>
             </div>
 
@@ -14,28 +14,28 @@
                 @if($transportRequest->status === 'selesai')
                     <a href="{{ route('admin.transport.print', $transportRequest) }}"
                        target="_blank"
-                       class="inline-flex items-center rounded-lg border border-emerald-600 bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 shadow-sm">
-                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                       class="inline-flex items-center rounded-lg bg-emerald-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700">
+                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                         </svg>
-                        Print Surat
+                        Print
                     </a>
                 @endif
                 <a href="{{ route('admin.transport.index') }}"
-                   class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-sm">
-                    Kembali ke daftar
+                   class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
+                    Kembali
                 </a>
-            </div>v>
+            </div>
         </div>
 
         @if (session('success'))
-            <div class="mt-4 p-4 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-xl text-sm font-medium">
+            <div class="mt-3 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs font-medium">
                 {{ session('success') }}
             </div>
         @endif
 
         @if ($errors->any())
-            <div class="mt-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
+            <div class="mt-3 p-2.5 bg-red-50 border border-red-200 text-red-700 rounded-lg text-xs">
                 <div class="font-semibold mb-1">Periksa kembali data yang diisi:</div>
                 <ul class="list-disc ml-4 space-y-0.5">
                     @foreach ($errors->all() as $error)
@@ -45,136 +45,116 @@
             </div>
         @endif
 
-        <div class="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="mt-3 grid grid-cols-1 lg:grid-cols-2 gap-3">
             {{-- Card 1: Pengajuan oleh User --}}
-            <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
-                <div class="border-b border-slate-200 px-5 py-4 flex items-center justify-between">
+            <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200">
+                <div class="border-b border-slate-200 px-3 py-2 flex items-center justify-between">
                     <div>
-                        <h2 class="text-sm font-semibold text-slate-800">
-                            Diajukan oleh Pemohon
+                        <h2 class="text-xs font-semibold text-slate-800">
+                            Data Pengajuan
                         </h2>
-                        <p class="text-xs text-slate-500">
-                            Data asli yang diisi oleh user.
-                        </p>
                     </div>
                     @php
                         $colors = [
                             'diajukan' => 'bg-amber-100 text-amber-800',
                             'diproses' => 'bg-blue-100 text-blue-800',
+                            'digunakan' => 'bg-cyan-100 text-cyan-800',
                             'selesai' => 'bg-emerald-100 text-emerald-800',
-                            'ditolak' => 'bg-red-100 text-red-800'
+                            'ditolak' => 'bg-red-100 text-red-800',
+                            'kadaluarsa' => 'bg-orange-100 text-orange-800'
                         ];
                         $color = $colors[$transportRequest->status] ?? 'bg-slate-100 text-slate-800';
+                        $label = match($transportRequest->status) {
+                            'diproses' => 'Disetujui',
+                            'digunakan' => 'Digunakan',
+                            'kadaluarsa' => 'Kadaluarsa',
+                            default => ucfirst($transportRequest->status)
+                        };
                     @endphp
-                    <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold {{ $color }}">
-                        Status: {{ $transportRequest->status === 'diproses' ? 'Disetujui' : ucfirst($transportRequest->status) }}
+                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold {{ $color }}">
+                        {{ $label }}
                     </span>
                 </div>
 
-                <div class="px-5 py-4 text-sm">
-                    <dl class="space-y-2.5">
+                <div class="px-3 py-2.5 text-xs">
+                    <dl class="space-y-1.5">
                         <div class="flex">
-                            <dt class="w-32 text-slate-500">Tanggal</dt>
-                            <dd class="flex-1 text-slate-800">
-                                {{ $transportRequest->tanggal->format('d M Y') }},
-                                {{ $transportRequest->jam }} s/d
-                                {{ $transportRequest->tanggal_sampai->format('d M Y') }}
-                                {{ $transportRequest->jam_sampai }}
+                            <dt class="w-24 text-slate-500">Tanggal</dt>
+                            <dd class="flex-1 text-slate-800 font-medium">
+                                {{ $transportRequest->tanggal->format('d/m/Y') }} {{ substr($transportRequest->jam, 0, 5) }} - {{ $transportRequest->tanggal_sampai->format('d/m/Y') }} {{ substr($transportRequest->jam_sampai, 0, 5) }}
                             </dd>
                         </div>
 
                         <div class="flex">
-                            <dt class="w-32 text-slate-500">Pemohon</dt>
+                            <dt class="w-24 text-slate-500">Pemohon</dt>
                             <dd class="flex-1 text-slate-800">
-                                {{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}
-                                <div class="text-xs text-slate-500">
-                                    {{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}
-                                </div>
+                                <span class="font-medium">{{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}</span>
+                                <span class="text-slate-500"> • {{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</span>
                             </dd>
                         </div>
 
                         <div class="flex">
-                            <dt class="w-32 text-slate-500">Jenis</dt>
+                            <dt class="w-24 text-slate-500">Jenis</dt>
                             <dd class="flex-1 text-slate-800">
-                                {{ ucfirst($transportRequest->jenis) }}
+                                <span class="font-medium">{{ ucfirst($transportRequest->jenis) }}</span>
                                 @if ($transportRequest->jenis === 'ambulance' && $transportRequest->keperluan)
-                                    <span class="text-xs text-slate-500">
-                                        ({{ ucfirst($transportRequest->keperluan) }})
-                                    </span>
+                                    <span class="text-slate-500">({{ ucfirst($transportRequest->keperluan) }})</span>
                                 @endif
-                            </dd>
-                        </div>
-
-                        <div class="flex">
-                            <dt class="w-32 text-slate-500">Prioritas</dt>
-                            <dd class="flex-1 text-slate-800">
                                 @if($transportRequest->prioritas === 'segera')
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-red-600 bg-red-50 px-2 py-0.5 rounded-full">
-                                        Cito
-                                    </span>
-                                @else
-                                    <span class="inline-flex items-center gap-1 text-[11px] font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full">
-                                        Biasa
-                                    </span>
+                                    <span class="inline-flex items-center text-[9px] font-bold text-red-600 bg-red-50 px-1.5 py-0.5 rounded ml-1">CITO</span>
                                 @endif
                             </dd>
                         </div>
 
                         <div class="flex">
-                            <dt class="w-32 text-slate-500">Alamat Tujuan</dt>
+                            <dt class="w-24 text-slate-500">Tujuan</dt>
                             <dd class="flex-1 text-slate-800">
                                 {{ $transportRequest->alamat_tujuan ?? '-' }}
                             </dd>
                         </div>
 
                         @if($transportRequest->driver_id)
-                            <div class="border-t border-dashed border-slate-200 pt-3 mt-1"></div>
+                            <div class="border-t border-slate-200 pt-1.5 mt-1"></div>
                             <div class="flex">
-                                <dt class="w-32 text-slate-500">Supir</dt>
+                                <dt class="w-24 text-slate-500">Supir</dt>
                                 <dd class="flex-1 text-slate-800">
                                     <span class="font-medium">{{ $transportRequest->driver->name ?? '-' }}</span>
                                     @if($transportRequest->driver && $transportRequest->driver->phone)
-                                        <div class="text-xs text-slate-500">
-                                            {{ $transportRequest->driver->phone }}
-                                        </div>
+                                        <span class="text-slate-500"> • {{ $transportRequest->driver->phone }}</span>
                                     @endif
                                 </dd>
                             </div>
                         @endif
 
                         @if ($transportRequest->jenis === 'ambulance')
-                            <div class="border-t border-dashed border-slate-200 pt-3 mt-1"></div>
-
+                            <div class="border-t border-slate-200 pt-1.5 mt-1"></div>
                             <div class="flex">
-                                <dt class="w-32 text-slate-500">Nama Pasien</dt>
+                                <dt class="w-24 text-slate-500">Pasien</dt>
                                 <dd class="flex-1 text-slate-800">
-                                    {{ $transportRequest->pasien_nama ?? '-' }}
+                                    <span class="font-medium">{{ $transportRequest->pasien_nama ?? '-' }}</span>
+                                    <span class="text-slate-500"> • RM: {{ $transportRequest->pasien_no_rm ?? '-' }}</span>
                                 </dd>
                             </div>
                             <div class="flex">
-                                <dt class="w-32 text-slate-500">No. RM</dt>
-                                <dd class="flex-1 text-slate-800">
-                                    {{ $transportRequest->pasien_no_rm ?? '-' }}
-                                </dd>
-                            </div>
-                            <div class="flex">
-                                <dt class="w-32 text-slate-500">Ruangan</dt>
+                                <dt class="w-24 text-slate-500">Ruangan</dt>
                                 <dd class="flex-1 text-slate-800">
                                     {{ $transportRequest->ruangan ?? '-' }}
                                 </dd>
                             </div>
+                            @if($transportRequest->pendamping_nama)
                             <div class="flex">
-                                <dt class="w-32 text-slate-500">Pendamping</dt>
+                                <dt class="w-24 text-slate-500">Pendamping</dt>
                                 <dd class="flex-1 text-slate-800">
-                                    {{ $transportRequest->pendamping_nama ?? '-' }}
+                                    {{ $transportRequest->pendamping_nama }}
                                 </dd>
                             </div>
+                            @endif
                         @endif
 
                         @if ($transportRequest->keterangan)
-                            <div class="border-t border-dashed border-slate-200 pt-3 mt-1"></div>
+                            <div class="border-t border-slate-200 pt-1.5 mt-1"></div>
                             <div class="flex">
-                                <dt class="w-32 text-slate-500">Keterangan</dt>
+                                <dt class="w-24 text-slate-500">Keterangan</dt>
                                 <dd class="flex-1 text-slate-800">
                                     {{ $transportRequest->keterangan }}
                                 </dd>
@@ -184,53 +164,64 @@
                 </div>
             </div>
 
-            {{-- Card 2: Disetujui oleh Admin --}}
-            <div class="bg-white rounded-2xl shadow-sm ring-1 ring-slate-200">
-                <div class="border-b border-slate-200 px-5 py-4">
-                    <h2 class="text-sm font-semibold text-slate-800">
-                        Disetujui oleh Admin
+            {{-- Card 2: Form Eksekusi Admin --}}
+            <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200">
+                <div class="border-b border-slate-200 px-3 py-2">
+                    <h2 class="text-xs font-semibold text-slate-800">
+                        Form Eksekusi Admin
                     </h2>
-                    <p class="text-xs text-slate-500 mt-1">
-                        Pilih status dan lengkapi data kendaraan secara singkat.
-                    </p>
                 </div>
 
                 <form method="POST"
                       action="{{ route('admin.transport.update', $transportRequest) }}"
-                      class="px-5 py-4 space-y-4 text-sm">
+                      class="px-3 py-2.5 space-y-2.5 text-xs"
+                      x-data="{ currentStatus: '{{ $transportRequest->status }}' }">
                     @csrf
                     @method('PUT')
 
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">
                             Status Pengajuan
                         </label>
-                        <select name="status"
-                                class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                            <option value="diproses" @selected($transportRequest->status === 'diproses')>
-                                Disetujui / Sedang digunakan
-                            </option>
-                            <option value="selesai" @selected($transportRequest->status === 'selesai')>
-                                Selesai
-                            </option>
-                            <option value="ditolak" @selected($transportRequest->status === 'ditolak')>
-                                Ditolak
-                            </option>
+                        <select name="status" x-model="currentStatus"
+                                class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            @if($transportRequest->status === 'diajukan')
+                                <option value="diajukan" selected>Diajukan (Menunggu)</option>
+                                <option value="diproses">Disetujui</option>
+                                <option value="ditolak">Ditolak</option>
+                            @elseif($transportRequest->status === 'diproses')
+                                <option value="diproses" selected>Disetujui</option>
+                                <option value="digunakan">Digunakan</option>
+                            @elseif($transportRequest->status === 'digunakan')
+                                <option value="digunakan" selected>Digunakan</option>
+                                <option value="selesai">Selesai</option>
+                            @elseif($transportRequest->status === 'selesai')
+                                <option value="selesai" selected>Selesai</option>
+                            @elseif($transportRequest->status === 'ditolak')
+                                <option value="ditolak" selected>Ditolak</option>
+                            @elseif($transportRequest->status === 'kadaluarsa')
+                                <option value="kadaluarsa" selected>Kadaluarsa</option>
+                            @endif
                         </select>
-                        <p class="text-[11px] text-slate-500 mt-1">
-                            Saat diset ke <span class="font-semibold">Disetujui / Sedang digunakan</span>, isi kendaraan, nomor polisi, dan KM keberangkatan.
-                            Saat diset ke <span class="font-semibold">Selesai</span>, isi jam kedatangan dan KM tiba.
+                        <p class="text-[9px] text-slate-500 mt-0.5">
+                            <span x-show="currentStatus === 'diajukan'">Pilih <strong>Disetujui</strong> untuk menyetujui</span>
+                            <span x-show="currentStatus === 'diproses'">Pilih <strong>Digunakan</strong> saat mulai digunakan</span>
+                            <span x-show="currentStatus === 'digunakan'">Pilih <strong>Selesai</strong> saat kendaraan kembali</span>
+                            <span x-show="currentStatus === 'selesai'">Status sudah selesai</span>
+                            <span x-show="currentStatus === 'ditolak'">Pengajuan ditolak</span>
+                            <span x-show="currentStatus === 'kadaluarsa'">Pengajuan kadaluarsa</span>
                         </p>
                     </div>
 
-                    <div class="grid grid-cols-1 gap-3">
+                    <!-- Form untuk Diajukan -> Disetujui: Unit Kendaraan & Supir -->
+                    <div x-show="currentStatus === 'diproses' && '{{ $transportRequest->status }}' === 'diajukan'" class="space-y-2">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                Unit Kendaraan
+                            <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                                Unit Kendaraan <span class="text-red-500">*</span>
                             </label>
                             <select name="unit_mobil" id="unit_mobil"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                                <option value="">-- Pilih Unit Kendaraan --</option>
+                                    class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                <option value="">-- Pilih Unit --</option>
                                 @foreach($vehicles as $vehicle)
                                     <option value="{{ $vehicle->name }}" 
                                             data-plate="{{ $vehicle->plate_number }}"
@@ -239,74 +230,116 @@
                                     </option>
                                 @endforeach
                             </select>
-                            <p class="text-[10px] text-slate-500 mt-1">Pilih unit kendaraan yang akan digunakan</p>
                             <input type="hidden" name="plat_nomor" id="plat_nomor" value="{{ old('plat_nomor', $transportRequest->plat_nomor) }}">
                         </div>
 
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                Nama Supir
+                            <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                                Nama Supir <span class="text-red-500">*</span>
                             </label>
                             <select name="driver_id"
-                                    class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                                    class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="">-- Pilih Supir --</option>
                                 @foreach($drivers as $driver)
                                     <option value="{{ $driver->id }}" 
                                             @selected(old('driver_id', $transportRequest->driver_id) == $driver->id)>
-                                        {{ $driver->name }}
-                                        @if($driver->phone)
-                                            ({{ $driver->phone }})
-                                        @endif
+                                        {{ $driver->name }}@if($driver->phone) ({{ $driver->phone }})@endif
                                     </option>
                                 @endforeach
                             </select>
-                            <p class="text-[10px] text-slate-500 mt-1">Pilih supir yang bertugas</p>
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-3">
+                    <!-- Form untuk Disetujui -> Digunakan: KM Keberangkatan -->
+                    <div x-show="currentStatus === 'digunakan' && '{{ $transportRequest->status }}' === 'diproses'">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                KM Keberangkatan
+                            <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                                KM Keberangkatan <span class="text-red-500">*</span>
                             </label>
                             <input type="number" name="km_awal"
                                    value="{{ old('km_awal', $transportRequest->km_awal) }}"
-                                   class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Isi saat berangkat">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                KM Tiba / Selesai
-                            </label>
-                            <input type="number" name="km_akhir"
-                                   value="{{ old('km_akhir', $transportRequest->km_akhir) }}"
-                                   class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Isi saat selesai">
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">
-                                Jam Kedatangan
-                            </label>
-                            <input type="text" name="jam_sampai" id="jam_sampai"
-                                   value="{{ old('jam_sampai', '') }}"
-                                   class="w-full rounded-xl border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Kosongkan jika belum selesai"
-                                   pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
-                                   maxlength="5"
-                                   inputmode="numeric">
-                            <p class="text-[10px] text-slate-500 mt-1">Format: 00:00 (24 jam)</p>
+                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                   placeholder="Masukkan KM">
                         </div>
                     </div>
 
-                    <div class="pt-2 border-t border-dashed border-slate-200 mt-1 flex items-center justify-between gap-3">
-                        <p class="text-[11px] text-slate-500">
-                            Pastikan data sudah sesuai sebelum menyimpan.
-                        </p>
+                    <!-- Form untuk Digunakan -> Selesai: KM Tiba & Jam Kedatangan -->
+                    <div x-show="currentStatus === 'selesai' && '{{ $transportRequest->status }}' === 'digunakan'" class="space-y-2">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                                KM Tiba <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" name="km_akhir"
+                                   value="{{ old('km_akhir', $transportRequest->km_akhir) }}"
+                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                   placeholder="Masukkan KM">
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                                Jam Kedatangan <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" name="jam_kedatangan" id="jam_kedatangan"
+                                   value="{{ old('jam_kedatangan', $transportRequest->jam_kedatangan) }}"
+                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                   placeholder="00:00"
+                                   pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
+                                   maxlength="5"
+                                   inputmode="numeric">
+                        </div>
+                    </div>
+
+                    <!-- Info Data yang Sudah Diisi -->
+                    <div x-show="'{{ $transportRequest->status }}' !== 'diajukan'" class="bg-slate-50 rounded-lg p-2 text-[10px] space-y-1">
+                        <div class="font-semibold text-slate-700 mb-1">Data Terisi:</div>
+                        
+                        @if($transportRequest->unit_mobil)
+                            <div class="flex justify-between gap-2">
+                                <span class="text-slate-500">Unit:</span>
+                                <span class="text-slate-900 font-medium text-right">{{ $transportRequest->unit_mobil }} ({{ $transportRequest->plat_nomor }})</span>
+                            </div>
+                        @endif
+                        
+                        @if($transportRequest->driver_id)
+                            <div class="flex justify-between gap-2">
+                                <span class="text-slate-500">Supir:</span>
+                                <span class="text-slate-900 font-medium">{{ $transportRequest->driver->name ?? '-' }}</span>
+                            </div>
+                        @endif
+                        
+                        @if($transportRequest->km_awal)
+                            <div class="flex justify-between gap-2">
+                                <span class="text-slate-500">KM Awal:</span>
+                                <span class="text-slate-900 font-medium">{{ $transportRequest->km_awal }} km</span>
+                            </div>
+                        @endif
+                        
+                        @if($transportRequest->km_akhir)
+                            <div class="flex justify-between gap-2">
+                                <span class="text-slate-500">KM Akhir:</span>
+                                <span class="text-slate-900 font-medium">{{ $transportRequest->km_akhir }} km</span>
+                            </div>
+                        @endif
+                        
+                        @if($transportRequest->km_awal && $transportRequest->km_akhir)
+                            <div class="flex justify-between gap-2 border-t border-slate-200 pt-1 mt-1">
+                                <span class="text-slate-500">Total:</span>
+                                <span class="text-emerald-600 font-bold">{{ $transportRequest->km_akhir - $transportRequest->km_awal }} km</span>
+                            </div>
+                        @endif
+                        
+                        @if($transportRequest->jam_kedatangan)
+                            <div class="flex justify-between gap-2">
+                                <span class="text-slate-500">Jam Tiba:</span>
+                                <span class="text-slate-900 font-medium">{{ $transportRequest->jam_kedatangan }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="pt-2 border-t border-slate-200 flex items-center justify-end gap-2">
                         <button type="submit"
-                                class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-1">
-                            Simpan Perubahan
+                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                            Simpan
                         </button>
                     </div>
                 </form>
@@ -334,11 +367,11 @@
             }
             
             // Auto-format jam kedatangan input
-            const jamSampaiInput = document.getElementById('jam_sampai');
+            const jamKedatanganInput = document.getElementById('jam_kedatangan');
             
-            if (jamSampaiInput) {
+            if (jamKedatanganInput) {
                 // Format input as user types
-                jamSampaiInput.addEventListener('input', function(e) {
+                jamKedatanganInput.addEventListener('input', function(e) {
                     let value = e.target.value.replace(/[^0-9]/g, '');
                     
                     if (value.length >= 2) {
@@ -349,7 +382,7 @@
                 });
 
                 // Validate and format on blur
-                jamSampaiInput.addEventListener('blur', function(e) {
+                jamKedatanganInput.addEventListener('blur', function(e) {
                     let value = e.target.value;
                     
                     // If empty, leave it empty
@@ -382,7 +415,7 @@
                 });
 
                 // Prevent non-numeric input
-                jamSampaiInput.addEventListener('keypress', function(e) {
+                jamKedatanganInput.addEventListener('keypress', function(e) {
                     if (!/[0-9]/.test(e.key)) {
                         e.preventDefault();
                     }

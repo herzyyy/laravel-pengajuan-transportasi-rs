@@ -41,8 +41,10 @@
                         <option value="">Semua</option>
                         <option value="diajukan" {{ request('status') == 'diajukan' ? 'selected' : '' }}>Diajukan</option>
                         <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Disetujui</option>
+                        <option value="digunakan" {{ request('status') == 'digunakan' ? 'selected' : '' }}>Digunakan</option>
                         <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
                         <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
+                        <option value="kadaluarsa" {{ request('status') == 'kadaluarsa' ? 'selected' : '' }}>Kadaluarsa</option>
                     </select>
                 </div>
                 
@@ -167,6 +169,13 @@
                                                 'label' => 'Disetujui',
                                                 'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"/></svg>'
                                             ],
+                                            'digunakan' => [
+                                                'bg' => 'bg-cyan-50',
+                                                'text' => 'text-cyan-700',
+                                                'border' => 'border-cyan-200',
+                                                'label' => 'Digunakan',
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3z"/></svg>'
+                                            ],
                                             'selesai' => [
                                                 'bg' => 'bg-emerald-50',
                                                 'text' => 'text-emerald-700',
@@ -179,6 +188,13 @@
                                                 'text' => 'text-red-700',
                                                 'border' => 'border-red-200',
                                                 'label' => 'Ditolak',
+                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
+                                            ],
+                                            'kadaluarsa' => [
+                                                'bg' => 'bg-orange-50',
+                                                'text' => 'text-orange-700',
+                                                'border' => 'border-orange-200',
+                                                'label' => 'Kadaluarsa',
                                                 'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
                                             ],
                                             default => [
@@ -258,8 +274,10 @@
                                 $statusConfig = match($item->status) {
                                     'diajukan' => ['bg' => 'bg-amber-50', 'text' => 'text-amber-700', 'border' => 'border-amber-200', 'label' => 'Diajukan'],
                                     'diproses' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'label' => 'Disetujui'],
+                                    'digunakan' => ['bg' => 'bg-cyan-50', 'text' => 'text-cyan-700', 'border' => 'border-cyan-200', 'label' => 'Digunakan'],
                                     'selesai' => ['bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200', 'label' => 'Selesai'],
                                     'ditolak' => ['bg' => 'bg-red-50', 'text' => 'text-red-700', 'border' => 'border-red-200', 'label' => 'Ditolak'],
+                                    'kadaluarsa' => ['bg' => 'bg-orange-50', 'text' => 'text-orange-700', 'border' => 'border-orange-200', 'label' => 'Kadaluarsa'],
                                     default => ['bg' => 'bg-slate-50', 'text' => 'text-slate-700', 'border' => 'border-slate-200', 'label' => ucfirst($item->status)]
                                 };
                             @endphp

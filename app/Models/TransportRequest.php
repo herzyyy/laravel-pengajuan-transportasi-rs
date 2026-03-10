@@ -31,6 +31,7 @@ class TransportRequest extends Model
         'tanggal_sampai',
         'jam',
         'jam_sampai',
+        'jam_kedatangan',
         'kontak',
         'alamat_asal',
         'alamat_tujuan',

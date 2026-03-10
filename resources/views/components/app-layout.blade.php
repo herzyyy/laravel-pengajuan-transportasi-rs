@@ -45,6 +45,16 @@
                                 ->limit(5)
                                 ->get();
                             $pendingCount = $pendingRequests->count();
+                            
+                            $todayReminders = \App\Models\TransportRequest::with(['user', 'driver'])
+                                ->where('status', 'diproses')
+                                ->whereDate('tanggal', today())
+                                ->orderBy('jam', 'asc')
+                                ->limit(5)
+                                ->get();
+                            $reminderCount = $todayReminders->count();
+                            
+                            $totalNotifications = $pendingCount + $reminderCount;
                         @endphp
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" 
@@ -52,9 +62,9 @@
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                                 </svg>
-                                @if($pendingCount > 0)
+                                @if($totalNotifications > 0)
                                     <span class="absolute -top-1 -right-1 flex items-center justify-center w-5 h-5 text-[10px] font-bold text-white bg-amber-500 rounded-full shadow-lg">
-                                        {{ $pendingCount > 9 ? '9+' : $pendingCount }}
+                                        {{ $totalNotifications > 9 ? '9+' : $totalNotifications }}
                                     </span>
                                 @endif
                             </button>
@@ -71,7 +81,57 @@
                                  class="absolute right-0 mt-2 w-80 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 z-50"
                                  style="display: none;">
                                 
-                                {{-- Header --}}
+                                {{-- Reminder Section --}}
+                                @if($reminderCount > 0)
+                                    <div class="px-4 py-3 bg-blue-50 border-b border-blue-200">
+                                        <div class="flex items-center justify-between">
+                                            <h3 class="text-sm font-semibold text-blue-900">Reminder Hari Ini</h3>
+                                            <a href="{{ route('admin.transport.index', ['status' => 'diproses']) }}" 
+                                               class="text-xs font-medium text-blue-700 hover:text-blue-800">
+                                                Lihat Semua
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="max-h-64 overflow-y-auto border-b border-slate-200">
+                                        @foreach($todayReminders as $reminder)
+                                            <a href="{{ route('admin.transport.show', $reminder) }}" class="block px-4 py-3 border-b border-slate-100 last:border-0 hover:bg-blue-50 transition">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-600 flex items-center justify-center">
+                                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-1 min-w-0">
+                                                        <p class="text-sm text-slate-900 font-medium">
+                                                            <span class="font-semibold">{{ $reminder->user->full_name ?? $reminder->pemohon_nama }}</span>
+                                                        </p>
+                                                        <p class="text-xs text-slate-600 mt-0.5">
+                                                            {{ ucfirst($reminder->jenis) }} • {{ $reminder->jam }}
+                                                            @if($reminder->prioritas === 'segera')
+                                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700 ml-1">
+                                                                    CITO
+                                                                </span>
+                                                            @endif
+                                                        </p>
+                                                        <p class="text-xs text-slate-500 mt-0.5">
+                                                            {{ $reminder->unit_mobil ?? 'Menunggu unit' }}
+                                                            @if($reminder->driver)
+                                                                • {{ $reminder->driver->name }}
+                                                            @endif
+                                                        </p>
+                                                    </div>
+                                                    <div class="flex-shrink-0">
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+                                                            Disetujui
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        @endforeach
+                                    </div>
+                                @endif
+
+                                {{-- Pending Requests Section --}}
                                 <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                                     <h3 class="text-sm font-semibold text-slate-800">Pengajuan Baru</h3>
                                     @if($pendingCount > 0)
@@ -83,9 +143,9 @@
                                 </div>
 
                                 {{-- Notification List --}}
-                                <div class="max-h-96 overflow-y-auto">
+                                <div class="max-h-64 overflow-y-auto">
                                     @forelse($pendingRequests as $request)
-                                        <div class="px-4 py-3 border-b border-slate-100 last:border-0">
+                                        <div class="px-4 py-3 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition">
                                             <div class="flex items-start gap-3">
                                                 <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
                                                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,7 +196,8 @@
                         {{-- Notification Dropdown for User --}}
                         @php
                             $approvedRequests = \App\Models\TransportRequest::where('user_id', auth()->id())
-                                ->where('status', 'diproses')
+                                ->whereIn('status', ['diproses', 'digunakan'])
+                                ->whereDate('updated_at', today())
                                 ->latest()
                                 ->limit(5)
                                 ->get();
@@ -171,7 +232,7 @@
                                 <div class="px-4 py-3 border-b border-slate-200 flex items-center justify-between">
                                     <h3 class="text-sm font-semibold text-slate-800">Notifikasi</h3>
                                     @if($approvedCount > 0)
-                                        <a href="{{ route('pengajuan.index', ['status' => 'diproses']) }}" 
+                                        <a href="{{ route('pengajuan.index') }}" 
                                            class="text-xs font-medium text-emerald-600 hover:text-emerald-700">
                                             Lihat Semua
                                         </a>
@@ -183,14 +244,23 @@
                                     @forelse($approvedRequests as $request)
                                         <div class="px-4 py-3 border-b border-slate-100 last:border-0">
                                             <div class="flex items-start gap-3">
-                                                <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
-                                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                    </svg>
-                                                </div>
+                                                @if($request->status === 'digunakan')
+                                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 flex items-center justify-center">
+                                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                                        </svg>
+                                                    </div>
+                                                @else
+                                                    <div class="flex-shrink-0 w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center">
+                                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                    </div>
+                                                @endif
                                                 <div class="flex-1 min-w-0">
                                                     <p class="text-sm text-slate-900 font-medium">
-                                                        Pengajuan <span class="font-semibold">{{ ucfirst($request->jenis) }}</span> Disetujui
+                                                        Pengajuan <span class="font-semibold">{{ ucfirst($request->jenis) }}</span> 
+                                                        {{ $request->status === 'digunakan' ? 'Sedang Digunakan' : 'Disetujui' }}
                                                     </p>
                                                     <p class="text-xs text-slate-500 mt-0.5">
                                                         {{ $request->tanggal->format('d M Y') }} • {{ $request->unit_mobil ?? 'Menunggu unit' }}
@@ -200,9 +270,15 @@
                                                     </p>
                                                 </div>
                                                 <div class="flex-shrink-0">
-                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
-                                                        Disetujui
-                                                    </span>
+                                                    @if($request->status === 'digunakan')
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800">
+                                                            Digunakan
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800">
+                                                            Disetujui
+                                                        </span>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
