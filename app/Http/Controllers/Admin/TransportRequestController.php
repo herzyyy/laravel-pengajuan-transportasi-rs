@@ -79,12 +79,11 @@ class TransportRequestController extends Controller
         
         // Validasi berdasarkan transisi status
         if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
-            // Diajukan -> Disetujui: Wajib isi unit kendaraan dan supir
+            // Diajukan -> Disetujui: Wajib isi unit kendaraan
             $data = $request->validate([
                 'status' => ['required', 'in:diproses,ditolak'],
                 'unit_mobil' => ['required', 'string', 'max:100'],
                 'plat_nomor' => ['nullable', 'string', 'max:20'],
-                'driver_id' => ['required', 'exists:drivers,id'],
             ]);
             
             // Auto-fill plat nomor jika kosong
@@ -96,9 +95,10 @@ class TransportRequestController extends Controller
             }
             
         } elseif ($currentStatus === 'diproses' && $newStatus === 'digunakan') {
-            // Disetujui -> Digunakan: Wajib isi KM keberangkatan
+            // Disetujui -> Digunakan: Wajib isi supir dan KM keberangkatan
             $data = $request->validate([
                 'status' => ['required', 'in:digunakan'],
+                'driver_id' => ['required', 'exists:drivers,id'],
                 'km_awal' => ['required', 'integer', 'min:0'],
             ]);
             
@@ -127,6 +127,26 @@ class TransportRequestController extends Controller
         }
 
         $transportRequest->update($data);
+
+        // Redirect ke signature jika perlu tanda tangan
+        $needsSignature = false;
+        $signatureMessage = '';
+        
+        if ($newStatus === 'diproses' && (!isset($transportRequest->signature_pengelola_1) || !$transportRequest->signature_pengelola_1)) {
+            $needsSignature = true;
+            $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengelola.';
+        } elseif ($newStatus === 'digunakan' && (!isset($transportRequest->signature_driver) || !$transportRequest->signature_driver)) {
+            $needsSignature = true;
+            $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengemudi.';
+        } elseif ($newStatus === 'selesai' && (!isset($transportRequest->signature_pengelola_2) || !$transportRequest->signature_pengelola_2)) {
+            $needsSignature = true;
+            $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengelola.';
+        }
+        
+        if ($needsSignature) {
+            return redirect()->route('signature.show', $transportRequest)
+                ->with('success', $signatureMessage);
+        }
 
         return redirect()->route('admin.transport.show', $transportRequest)
             ->with('success', 'Status pengajuan berhasil diperbarui.');

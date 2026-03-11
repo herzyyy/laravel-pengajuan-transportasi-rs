@@ -45,12 +45,28 @@ class TransportRequest extends Model
         'alamat_pasien',
         'pendamping_nama',
         'status',
+        
+        // signatures
+        'signature_pemohon',
+        'signature_pemohon_at',
+        'signature_pengelola_1',
+        'signature_pengelola_1_at',
+        'signature_pengelola_1_name',
+        'signature_driver',
+        'signature_driver_at',
+        'signature_pengelola_2',
+        'signature_pengelola_2_at',
+        'signature_pengelola_2_name',
     ];
 
     protected $casts = [
         'tanggal' => 'date',
         'tanggal_sampai' => 'date',
         'jumlah_penumpang' => 'integer',
+        'signature_pemohon_at' => 'datetime',
+        'signature_pengelola_1_at' => 'datetime',
+        'signature_driver_at' => 'datetime',
+        'signature_pengelola_2_at' => 'datetime',
     ];
 
     public function user()

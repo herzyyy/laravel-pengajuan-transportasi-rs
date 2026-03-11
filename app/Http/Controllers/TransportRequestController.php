@@ -106,7 +106,8 @@ class TransportRequestController extends Controller
             ...collect($data)->except(['keperluan', 'prioritas'])->all(),
         ]);
 
-        return redirect()->route('pengajuan.success', $transportRequest);
+        return redirect()->route('signature.show', $transportRequest)
+            ->with('success', 'Pengajuan berhasil dibuat. Silakan tanda tangan untuk melanjutkan.');
     }
 
     public function checkAvailability(Request $request)
@@ -260,7 +261,8 @@ class TransportRequestController extends Controller
             'kondisi_pasien' => null,
         ]);
 
-        return redirect()->route('pengajuan.success', $transportRequest);
+        return redirect()->route('signature.show', $transportRequest)
+            ->with('success', 'Pengajuan berhasil dibuat. Silakan tanda tangan untuk melanjutkan.');
     }
 
     public function checkAmbulanceAvailability(Request $request)

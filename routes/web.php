@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\TransportRequestController;
+use App\Http\Controllers\SignatureController;
 use App\Http\Controllers\Admin\TransportRequestController as AdminTransportController;
 
 Route::get('/', function () {
@@ -59,6 +60,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/riwayat', [TransportRequestController::class, 'index'])
             ->name('index');
     });
+    
+    // Signature Routes
+    Route::get('/signature/{transportRequest}', [SignatureController::class, 'show'])->name('signature.show');
+    Route::post('/signature/{transportRequest}', [SignatureController::class, 'sign'])->name('signature.sign');
 });
 
 // Admin Routes

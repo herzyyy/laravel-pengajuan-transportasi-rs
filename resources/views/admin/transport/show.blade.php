@@ -21,6 +21,30 @@
                         Print
                     </a>
                 @endif
+                
+                @php
+                    $needsSignature = false;
+                    if ($transportRequest->status === 'diajukan' && (!isset($transportRequest->signature_pemohon) || !$transportRequest->signature_pemohon) && $transportRequest->user_id === auth()->id()) {
+                        $needsSignature = true;
+                    } elseif ($transportRequest->status === 'diproses' && (!isset($transportRequest->signature_pengelola_1) || !$transportRequest->signature_pengelola_1) && auth()->user()->isAdmin()) {
+                        $needsSignature = true;
+                    } elseif ($transportRequest->status === 'digunakan' && (!isset($transportRequest->signature_driver) || !$transportRequest->signature_driver) && auth()->user()->isAdmin()) {
+                        $needsSignature = true;
+                    } elseif ($transportRequest->status === 'selesai' && (!isset($transportRequest->signature_pengelola_2) || !$transportRequest->signature_pengelola_2) && auth()->user()->isAdmin()) {
+                        $needsSignature = true;
+                    }
+                @endphp
+                
+                @if($needsSignature)
+                    <a href="{{ route('signature.show', $transportRequest) }}"
+                       class="inline-flex items-center rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
+                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                        Tanda Tangan
+                    </a>
+                @endif
+                
                 <a href="{{ route('admin.transport.index') }}"
                    class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
                     Kembali
@@ -125,6 +149,71 @@
                                 </dd>
                             </div>
                         @endif
+                        
+                        @if($transportRequest->status !== 'diajukan')
+                            <div class="border-t border-slate-200 pt-1.5 mt-1"></div>
+                            <div class="text-[10px] font-semibold text-slate-700 mb-1">Status Tanda Tangan:</div>
+                            <div class="space-y-0.5 text-[10px]">
+                                <div class="flex items-center gap-1.5">
+                                    @if(isset($transportRequest->signature_pemohon) && $transportRequest->signature_pemohon)
+                                        <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="text-emerald-700 font-medium">Pemohon</span>
+                                    @else
+                                        <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <span class="text-slate-500">Pemohon (Belum)</span>
+                                    @endif
+                                </div>
+                                @if($transportRequest->status !== 'diajukan')
+                                    <div class="flex items-center gap-1.5">
+                                        @if(isset($transportRequest->signature_pengelola_1) && $transportRequest->signature_pengelola_1)
+                                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-emerald-700 font-medium">Pengelola 1</span>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-slate-500">Pengelola 1 (Belum)</span>
+                                        @endif
+                                    </div>
+                                @endif
+                                @if(in_array($transportRequest->status, ['digunakan', 'selesai']))
+                                    <div class="flex items-center gap-1.5">
+                                        @if(isset($transportRequest->signature_driver) && $transportRequest->signature_driver)
+                                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-emerald-700 font-medium">Pengemudi</span>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-slate-500">Pengemudi (Belum)</span>
+                                        @endif
+                                    </div>
+                                @endif
+                                @if($transportRequest->status === 'selesai')
+                                    <div class="flex items-center gap-1.5">
+                                        @if(isset($transportRequest->signature_pengelola_2) && $transportRequest->signature_pengelola_2)
+                                            <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-emerald-700 font-medium">Pengelola 2</span>
+                                        @else
+                                            <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            <span class="text-slate-500">Pengelola 2 (Belum)</span>
+                                        @endif
+                                    </div>
+                                @endif
+                            </div>
+                        @endif
 
                         @if ($transportRequest->jenis === 'ambulance')
                             <div class="border-t border-slate-200 pt-1.5 mt-1"></div>
@@ -213,7 +302,7 @@
                         </p>
                     </div>
 
-                    <!-- Form untuk Diajukan -> Disetujui: Unit Kendaraan & Supir -->
+                    <!-- Form untuk Diajukan -> Disetujui: Unit Kendaraan -->
                     <div x-show="currentStatus === 'diproses' && '{{ $transportRequest->status }}' === 'diajukan'" class="space-y-2">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
@@ -232,7 +321,10 @@
                             </select>
                             <input type="hidden" name="plat_nomor" id="plat_nomor" value="{{ old('plat_nomor', $transportRequest->plat_nomor) }}">
                         </div>
+                    </div>
 
+                    <!-- Form untuk Disetujui -> Digunakan: Supir & KM Keberangkatan -->
+                    <div x-show="currentStatus === 'digunakan' && '{{ $transportRequest->status }}' === 'diproses'" class="space-y-2">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 Nama Supir <span class="text-red-500">*</span>
@@ -248,10 +340,7 @@
                                 @endforeach
                             </select>
                         </div>
-                    </div>
 
-                    <!-- Form untuk Disetujui -> Digunakan: KM Keberangkatan -->
-                    <div x-show="currentStatus === 'digunakan' && '{{ $transportRequest->status }}' === 'diproses'">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 KM Keberangkatan <span class="text-red-500">*</span>
