@@ -45,6 +45,7 @@ class UserController extends Controller
             'password' => ['required', 'string', 'min:8'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'in:user,admin'],
+            'priority_level' => ['required', 'integer', 'in:0,1'],
         ]);
 
         $data['password'] = Hash::make($data['password']);
@@ -68,6 +69,7 @@ class UserController extends Controller
             'password' => ['nullable', 'string', 'min:8'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'in:user,admin'],
+            'priority_level' => ['required', 'integer', 'in:0,1'],
         ]);
 
         if (empty($data['password'])) {

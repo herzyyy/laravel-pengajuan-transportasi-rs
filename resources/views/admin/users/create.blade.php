@@ -60,6 +60,19 @@
                     @enderror
                 </div>
 
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Level Prioritas *</label>
+                    <select name="priority_level" required
+                            class="w-full rounded-xl border border-slate-300 px-4 py-2.5 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        <option value="0" @selected(old('priority_level', 0) == 0)>Normal</option>
+                        <option value="1" @selected(old('priority_level') == 1)>Prioritas Tinggi (Owner/VIP)</option>
+                    </select>
+                    <p class="mt-1 text-xs text-slate-500">User dengan prioritas tinggi dapat override pengajuan lain yang bentrok</p>
+                    @error('priority_level')
+                        <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                    @enderror
+                </div>
+
                 <div class="flex items-center gap-3 pt-4 border-t border-slate-200">
                     <button type="submit"
                             class="inline-flex items-center justify-center rounded-xl bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 transition shadow-sm">

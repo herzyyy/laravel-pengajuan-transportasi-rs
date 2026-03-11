@@ -427,11 +427,6 @@
                                 <td>:</td>
                                 <td>{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</td>
                             </tr>
-                            <tr>
-                                <td>Kontak</td>
-                                <td>:</td>
-                                <td>{{ $transportRequest->kontak ?? '-' }}</td>
-                            </tr>
                             @if($transportRequest->jenis === 'umum' && $transportRequest->jumlah_penumpang)
                             <tr>
                                 <td>Jumlah Penumpang</td>

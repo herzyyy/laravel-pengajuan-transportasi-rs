@@ -72,8 +72,14 @@ class TransportRequestController extends Controller
         }
 
         // Check availability before creating
+        // Untuk user priority, hanya cek yang status 'digunakan'
+        // Untuk user biasa, cek yang status 'diajukan', 'diproses', 'digunakan'
+        $statusToCheck = $request->user()->isPriority() 
+            ? ['digunakan'] 
+            : ['diajukan', 'diproses', 'digunakan'];
+            
         $conflicts = TransportRequest::where('unit_mobil', $data['unit_mobil'])
-            ->whereIn('status', ['diajukan', 'diproses'])
+            ->whereIn('status', $statusToCheck)
             ->get()
             ->filter(function ($r) use ($mulai, $sampai) {
                 $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
@@ -94,6 +100,7 @@ class TransportRequestController extends Controller
             ]);
         }
 
+        // Buat pengajuan baru
         $transportRequest = TransportRequest::create([
             'user_id' => $request->user()->id,
             'jenis' => 'umum',
@@ -105,6 +112,34 @@ class TransportRequestController extends Controller
             'jumlah_penumpang' => null,
             ...collect($data)->except(['keperluan', 'prioritas'])->all(),
         ]);
+
+        // Jika user priority, auto-reject pengajuan lain yang bentrok (KECUALI pengajuan yang baru dibuat)
+        if ($request->user()->isPriority()) {
+            $conflictingRequests = TransportRequest::where('unit_mobil', $data['unit_mobil'])
+                ->where('id', '!=', $transportRequest->id) // PENTING: Exclude pengajuan yang baru dibuat
+                ->whereIn('status', ['diajukan', 'diproses'])
+                ->get()
+                ->filter(function ($r) use ($mulai, $sampai) {
+                    $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                    $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                        ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                        : $rMulai->copy()->addHour();
+
+                    if ($rSampai->lte($rMulai)) {
+                        $rSampai->addDay();
+                    }
+
+                    return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+                });
+
+            foreach ($conflictingRequests as $conflict) {
+                $conflict->update([
+                    'status' => 'ditolak',
+                    'keterangan' => ($conflict->keterangan ? $conflict->keterangan . "\n\n" : '') . 
+                                    'Ditolak otomatis: Bentrok dengan pengajuan prioritas tinggi.'
+                ]);
+            }
+        }
 
         return redirect()->route('signature.show', $transportRequest)
             ->with('success', 'Pengajuan berhasil dibuat. Silakan tanda tangan untuk melanjutkan.');
@@ -129,8 +164,14 @@ class TransportRequestController extends Controller
         }
 
         // Check all transport requests (both umum and ambulance) that use the same unit_mobil
+        // Untuk user priority, hanya cek yang status 'digunakan'
+        // Untuk user biasa, cek yang status 'diajukan', 'diproses', 'digunakan'
+        $statusToCheck = $request->user()->isPriority() 
+            ? ['digunakan'] 
+            : ['diajukan', 'diproses', 'digunakan'];
+            
         $allRequests = TransportRequest::where('unit_mobil', $data['unit_mobil'])
-            ->whereIn('status', ['diajukan', 'diproses'])
+            ->whereIn('status', $statusToCheck)
             ->get();
 
         $conflicts = $allRequests->filter(function ($r) use ($mulai, $sampai) {
@@ -155,6 +196,7 @@ class TransportRequestController extends Controller
         return response()->json([
             'available' => $conflicts->isEmpty(),
             'conflicts_count' => $conflicts->count(),
+            'is_priority' => $request->user()->isPriority(),
             'conflicts' => $conflicts->map(function($r) {
                 return [
                     'id' => $r->id,
@@ -222,8 +264,14 @@ class TransportRequestController extends Controller
         }
 
         // Check availability before creating
+        // Untuk user priority, hanya cek yang status 'digunakan'
+        // Untuk user biasa, cek yang status 'diajukan', 'diproses', 'digunakan'
+        $statusToCheck = $request->user()->isPriority() 
+            ? ['digunakan'] 
+            : ['diajukan', 'diproses', 'digunakan'];
+            
         $conflicts = TransportRequest::where('unit_mobil', $data['unit_mobil'])
-            ->whereIn('status', ['diajukan', 'diproses'])
+            ->whereIn('status', $statusToCheck)
             ->get()
             ->filter(function ($r) use ($mulai, $sampai) {
                 $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
@@ -247,6 +295,7 @@ class TransportRequestController extends Controller
         $alamatAsal = $purpose === 'antar' ? 'RS' : ($data['alamat_asal'] ?? 'RS');
         $alamatTujuan = $purpose === 'antar' ? ($data['alamat_tujuan'] ?? 'RS') : 'RS';
 
+        // Buat pengajuan baru
         $transportRequest = TransportRequest::create([
             'user_id' => $request->user()->id,
             'jenis' => 'ambulance',
@@ -260,6 +309,34 @@ class TransportRequestController extends Controller
             'pendamping_nama' => null,
             'kondisi_pasien' => null,
         ]);
+
+        // Jika user priority, auto-reject pengajuan lain yang bentrok (KECUALI pengajuan yang baru dibuat)
+        if ($request->user()->isPriority()) {
+            $conflictingRequests = TransportRequest::where('unit_mobil', $data['unit_mobil'])
+                ->where('id', '!=', $transportRequest->id) // PENTING: Exclude pengajuan yang baru dibuat
+                ->whereIn('status', ['diajukan', 'diproses'])
+                ->get()
+                ->filter(function ($r) use ($mulai, $sampai) {
+                    $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                    $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                        ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                        : $rMulai->copy()->addHour();
+
+                    if ($rSampai->lte($rMulai)) {
+                        $rSampai->addDay();
+                    }
+
+                    return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+                });
+
+            foreach ($conflictingRequests as $conflict) {
+                $conflict->update([
+                    'status' => 'ditolak',
+                    'keterangan' => ($conflict->keterangan ? $conflict->keterangan . "\n\n" : '') . 
+                                    'Ditolak otomatis: Bentrok dengan pengajuan prioritas tinggi.'
+                ]);
+            }
+        }
 
         return redirect()->route('signature.show', $transportRequest)
             ->with('success', 'Pengajuan berhasil dibuat. Silakan tanda tangan untuk melanjutkan.');
@@ -284,8 +361,14 @@ class TransportRequestController extends Controller
         }
 
         // Check all transport requests (both umum and ambulance) that use the same unit_mobil
+        // Untuk user priority, hanya cek yang status 'digunakan'
+        // Untuk user biasa, cek yang status 'diajukan', 'diproses', 'digunakan'
+        $statusToCheck = $request->user()->isPriority() 
+            ? ['digunakan'] 
+            : ['diajukan', 'diproses', 'digunakan'];
+            
         $allRequests = TransportRequest::where('unit_mobil', $data['unit_mobil'])
-            ->whereIn('status', ['diajukan', 'diproses'])
+            ->whereIn('status', $statusToCheck)
             ->get();
 
         $conflicts = $allRequests->filter(function ($r) use ($mulai, $sampai) {
@@ -310,6 +393,7 @@ class TransportRequestController extends Controller
         return response()->json([
             'available' => $conflicts->isEmpty(),
             'conflicts_count' => $conflicts->count(),
+            'is_priority' => $request->user()->isPriority(),
             'conflicts' => $conflicts->map(function($r) {
                 return [
                     'id' => $r->id,

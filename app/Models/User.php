@@ -24,6 +24,7 @@ class User extends Authenticatable
         'unit_kerja',
         'password',
         'role',
+        'priority_level',
     ];
 
     /**
@@ -57,6 +58,11 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+    
+    public function isPriority(): bool
+    {
+        return $this->priority_level === 1;
     }
 
     public function getFullNameAttribute(): string
