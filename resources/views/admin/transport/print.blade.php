@@ -84,9 +84,9 @@
             text-align: center;
             margin: 10px 0 8px 0;
             padding: 8px 0;
-            background: linear-gradient(135deg, #f0fdf4 0%, #d1fae5 100%);
-            border-left: 3px solid #10b981;
-            border-right: 3px solid #10b981;
+            background: #e6f7f6;
+            border-left: 3px solid #007774;
+            border-right: 3px solid #007774;
         }
 
         .document-title h2 {
@@ -116,7 +116,7 @@
         }
 
         .section-header {
-            background: linear-gradient(90deg, #10b981 0%, #059669 100%);
+            background: #007774;
             color: white;
             padding: 4px 8px;
             font-weight: bold;
@@ -286,21 +286,21 @@
             top: 20px;
             right: 20px;
             padding: 12px 24px;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            background: #007774;
             color: white;
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-size: 14px;
             font-weight: 600;
-            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 6px rgba(0, 119, 116, 0.3);
             transition: all 0.3s ease;
             z-index: 1000;
         }
 
         .print-button:hover {
-            background: linear-gradient(135deg, #059669 0%, #047857 100%);
-            box-shadow: 0 6px 8px rgba(16, 185, 129, 0.4);
+            background: #005a57;
+            box-shadow: 0 6px 8px rgba(0, 119, 116, 0.4);
             transform: translateY(-2px);
         }
 

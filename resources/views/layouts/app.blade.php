@@ -9,19 +9,19 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 text-slate-800 antialiased">
+<body class="min-h-screen bg-white text-slate-800 antialiased">
 
     <!-- Header Bar Accent -->
-    <div class="h-1 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-500 shadow-sm"></div>
+    <div class="h-1 bg-accent-teal shadow-sm"></div>
     
     <div class="min-h-screen flex">
 
         <!-- Sidebar -->
         <aside class="w-64 bg-white/95 backdrop-blur-md border-r border-emerald-100 flex flex-col shadow-sm">
             
-            <div class="px-5 py-5 border-b border-emerald-100 bg-gradient-to-r from-emerald-50 to-white">
+            <div class="px-5 py-5 border-b border-emerald-100 bg-white/80">
                 <div class="flex items-center gap-3 mb-2">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-600 to-teal-500 
+                    <div class="w-9 h-9 rounded-xl bg-emerald-600 
                                 flex items-center justify-center text-white text-sm font-semibold shadow-md">
                         RS
                     </div>
@@ -159,9 +159,9 @@
                     @csrf
                     <button type="submit"
                         class="w-full px-4 py-2.5 text-sm rounded-xl 
-                               bg-gradient-to-r from-emerald-600 to-teal-500 
+                               bg-emerald-600 
                                text-white font-medium 
-                               hover:from-emerald-700 hover:to-teal-600 
+                               hover:bg-emerald-700 
                                active:scale-[0.99] transition-all shadow-md shadow-emerald-500/20">
                         Keluar (Logout)
                     </button>

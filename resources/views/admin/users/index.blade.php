@@ -7,10 +7,10 @@
             </div>
             <a href="{{ route('admin.users.create') }}"
                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 text-white px-3 py-2 text-xs font-medium hover:bg-emerald-700 transition">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="white" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                Tambah
+                <span class="text-white font-semibold">Tambah</span>
             </a>
         </div>
 
@@ -54,8 +54,8 @@
             </form>
         </div>
 
-        <!-- Table -->
-        <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <!-- Desktop Table -->
+        <div class="hidden md:block bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200">
@@ -121,6 +121,55 @@
             <div class="px-3 py-2 bg-slate-50 border-t border-slate-200">
                 {{ $users->links() }}
             </div>
+        </div>
+
+        <!-- Mobile Cards -->
+        <div class="md:hidden space-y-2">
+            @forelse($users as $user)
+                <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-3">
+                    <div class="flex items-start justify-between mb-2">
+                        <div class="flex-1">
+                            <h3 class="font-semibold text-slate-900 text-sm">{{ $user->first_name }} {{ $user->last_name }}</h3>
+                            <p class="text-xs text-slate-600 mt-0.5">{{ $user->unit_kerja ?? '-' }}</p>
+                        </div>
+                        @if($user->role === 'admin')
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">
+                                Admin
+                            </span>
+                        @else
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">
+                                User
+                            </span>
+                        @endif
+                    </div>
+                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                        <a href="{{ route('admin.users.edit', $user) }}"
+                           class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
+                            Edit
+                        </a>
+                        <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="flex-1"
+                              onsubmit="return confirm('Yakin ingin menghapus user ini?')">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit"
+                                    class="w-full inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 hover:border-red-500 transition">
+                                Hapus
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-6 text-center text-slate-500 text-xs">
+                    Tidak ada data user
+                </div>
+            @endforelse
+
+            <!-- Pagination -->
+            @if($users->hasPages())
+                <div class="pt-2">
+                    {{ $users->links() }}
+                </div>
+            @endif
         </div>
     </div>
 </x-app-layout>

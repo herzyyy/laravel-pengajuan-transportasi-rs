@@ -9,12 +9,12 @@
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="@if($hideHeader ?? false) h-screen overflow-hidden bg-white @else min-h-screen bg-gradient-to-br from-emerald-50 via-white to-teal-50 @endif text-slate-800 antialiased">
+<body class="@if($hideHeader ?? false) h-screen overflow-hidden bg-white @else min-h-screen bg-white text-slate-800 antialiased @endif">
     <div class="@if($hideHeader ?? false) h-screen flex @else min-h-screen flex flex-col @endif">
 
         @unless($hideHeader ?? false)
-            <header class="bg-gradient-to-r from-emerald-700 via-emerald-600 to-teal-500 
-                           text-white shadow-lg shadow-emerald-900/10">
+            <header class="bg-emerald-700 
+                           text-white shadow-lg">
                 <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div class="min-w-0">
                         <div class="text-[11px] uppercase tracking-widest text-emerald-100/80 font-semibold">
@@ -35,7 +35,7 @@
                 <div class="w-full max-w-md">
                     <div class="mb-8 text-center">
                         <!-- <div class="inline-flex items-center gap-2 rounded-full 
-                                    bg-gradient-to-r from-emerald-100 to-teal-100 
+                                    bg-emerald-100 
                                     text-emerald-700 px-4 py-1.5 text-xs font-semibold 
                                     shadow-sm mb-3">
                             Sistem Pengajuan Transportasi

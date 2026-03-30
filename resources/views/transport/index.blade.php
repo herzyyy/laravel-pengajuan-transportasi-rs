@@ -14,12 +14,12 @@
 
             <a href="{{ route('dashboard') }}"
                class="inline-flex items-center justify-center gap-2 rounded-lg 
-                      bg-gradient-to-r from-emerald-600 to-teal-600 text-white 
+                      bg-emerald-600 text-white 
                       px-4 py-2.5 text-sm font-semibold hover:shadow-lg transition">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                <svg class="w-4 h-4" fill="white" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
                 </svg>
-                Pengajuan Baru
+                <span class="text-white font-semibold">Pengajuan Baru</span>
             </a>
         </div>
 

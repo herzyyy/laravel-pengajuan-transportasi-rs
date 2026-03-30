@@ -136,7 +136,7 @@
                     Lihat Riwayat
                 </a>
                 <a href="{{ route('dashboard') }}" class="inline-flex justify-center items-center px-3 py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition-colors w-full sm:w-auto">
-                    Buat Pengajuan Baru
+                    <span class="text-white font-semibold">Buat Pengajuan Baru</span>
                 </a>
             </div>
         </div>

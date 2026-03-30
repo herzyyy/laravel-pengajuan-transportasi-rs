@@ -14,7 +14,7 @@
     <div class="min-h-screen flex flex-col">
 
         {{-- Header --}}
-        <header class="sticky top-0 z-40 backdrop-blur-md bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 shadow-md">
+        <header class="sticky top-0 z-40 backdrop-blur-md bg-emerald-600 shadow-md">
             <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
                 {{-- Mobile Menu Button --}}
                 <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition">
@@ -336,9 +336,9 @@
 
             {{-- Sidebar --}}
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-                   class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-56 bg-gradient-to-b from-emerald-50 to-white border-r border-emerald-100 flex flex-col shadow-lg lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0">
+                   class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-56 bg-white border-r border-emerald-100 flex flex-col shadow-lg lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0">
                 <div class="px-3 py-4 border-b border-emerald-100">
-                    <div class="rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 px-3 py-2.5 shadow-md text-white">
+                    <div class="rounded-lg bg-emerald-600 px-3 py-2.5 shadow-md text-white">
                         <div class="flex items-center gap-2 mb-1.5">
                             <div class="w-1.5 h-1.5 rounded-full bg-white shadow-sm"></div>
                             <div class="text-[10px] uppercase tracking-wider text-emerald-100 font-semibold">

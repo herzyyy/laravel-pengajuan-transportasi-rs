@@ -1,7 +1,7 @@
 <x-app-layout>
     <div class="space-y-6">
         <!-- Welcome Header -->
-        <div class="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl p-6 text-white shadow-lg">
+        <div class="bg-emerald-600 rounded-xl p-6 text-white shadow-lg">
             <div class="flex items-start justify-between gap-4">
                 <div class="flex-1">
                     <div class="flex items-center gap-2 mb-3">

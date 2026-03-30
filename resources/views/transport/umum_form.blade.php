@@ -41,7 +41,7 @@
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
 
             <!-- Accent Bar -->
-            <div class="h-1 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
+            <div class="h-1 bg-emerald-600"></div>
 
             <div class="p-3 space-y-3">
 
@@ -177,7 +177,7 @@
                     ← Kembali
                 </a>
                 <button id="submitBtn" type="submit"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-gradient-to-r from-emerald-600 to-teal-600 hover:shadow-lg text-white px-4 py-2 text-xs font-semibold transition">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:shadow-lg text-white px-4 py-2 text-xs font-semibold transition">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>

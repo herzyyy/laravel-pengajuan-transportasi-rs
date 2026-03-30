@@ -10,11 +10,11 @@
     --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     
-    /* RS AZRA Custom Colors */
-    --color-azra-yellow: #FFC700;
-    --color-azra-yellow-light: #FFD633;
-    --color-azra-green: #1B7149;
-    --color-azra-green-light: #2B8F5F;
-    --color-azra-teal: #0D9488;
-    --color-azra-teal-light: #14B8A6;
+    /* RS AZRA Custom Colors (tema baru) */
+    --color-azra-yellow: #007774;
+    --color-azra-yellow-light: #1a918d;
+    --color-azra-green: #81bd41;
+    --color-azra-green-light: #a5d762;
+    --color-azra-teal: #007774;
+    --color-azra-teal-light: #1a918d;
 }

@@ -1,25 +1,26 @@
 /* RS AZRA Color Theme */
 
 :root {
-    --color-primary-yellow: #FFC700;
-    --color-primary-yellow-light: #FFD633;
-    --color-primary-green: #1B7149;
-    --color-primary-green-light: #2B8F5F;
-    --color-accent-teal: #0D9488;
-    --color-accent-teal-light: #14B8A6;
+    /* Berganti ke tema 2 warna Azra sesuai request */
+    --color-primary-yellow: #007774;
+    --color-primary-yellow-light: #1a918d;
+    --color-primary-green: #81bd41;
+    --color-primary-green-light: #a5d762;
+    --color-accent-teal: #007774;
+    --color-accent-teal-light: #1a918d;
     --color-secondary-gray: #F5F5F5;
 }
 
 /* Accent Line Styles */
 .accent-left-yellow {
     position: relative;
-    border-left: 4px solid var(--color-primary-yellow);
+    border-left: 4px solid var(--color-primary-green);
     padding-left: 0;
 }
 
 .accent-left-green {
     position: relative;
-    border-left: 4px solid var(--color-primary-green);
+    border-left: 4px solid var(--color-accent-teal);
     padding-left: 0;
 }
 
@@ -30,20 +31,20 @@
 }
 
 .accent-top-yellow {
-    border-top: 4px solid var(--color-primary-yellow);
+    border-top: 4px solid var(--color-primary-green);
 }
 
 .accent-top-green {
-    border-top: 4px solid var(--color-primary-green);
+    border-top: 4px solid var(--color-accent-teal);
 }
 
 .accent-top-teal {
     border-top: 4px solid var(--color-accent-teal);
 }
 
-/* Header Bar Gradient */
+/* Header Bar - Solid Teal */
 .header-bar-gradient {
-    background: linear-gradient(90deg, var(--color-primary-yellow) 0%, var(--color-primary-green) 100%);
+    background: var(--color-accent-teal);
 }
 
 /* Card Styles */
@@ -63,7 +64,7 @@
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(90deg, var(--color-primary-yellow) 0%, var(--color-primary-green) 100%);
+    background: var(--color-primary-green);
 }
 
 .card-accent:hover {
@@ -102,8 +103,8 @@
 }
 
 .badge-yellow {
-    background-color: var(--color-primary-yellow);
-    color: #333;
+    background-color: var(--color-primary-green);
+    color: white;
 }
 
 .badge-teal {
@@ -138,14 +139,14 @@
 }
 
 .btn-yellow {
-    background-color: var(--color-primary-yellow);
-    color: #333;
+    background-color: var(--color-primary-green);
+    color: white;
     border: none;
     transition: all 0.3s ease;
 }
 
 .btn-yellow:hover {
-    background-color: var(--color-primary-yellow-light);
+    background-color: var(--color-primary-green-light);
 }
 
 .btn-teal {
@@ -157,6 +158,31 @@
 
 .btn-teal:hover {
     background-color: var(--color-accent-teal-light);
+}
+
+/* Secondary Button - Lime Green Support Color */
+.btn-secondary {
+    background-color: var(--color-brand-secondary);
+    color: white;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-brand-secondary-light);
+}
+
+/* Outline Secondary Button */
+.btn-secondary-outline {
+    background-color: transparent;
+    color: var(--color-brand-secondary);
+    border: 2px solid var(--color-brand-secondary);
+    transition: all 0.3s ease;
+}
+
+.btn-secondary-outline:hover {
+    background-color: var(--color-brand-secondary);
+    color: white;
 }
 
 /* Status Badge Styles */
@@ -220,12 +246,65 @@
     transition: all 0.3s ease;
 }
 
-/* Gradient Text */
+/* Solid Text - Lime Green */
 .text-gradient {
-    background: linear-gradient(90deg, var(--color-primary-yellow) 0%, var(--color-primary-green) 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--color-primary-green);
+    font-weight: 600;
+}
+
+/* Tailwind Emerald/Teal overrides to match brand color palette */
+:root {
+    --color-brand-primary: #007774;
+    --color-brand-primary-light: #1a918d;
+    --color-brand-secondary: #81bd41;
+    --color-brand-secondary-light: #a5d762;
+    --color-brand-surface: #f4f9f2;
+}
+
+.bg-emerald-50  { background-color: #e8f8e8 !important; }
+.bg-emerald-100 { background-color: #d5f0c8 !important; }
+.bg-emerald-300 { background-color: #8acc83 !important; }
+.bg-emerald-400 { background-color: #68c45f !important; }
+.bg-emerald-600 { background-color: var(--color-brand-primary) !important; }
+.bg-teal-400   { background-color: #2ba5a1 !important; }
+
+.border-emerald-100 { border-color: #c9e8cb !important; }
+.border-emerald-200 { border-color: #aee0a5 !important; }
+.border-emerald-400 { border-color: #68c45f !important; }
+.border-emerald-500 { border-color: var(--color-brand-primary) !important; }
+
+.text-emerald-50  { color: #e8f8e8 !important; }
+.text-emerald-100 { color: #c8e9c4 !important; }
+.text-emerald-500 { color: var(--color-brand-primary) !important; }
+.text-emerald-600 { color: #6dac3a !important; }
+.text-emerald-700 { color: var(--color-brand-primary) !important; }
+.text-emerald-800 { color: #4d8f2f !important; }
+.text-emerald-900 { color: #3f7127 !important; }
+
+.ring-emerald-200 { --tw-ring-color: rgba(129, 189, 65, 0.5) !important; }
+.focus\:ring-emerald-500,
+.focus\:ring-emerald-500:focus {
+    box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), 0 0 0 3px rgba(0, 119, 116, 0.35) !important;
+}
+
+.from-emerald-50  { background-color: #e8f8e8 !important; }
+.from-emerald-100 { background-color: #d5f0c8 !important; }
+.from-emerald-500 { background-color: var(--color-brand-primary) !important; }
+.from-emerald-600 { background-color: var(--color-brand-primary) !important; }
+.from-emerald-700 { background-color: #6dac3a !important; }
+.via-emerald-300 { background-color: #8acc83 !important; }
+.via-emerald-600 { background-color: var(--color-brand-primary) !important; }
+.to-teal-600 { background-color: var(--color-brand-primary) !important; }
+.to-teal-500,
+.to-teal-800 { background-color: var(--color-brand-primary) !important; }
+
+.bg-gradient-to-br.from-emerald-600.to-teal-600 {
+    background-color: var(--color-brand-primary) !important;
+}
+.bg-gradient-to-r.from-emerald-600.to-teal-500,
+.bg-gradient-to-r.from-emerald-600.to-teal-600,
+.bg-gradient-to-r.from-emerald-700.to-teal-500 {
+    background-color: var(--color-brand-primary) !important;
 }
 
 /* Section Divider */
@@ -265,6 +344,41 @@
 .icon-wrapper-teal {
     background: linear-gradient(135deg, rgba(13, 148, 136, 0.1) 0%, rgba(13, 148, 136, 0.05) 100%);
     color: var(--color-accent-teal);
+}
+
+/* Form Input Styling */
+input:focus,
+select:focus,
+textarea:focus,
+button:focus {
+    outline: none;
+    border-color: var(--color-brand-primary) !important;
+    box-shadow: 0 0 0 3px rgba(0, 119, 116, 0.1) !important;
+}
+
+/* Tailwind Focus Ring Override */
+.focus\:ring-2:focus,
+.focus\:border-emerald-500:focus {
+    border-color: var(--color-brand-primary) !important;
+    box-shadow: 0 0 0 3px rgba(0, 119, 116, 0.1) !important;
+}
+
+/* Link & Active States */
+a {
+    color: var(--color-brand-primary);
+    transition: color 0.2s ease;
+}
+
+a:hover {
+    color: var(--color-brand-primary-light);
+}
+
+/* Active/Selected States */
+.active,
+.is-active,
+[aria-current="page"] {
+    color: var(--color-brand-primary) !important;
+    border-color: var(--color-brand-primary) !important;
 }
 
 /* Responsive Utilities */
