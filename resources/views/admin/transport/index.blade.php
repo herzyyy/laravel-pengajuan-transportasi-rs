@@ -29,8 +29,7 @@
                         <option value="diproses" @selected(request('status') === 'diproses')>Disetujui</option>
                         <option value="digunakan" @selected(request('status') === 'digunakan')>Digunakan</option>
                         <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
-                        <option value="ditolak" @selected(request('status') === 'ditolak')>Ditolak</option>
-                        <option value="kadaluarsa" @selected(request('status') === 'kadaluarsa')>Kadaluarsa</option>
+                        <option value="tidak_disetujui" @selected(request('status') === 'tidak_disetujui')>Tidak Disetujui</option>
                     </select>
 
                     <input type="date" name="tanggal" value="{{ request('tanggal') }}" 
@@ -101,7 +100,7 @@
                                     </td>
                                     <td class="px-3 py-2">
                                         @php
-                                            $colors = ['diajukan' => 'bg-amber-100 text-amber-800', 'diproses' => 'bg-blue-100 text-blue-800', 'digunakan' => 'bg-cyan-100 text-cyan-800', 'selesai' => 'bg-emerald-100 text-emerald-800', 'ditolak' => 'bg-red-100 text-red-800'];
+                                            $colors = ['diajukan' => 'bg-amber-100 text-amber-800', 'diproses' => 'bg-blue-100 text-blue-800', 'digunakan' => 'bg-cyan-100 text-cyan-800', 'selesai' => 'bg-emerald-100 text-emerald-800', 'tidak_disetujui' => 'bg-red-100 text-red-800'];
                                             $color = $colors[$item->status] ?? 'bg-slate-100 text-slate-800';
                                             $label = match($item->status) {
                                                 'diproses' => 'Disetujui',
@@ -148,12 +147,12 @@
                                     <div class="text-xs text-slate-500 truncate">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
                                 </div>
                                 @php
-                                    $colors = ['diajukan' => 'bg-amber-100 text-amber-800', 'diproses' => 'bg-blue-100 text-blue-800', 'digunakan' => 'bg-cyan-100 text-cyan-800', 'selesai' => 'bg-emerald-100 text-emerald-800', 'ditolak' => 'bg-red-100 text-red-800', 'kadaluarsa' => 'bg-orange-100 text-orange-800'];
+                                    $colors = ['diajukan' => 'bg-amber-100 text-amber-800', 'diproses' => 'bg-blue-100 text-blue-800', 'digunakan' => 'bg-cyan-100 text-cyan-800', 'selesai' => 'bg-emerald-100 text-emerald-800', 'tidak_disetujui' => 'bg-red-100 text-red-800'];
                                     $color = $colors[$item->status] ?? 'bg-slate-100 text-slate-800';
                                     $label = match($item->status) {
                                         'diproses' => 'Disetujui',
                                         'digunakan' => 'Digunakan',
-                                        'kadaluarsa' => 'Kadaluarsa',
+                                        'tidak_disetujui' => 'Tidak Disetujui',
                                         default => ucfirst($item->status)
                                     };
                                 @endphp

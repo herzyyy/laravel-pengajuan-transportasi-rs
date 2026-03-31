@@ -43,8 +43,8 @@
                         <option value="diproses" {{ request('status') == 'diproses' ? 'selected' : '' }}>Disetujui</option>
                         <option value="digunakan" {{ request('status') == 'digunakan' ? 'selected' : '' }}>Digunakan</option>
                         <option value="selesai" {{ request('status') == 'selesai' ? 'selected' : '' }}>Selesai</option>
-                        <option value="ditolak" {{ request('status') == 'ditolak' ? 'selected' : '' }}>Ditolak</option>
-                        <option value="kadaluarsa" {{ request('status') == 'kadaluarsa' ? 'selected' : '' }}>Kadaluarsa</option>
+                        <option value="tidak_disetujui" {{ request('status') == 'tidak_disetujui' ? 'selected' : '' }}>Tidak Disetujui</option>
+
                     </select>
                 </div>
                 
@@ -183,18 +183,11 @@
                                                 'label' => 'Selesai',
                                                 'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>'
                                             ],
-                                            'ditolak' => [
+                                            'tidak_disetujui' => [
                                                 'bg' => 'bg-red-50',
                                                 'text' => 'text-red-700',
                                                 'border' => 'border-red-200',
-                                                'label' => 'Ditolak',
-                                                'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
-                                            ],
-                                            'kadaluarsa' => [
-                                                'bg' => 'bg-orange-50',
-                                                'text' => 'text-orange-700',
-                                                'border' => 'border-orange-200',
-                                                'label' => 'Kadaluarsa',
+                                                'label' => 'Tidak Disetujui',
                                                 'icon' => '<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/></svg>'
                                             ],
                                             default => [
@@ -276,8 +269,7 @@
                                     'diproses' => ['bg' => 'bg-blue-50', 'text' => 'text-blue-700', 'border' => 'border-blue-200', 'label' => 'Disetujui'],
                                     'digunakan' => ['bg' => 'bg-cyan-50', 'text' => 'text-cyan-700', 'border' => 'border-cyan-200', 'label' => 'Digunakan'],
                                     'selesai' => ['bg' => 'bg-emerald-50', 'text' => 'text-emerald-700', 'border' => 'border-emerald-200', 'label' => 'Selesai'],
-                                    'ditolak' => ['bg' => 'bg-red-50', 'text' => 'text-red-700', 'border' => 'border-red-200', 'label' => 'Ditolak'],
-                                    'kadaluarsa' => ['bg' => 'bg-orange-50', 'text' => 'text-orange-700', 'border' => 'border-orange-200', 'label' => 'Kadaluarsa'],
+                                    'tidak_disetujui' => ['bg' => 'bg-red-50', 'text' => 'text-red-700', 'border' => 'border-red-200', 'label' => 'Tidak Disetujui'],
                                     default => ['bg' => 'bg-slate-50', 'text' => 'text-slate-700', 'border' => 'border-slate-200', 'label' => ucfirst($item->status)]
                                 };
                             @endphp

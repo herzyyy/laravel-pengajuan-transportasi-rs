@@ -21,9 +21,19 @@ class TransportRequestController extends Controller
             'diproses' => $counts['diproses'] ?? 0,
             'digunakan' => $counts['digunakan'] ?? 0,
             'selesai' => $counts['selesai'] ?? 0,
-            'ditolak' => $counts['ditolak'] ?? 0,
-            'kadaluarsa' => $counts['kadaluarsa'] ?? 0,
+            'tidak_disetujui' => $counts['tidak_disetujui'] ?? 0,
         ];
+
+        // Verify total matches sum of all statuses (for data integrity)
+        $calculatedTotal = $summary['diajukan'] + $summary['diproses'] + $summary['digunakan'] + $summary['selesai'] + $summary['tidak_disetujui'];
+        if ($summary['total'] !== $calculatedTotal) {
+            // Log discrepancy for debugging
+            \Log::warning('Dashboard total count mismatch', [
+                'total_from_count' => $summary['total'],
+                'calculated_total' => $calculatedTotal,
+                'status_counts' => $counts->toArray()
+            ]);
+        }
 
         // Beberapa data terbaru untuk konteks cepat di dashboard
         $latest = TransportRequest::with('user')
@@ -36,20 +46,27 @@ class TransportRequestController extends Controller
 
     public function index(Request $request)
     {
-        $query = TransportRequest::with('user')->orderBy('created_at', 'asc'); // Urutkan berdasarkan waktu membuat ajuan (FIFO)
+        $query = TransportRequest::with('user');
 
-        // Filter status: default 'diajukan' hanya jika tidak ada parameter status sama sekali
-        // Jika user memilih "Semua Status" (value kosong), jangan filter status
-        if ($request->has('status')) {
-            // User sudah memilih filter status (bisa kosong untuk "Semua Status" atau value tertentu)
-            if ($request->filled('status')) {
-                // Ada value status yang dipilih
-                $query->where('status', $request->status);
+        // Tentukan sorting berdasarkan status
+        $selectedStatus = $request->input('status');
+        if ($request->has('status') && $request->filled('status')) {
+            // Status tertentu dipilih
+            $fifoStatuses = ['diajukan', 'diproses', 'digunakan']; // Status yang menggunakan FIFO (terlama dulu)
+            if (in_array($selectedStatus, $fifoStatuses)) {
+                // Untuk status menunggu, disetujui, dan digunakan: urutkan dari yang terlama (FIFO)
+                $query->orderBy('created_at', 'asc');
+            } else {
+                // Untuk status lain (selesai, tidak_disetujui, dll): urutkan dari yang terbaru
+                $query->orderBy('created_at', 'desc');
             }
-            // Jika status kosong (Semua Status), tidak perlu filter
+            $query->where('status', $selectedStatus);
+        } elseif ($request->has('status') && !$request->filled('status')) {
+            // "Semua Status" dipilih: urutkan dari yang terbaru
+            $query->orderBy('created_at', 'desc');
         } else {
-            // Tidak ada parameter status sama sekali (first load), default ke 'diajukan'
-            $query->where('status', 'diajukan');
+            // Tidak ada parameter status (first load): default ke 'diajukan' dengan FIFO
+            $query->where('status', 'diajukan')->orderBy('created_at', 'asc');
         }
 
         if ($request->filled('jenis')) {
@@ -81,7 +98,7 @@ class TransportRequestController extends Controller
         if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
             // Diajukan -> Disetujui: Wajib isi unit kendaraan
             $data = $request->validate([
-                'status' => ['required', 'in:diproses,ditolak'],
+                'status' => ['required', 'in:diproses,tidak_disetujui'],
                 'unit_mobil' => ['required', 'string', 'max:100'],
                 'plat_nomor' => ['nullable', 'string', 'max:20'],
             ]);
@@ -115,10 +132,10 @@ class TransportRequestController extends Controller
                 throw ValidationException::withMessages(['km_akhir' => 'KM tiba harus lebih besar dari KM keberangkatan.']);
             }
             
-        } elseif ($currentStatus === 'diajukan' && $newStatus === 'ditolak') {
-            // Diajukan -> Ditolak
+        } elseif ($currentStatus === 'diajukan' && $newStatus === 'tidak_disetujui') {
+            // Diajukan -> Tidak Disetujui
             $data = $request->validate([
-                'status' => ['required', 'in:ditolak'],
+                'status' => ['required', 'in:tidak_disetujui'],
             ]);
             
         } else {

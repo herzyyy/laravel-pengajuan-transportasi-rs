@@ -134,9 +134,9 @@ class TransportRequestController extends Controller
 
             foreach ($conflictingRequests as $conflict) {
                 $conflict->update([
-                    'status' => 'ditolak',
+                    'status' => 'tidak_disetujui',
                     'keterangan' => ($conflict->keterangan ? $conflict->keterangan . "\n\n" : '') . 
-                                    'Ditolak otomatis: Bentrok dengan pengajuan prioritas tinggi.'
+                                    'Tidak disetujui otomatis: Bentrok dengan pengajuan prioritas tinggi.'
                 ]);
             }
         }
@@ -331,9 +331,9 @@ class TransportRequestController extends Controller
 
             foreach ($conflictingRequests as $conflict) {
                 $conflict->update([
-                    'status' => 'ditolak',
+                    'status' => 'tidak_disetujui',
                     'keterangan' => ($conflict->keterangan ? $conflict->keterangan . "\n\n" : '') . 
-                                    'Ditolak otomatis: Bentrok dengan pengajuan prioritas tinggi.'
+                                    'Tidak disetujui otomatis: Bentrok dengan pengajuan prioritas tinggi.'
                 ]);
             }
         }

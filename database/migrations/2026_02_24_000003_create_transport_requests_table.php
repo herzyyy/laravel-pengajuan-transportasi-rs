@@ -38,7 +38,7 @@ return new class extends Migration
             $table->string('kondisi_pasien')->nullable();
             $table->string('pendamping_nama')->nullable();
 
-            $table->string('status')->default('diajukan'); // diajukan | diproses | selesai | ditolak
+            $table->string('status')->default('diajukan'); // diajukan | diproses | selesai | tidak_disetujui
 
             $table->timestamps();
         });

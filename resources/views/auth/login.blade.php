@@ -6,7 +6,7 @@
                 <div class="w-full max-w-sm px-4">
                     <!-- Mobile Logo -->
                     <div class="lg:hidden flex flex-col items-center mb-4">
-                        <div class="bg-emerald-600 rounded-xl p-2 shadow-lg mb-2">
+                        <div class="bg-white rounded-xl p-2 shadow-lg mb-2">
                             <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-10 w-auto">
                         </div>
                         <h1 class="text-lg font-bold text-gray-900 text-center">Sistem Pengajuan Transportasi</h1>

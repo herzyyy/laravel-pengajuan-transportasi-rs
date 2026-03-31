@@ -75,7 +75,7 @@
                     <div class="flex items-center gap-4">
                         <label class="flex items-center gap-2 cursor-pointer">
                             <input type="radio" name="is_active" value="1" @checked(old('is_active', $vehicle->is_active) == 1)
-                                   class="w-4 h-4 text-emerald-600 focus:ring-emerald-500">
+                                   class="w-4 h-4 text-slate-600 focus:ring-slate-500">
                             <span class="text-sm text-slate-700">Aktif</span>
                         </label>
                         <label class="flex items-center gap-2 cursor-pointer">

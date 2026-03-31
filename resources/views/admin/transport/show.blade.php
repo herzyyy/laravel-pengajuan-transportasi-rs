@@ -84,14 +84,13 @@
                             'diproses' => 'bg-blue-100 text-blue-800',
                             'digunakan' => 'bg-cyan-100 text-cyan-800',
                             'selesai' => 'bg-emerald-100 text-emerald-800',
-                            'ditolak' => 'bg-red-100 text-red-800',
-                            'kadaluarsa' => 'bg-orange-100 text-orange-800'
+                            'tidak_disetujui' => 'bg-red-100 text-red-800'
                         ];
                         $color = $colors[$transportRequest->status] ?? 'bg-slate-100 text-slate-800';
                         $label = match($transportRequest->status) {
                             'diproses' => 'Disetujui',
                             'digunakan' => 'Digunakan',
-                            'kadaluarsa' => 'Kadaluarsa',
+                            'tidak_disetujui' => 'Tidak Disetujui',
                             default => ucfirst($transportRequest->status)
                         };
                     @endphp
@@ -277,7 +276,7 @@
                             @if($transportRequest->status === 'diajukan')
                                 <option value="diajukan" selected>Diajukan (Menunggu)</option>
                                 <option value="diproses">Disetujui</option>
-                                <option value="ditolak">Ditolak</option>
+                                <option value="tidak_disetujui">Tidak Disetujui</option>
                             @elseif($transportRequest->status === 'diproses')
                                 <option value="diproses" selected>Disetujui</option>
                                 <option value="digunakan">Digunakan</option>
@@ -286,10 +285,8 @@
                                 <option value="selesai">Selesai</option>
                             @elseif($transportRequest->status === 'selesai')
                                 <option value="selesai" selected>Selesai</option>
-                            @elseif($transportRequest->status === 'ditolak')
-                                <option value="ditolak" selected>Ditolak</option>
-                            @elseif($transportRequest->status === 'kadaluarsa')
-                                <option value="kadaluarsa" selected>Kadaluarsa</option>
+                            @elseif($transportRequest->status === 'tidak_disetujui')
+                                <option value="tidak_disetujui" selected>Tidak Disetujui</option>
                             @endif
                         </select>
                         <p class="text-[9px] text-slate-500 mt-0.5">
@@ -297,8 +294,7 @@
                             <span x-show="currentStatus === 'diproses'">Pilih <strong>Digunakan</strong> saat mulai digunakan</span>
                             <span x-show="currentStatus === 'digunakan'">Pilih <strong>Selesai</strong> saat kendaraan kembali</span>
                             <span x-show="currentStatus === 'selesai'">Status sudah selesai</span>
-                            <span x-show="currentStatus === 'ditolak'">Pengajuan ditolak</span>
-                            <span x-show="currentStatus === 'kadaluarsa'">Pengajuan kadaluarsa</span>
+                            <span x-show="currentStatus === 'tidak_disetujui'">Pengajuan tidak disetujui</span>
                         </p>
                     </div>
 

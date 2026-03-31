@@ -20,7 +20,7 @@ class AutoRejectExpiredRequests extends Command
      *
      * @var string
      */
-    protected $description = 'Otomatis mengubah status pengajuan menjadi kadaluarsa jika sudah melewati waktu transportasi';
+    protected $description = 'Otomatis mengubah status pengajuan menjadi tidak disetujui jika sudah melewati waktu transportasi';
 
     /**
      * Execute the console command.
@@ -39,18 +39,18 @@ class AutoRejectExpiredRequests extends Command
 
         $count = 0;
         foreach ($expiredRequests as $request) {
-            $request->update(['status' => 'kadaluarsa']);
+            $request->update(['status' => 'tidak_disetujui']);
             $count++;
             
             $requestDateTime = $request->tanggal->format('d/m/Y') . ' ' . $request->jam;
             $userName = $request->user ? $request->user->full_name : $request->pemohon_nama;
-            $this->info("Pengajuan #{$request->id} dari {$userName} ({$requestDateTime}) telah kadaluarsa otomatis");
+            $this->info("Pengajuan #{$request->id} dari {$userName} ({$requestDateTime}) tidak disetujui karena melewati waktu");
         }
 
         if ($count > 0) {
-            $this->info("✓ Total {$count} pengajuan telah diubah menjadi kadaluarsa karena melewati waktu.");
+            $this->info("✓ Total {$count} pengajuan telah berubah menjadi tidak disetujui karena melewati waktu.");
         } else {
-            $this->info("✓ Tidak ada pengajuan yang kadaluarsa.");
+            $this->info("✓ Tidak ada pengajuan yang melewati waktu.");
         }
 
         return Command::SUCCESS;

@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         // Migration ini hanya untuk dokumentasi
-        // Status 'kadaluarsa' akan ditambahkan ke enum di aplikasi
+        // Status 'kadaluarsa' telah digabungkan ke dalam status 'tidak_disetujui'
         // Tidak perlu mengubah struktur tabel karena kolom status sudah ada sebagai string
     }
 

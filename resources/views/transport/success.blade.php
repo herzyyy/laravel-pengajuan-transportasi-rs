@@ -117,8 +117,7 @@
                                     'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Disetujui'],
                                     'digunakan' => ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-800', 'label' => 'Digunakan'],
                                     'selesai' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'label' => 'Selesai'],
-                                    'ditolak' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Ditolak'],
-                                    'kadaluarsa' => ['bg' => 'bg-orange-100', 'text' => 'text-orange-800', 'label' => 'Kadaluarsa'],
+                                    'tidak_disetujui' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Tidak Disetujui'],
                                     default => ['bg' => 'bg-slate-100', 'text' => 'text-slate-800', 'label' => ucfirst($item->status)]
                                 };
                             @endphp

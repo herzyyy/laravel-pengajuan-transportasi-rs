@@ -1,7 +1,7 @@
 # Laravel Scheduler - Auto Reject Expired Requests
 
 ## Deskripsi
-Sistem ini secara otomatis mengubah status pengajuan transportasi yang masih berstatus "diajukan" menjadi "kadaluarsa" jika sudah melewati waktu transportasi yang diajukan.
+Sistem ini secara otomatis mengubah status pengajuan transportasi yang masih berstatus "diajukan" menjadi "tidak_disetujui" jika sudah melewati waktu transportasi yang diajukan.
 
 ## Command Manual
 Untuk menjalankan command secara manual:
@@ -45,14 +45,14 @@ Tambahkan baris ini:
 - **diproses**: Pengajuan yang sudah disetujui
 - **digunakan**: Kendaraan sedang digunakan
 - **selesai**: Transportasi selesai
-- **ditolak**: Pengajuan ditolak oleh admin
-- **kadaluarsa**: Pengajuan yang terlewat waktu (otomatis)
+- **tidak_disetujui**: Pengajuan tidak disetujui oleh admin
+- **tidak_disetujui**: Pengajuan yang tidak disetujui atau terlewat waktu (otomatis/manual)
 
 ## Cara Kerja
 1. Command berjalan setiap jam (atau manual)
 2. Mencari semua pengajuan dengan status "diajukan"
 3. Membandingkan tanggal + jam pengajuan dengan waktu sekarang
-4. Jika sudah lewat, status diubah menjadi "kadaluarsa"
+4. Jika sudah lewat, status diubah menjadi "tidak_disetujui"
 5. Log ditampilkan untuk setiap pengajuan yang diubah
 
 ## Testing
@@ -63,5 +63,5 @@ php artisan transport:auto-reject-expired
 
 Output akan menampilkan:
 - Daftar pengajuan yang diubah statusnya
-- Total pengajuan yang kadaluarsa
-- Atau pesan "Tidak ada pengajuan yang kadaluarsa" jika tidak ada
+- Total pengajuan yang berubah menjadi tidak disetujui
+- Atau pesan "Tidak ada pengajuan yang melewati waktu" jika tidak ada
