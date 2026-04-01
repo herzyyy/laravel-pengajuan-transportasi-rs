@@ -2,58 +2,40 @@
     <div class="max-w-5xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
 
         <!-- Header -->
-        <div class="text-center space-y-2 mb-8 sm:mb-12">
-            <h1 class="text-xl sm:text-2xl font-bold text-slate-800">
+        <div class="text-center space-y-1 mb-6">
+            <h1 class="text-lg sm:text-xl font-bold text-slate-800">
                 Pilih Jenis Transportasi
             </h1>
-            <p class="text-sm text-slate-600">
-                Pilih layanan untuk melanjutkan pengajuan
+            <p class="text-xs sm:text-sm text-slate-500">
+                Pilih layanan yang sesuai dan lanjutkan pengajuan dalam satu klik.
             </p>
         </div>
 
         <!-- Options -->
-        <div class="grid sm:grid-cols-2 gap-4 sm:gap-6 max-w-3xl mx-auto">
+        <div class="grid sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
 
             <!-- Ambulance -->
             <a href="{{ route('pengajuan.ambulance.create') }}"
                class="group relative overflow-hidden
                       flex flex-col items-center justify-center
-                      rounded-2xl border-2 border-red-100 bg-gradient-to-br from-white to-red-50/30
-                      p-8 sm:p-10 transition-all duration-300
-                      hover:border-red-300 hover:shadow-lg hover:shadow-red-100/50 hover:-translate-y-1">
+                      rounded-xl border border-red-200 bg-red-50/70
+                      px-4 py-5 sm:px-5 sm:py-6 transition-all duration-200
+                      hover:border-red-300 hover:shadow-lg hover:-translate-y-0.5">
 
-                <!-- Background Pattern -->
-                <div class="absolute inset-0 opacity-5">
-                    <div class="absolute inset-0" style="background-image: radial-gradient(circle, #ef4444 1px, transparent 1px); background-size: 20px 20px;"></div>
-                </div>
-
-                <!-- Icon Container -->
-                <div class="relative flex items-center justify-center
-                            w-28 h-28 sm:w-32 sm:h-32 rounded-3xl
-                            bg-white shadow-md
-                            group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
-                    <img src="{{ asset('images/ambulance-icon.png') }}" 
-                         alt="Ambulance Icon" 
-                         class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm">
-                </div>
-
-                <!-- Text -->
-                <div class="relative mt-6 text-center">
-                    <div class="text-lg sm:text-xl font-bold text-red-600
-                                group-hover:text-red-700 transition">
-                        Ambulance
+                <!-- Icon + Label -->
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 rounded-xl bg-white/90 border border-red-200 flex items-center justify-center shadow-sm">
+                        <img src="{{ asset('images/ambulance-icon.png') }}" 
+                            alt="Ambulance Icon" 
+                            class="w-8 h-8 object-contain">
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                        Layanan darurat medis
-                    </p>
+                    <div class="text-left">
+                        <div class="text-base font-semibold text-red-700">Ambulance</div>
+                        <p class="text-[11px] text-red-600 mt-0.5">Layanan darurat medis</p>
+                    </div>
                 </div>
 
-                <!-- Arrow Icon -->
-                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </div>
+                <span class="absolute top-2 right-2 text-xs font-medium text-red-600">Pilih</span>
             </a>
 
 
@@ -61,42 +43,24 @@
             <a href="{{ route('pengajuan.umum.create') }}"
                class="group relative overflow-hidden
                       flex flex-col items-center justify-center
-                      rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50/30
-                      p-8 sm:p-10 transition-all duration-300
-                      hover:border-blue-300 hover:shadow-lg hover:shadow-blue-100/50 hover:-translate-y-1">
+                      rounded-xl border border-blue-200 bg-blue-50/70
+                      px-4 py-5 sm:px-5 sm:py-6 transition-all duration-200
+                      hover:border-blue-300 hover:shadow-lg hover:-translate-y-0.5">
 
-                <!-- Background Pattern -->
-                <div class="absolute inset-0 opacity-5">
-                    <div class="absolute inset-0" style="background-image: radial-gradient(circle, #3b82f6 1px, transparent 1px); background-size: 20px 20px;"></div>
-                </div>
-
-                <!-- Icon Container -->
-                <div class="relative flex items-center justify-center
-                            w-28 h-28 sm:w-32 sm:h-32 rounded-3xl
-                            bg-white shadow-md
-                            group-hover:shadow-xl group-hover:scale-105 transition-all duration-300">
-                    <img src="{{ asset('images/umum-icon.png') }}" 
-                         alt="Mobil Umum Icon" 
-                         class="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-sm">
-                </div>
-
-                <!-- Text -->
-                <div class="relative mt-6 text-center">
-                    <div class="text-lg sm:text-xl font-bold text-blue-600
-                                group-hover:text-blue-700 transition">
-                        Mobil Umum
+                <!-- Icon + Label -->
+                <div class="flex items-center gap-3">
+                    <div class="w-14 h-14 rounded-xl bg-white/90 border border-blue-200 flex items-center justify-center shadow-sm">
+                        <img src="{{ asset('images/umum-icon.png') }}" 
+                            alt="Mobil Umum Icon" 
+                            class="w-8 h-8 object-contain">
                     </div>
-                    <p class="text-xs sm:text-sm text-slate-500 mt-1">
-                        Transportasi umum
-                    </p>
+                    <div class="text-left">
+                        <div class="text-base font-semibold text-blue-700">Mobil Umum</div>
+                        <p class="text-[11px] text-blue-600 mt-0.5">Transportasi umum</p>
+                    </div>
                 </div>
 
-                <!-- Arrow Icon -->
-                <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </div>
+                <span class="absolute top-2 right-2 text-xs font-medium text-blue-600">Pilih</span>
             </a>
 
         </div>

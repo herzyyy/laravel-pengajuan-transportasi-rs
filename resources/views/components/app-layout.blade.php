@@ -296,13 +296,6 @@
                         </div>
                     @endif
                     
-                    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-white/20 backdrop-blur-sm rounded-lg border border-white/30">
-                        <div class="w-2 h-2 rounded-full bg-white shadow-sm"></div>
-                        <div class="text-xs">
-                            <span class="text-emerald-50">{{ auth()->user()->isAdmin() ? 'Admin' : 'User' }}:</span>
-                            <span class="font-semibold text-white ml-1">{{ auth()->user()->full_name }}</span>
-                        </div>
-                    </div>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
@@ -336,23 +329,29 @@
 
             {{-- Sidebar --}}
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-                   class="fixed lg:static inset-y-0 left-0 z-50 w-64 lg:w-56 bg-white border-r border-emerald-100 flex flex-col shadow-lg lg:shadow-none transition-transform duration-300 ease-in-out lg:translate-x-0">
+                   class="fixed left-0 top-[3.5rem] bottom-0 z-30 w-64 bg-white border-r border-emerald-100 flex flex-col shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0">
                 <div class="px-3 py-4 border-b border-emerald-100">
                     <div class="rounded-lg bg-emerald-600 px-3 py-2.5 shadow-md text-white">
                         <div class="flex items-center gap-2 mb-1.5">
-                            <div class="w-1.5 h-1.5 rounded-full bg-white shadow-sm"></div>
                             <div class="text-[10px] uppercase tracking-wider text-emerald-100 font-semibold">
                                 {{ auth()->user()->isAdmin() ? 'Administrator' : 'Pegawai' }}
                             </div>
                         </div>
-                        <div class="text-sm font-semibold truncate">
-                            {{ auth()->user()->full_name }}
+                        <div class="flex items-center gap-2">
+                            <svg class="w-6 h-6 text-white flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                            <div class="min-w-0">
+                                <div class="text-sm font-semibold truncate">
+                                    {{ auth()->user()->full_name }}
+                                </div>
+                                @if(auth()->user()->unit_kerja)
+                                <div class="text-xs text-emerald-100 truncate mt-0.5">
+                                    {{ auth()->user()->unit_kerja }}
+                                </div>
+                                @endif
+                            </div>
                         </div>
-                        @if(auth()->user()->unit_kerja)
-                        <div class="text-xs text-emerald-100 truncate mt-0.5">
-                            {{ auth()->user()->unit_kerja }}
-                        </div>
-                        @endif
                     </div>
                 </div>
 
@@ -475,7 +474,7 @@
             </aside>
 
             {{-- Main Content --}}
-            <main class="flex-1 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 lg:ml-0">
+            <main class="flex-1 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 lg:ml-64">
                 <div class="max-w-7xl mx-auto">
 
                     @if (session('status'))

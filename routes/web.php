@@ -26,6 +26,9 @@ Route::post('/login', [AuthController::class, 'store'])
 Route::post('/logout', [AuthController::class, 'destroy'])
     ->name('logout');
 
+// QR Verify Route — bisa diakses tanpa login (untuk scan dari print surat)
+Route::get('/verify/{code}', [SignatureController::class, 'verify'])->name('signature.verify');
+
 // Aplikasi Pengajuan Transportasi (harus login)
 Route::middleware('auth')->group(function () {
     // Setelah login, langsung masuk halaman pilih jenis transport
@@ -63,6 +66,7 @@ Route::middleware('auth')->group(function () {
     
     // Signature Routes
     Route::get('/signature/{transportRequest}', [SignatureController::class, 'show'])->name('signature.show');
+    Route::get('/signature/{transportRequest}/confirm', [SignatureController::class, 'confirm'])->name('signature.confirm');
     Route::post('/signature/{transportRequest}', [SignatureController::class, 'sign'])->name('signature.sign');
 });
 

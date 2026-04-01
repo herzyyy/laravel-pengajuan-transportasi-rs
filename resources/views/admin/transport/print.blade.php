@@ -624,7 +624,7 @@
             <p class="title">Yang Mengajukan</p>
             <div class="signature-space">
                 @if(isset($transportRequest->signature_pemohon) && $transportRequest->signature_pemohon)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($transportRequest->signature_pemohon) }}" 
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_pemohon)) }}" 
                          alt="QR Signature">
                 @endif
             </div>
@@ -642,7 +642,7 @@
             <p class="subtitle">Menyetujui</p>
             <div class="signature-space">
                 @if(isset($transportRequest->signature_pengelola_1) && $transportRequest->signature_pengelola_1)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($transportRequest->signature_pengelola_1) }}" 
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_pengelola_1)) }}" 
                          alt="QR Signature">
                 @endif
             </div>
@@ -658,7 +658,7 @@
             <p class="title">Pengemudi</p>
             <div class="signature-space">
                 @if(isset($transportRequest->signature_driver) && $transportRequest->signature_driver)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($transportRequest->signature_driver) }}" 
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_driver)) }}" 
                          alt="QR Signature">
                 @endif
             </div>
@@ -678,7 +678,7 @@
             <p class="subtitle">Mengetahui</p>
             <div class="signature-space">
                 @if(isset($transportRequest->signature_pengelola_2) && $transportRequest->signature_pengelola_2)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($transportRequest->signature_pengelola_2) }}" 
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_pengelola_2)) }}" 
                          alt="QR Signature">
                 @endif
             </div>

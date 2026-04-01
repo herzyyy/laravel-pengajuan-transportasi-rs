@@ -56,20 +56,6 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Tahun</label>
-                        <input type="number" name="year" value="{{ old('year', $vehicle->year) }}" min="1900" max="{{ date('Y') + 1 }}"
-                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Kapasitas</label>
-                        <input type="number" name="capacity" value="{{ old('capacity', $vehicle->capacity) }}" min="1"
-                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                    </div>
-                </div>
-
                 <div>
                     <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
                     <div class="flex items-center gap-4">

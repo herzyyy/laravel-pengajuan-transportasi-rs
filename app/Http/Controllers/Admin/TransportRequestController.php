@@ -52,21 +52,21 @@ class TransportRequestController extends Controller
         $selectedStatus = $request->input('status');
         if ($request->has('status') && $request->filled('status')) {
             // Status tertentu dipilih
-            $fifoStatuses = ['diajukan', 'diproses', 'digunakan']; // Status yang menggunakan FIFO (terlama dulu)
+            $fifoStatuses = ['diajukan', 'diproses', 'digunakan']; // Status yang menggunakan FIFO berdasarkan waktu pengajuan
             if (in_array($selectedStatus, $fifoStatuses)) {
-                // Untuk status menunggu, disetujui, dan digunakan: urutkan dari yang terlama (FIFO)
-                $query->orderBy('created_at', 'asc');
+                // Untuk status menunggu, disetujui, dan digunakan: urutkan dari waktu pengajuan terlebih dahulu (FIFO)
+                $query->orderByRaw("CONCAT(tanggal, ' ', jam) ASC");
             } else {
-                // Untuk status lain (selesai, tidak_disetujui, dll): urutkan dari yang terbaru
+                // Untuk status lain (selesai, tidak_disetujui, dll): urutkan dari yang terbaru dibuat
                 $query->orderBy('created_at', 'desc');
             }
             $query->where('status', $selectedStatus);
         } elseif ($request->has('status') && !$request->filled('status')) {
-            // "Semua Status" dipilih: urutkan dari yang terbaru
+            // "Semua Status" dipilih: urutkan dari yang terbaru dibuat
             $query->orderBy('created_at', 'desc');
         } else {
-            // Tidak ada parameter status (first load): default ke 'diajukan' dengan FIFO
-            $query->where('status', 'diajukan')->orderBy('created_at', 'asc');
+            // Tidak ada parameter status (first load): default ke 'diajukan' dengan FIFO berdasarkan waktu pengajuan
+            $query->where('status', 'diajukan')->orderByRaw("CONCAT(tanggal, ' ', jam) ASC");
         }
 
         if ($request->filled('jenis')) {

@@ -9,7 +9,7 @@
             <div class="bg-white rounded-lg p-3 mb-2">
                 <div class="text-center">
                     <div class="inline-block bg-white p-2 rounded-lg shadow-md mb-1">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode(route('signature.sign', $transportRequest)) }}" 
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode(route('signature.confirm', $transportRequest)) }}" 
                              alt="QR Code" 
                              class="w-[160px] h-[160px]">
                     </div>

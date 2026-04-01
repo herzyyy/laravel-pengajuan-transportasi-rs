@@ -65,7 +65,6 @@
                             <th class="py-2 px-3 text-left">Jenis</th>
                             <th class="py-2 px-3 text-left">Plat Nomor</th>
                             <th class="py-2 px-3 text-left">Merk/Model</th>
-                            <th class="py-2 px-3 text-left">Tahun</th>
                             <th class="py-2 px-3 text-left">Status</th>
                             <th class="py-2 px-3 text-right">Aksi</th>
                         </tr>
@@ -94,7 +93,6 @@
                                         <span class="text-slate-500">/ {{ $vehicle->model }}</span>
                                     @endif
                                 </td>
-                                <td class="py-2 px-3 text-slate-700">{{ $vehicle->year ?? '-' }}</td>
                                 <td class="py-2 px-3">
                                     @if($vehicle->is_active)
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
@@ -126,7 +124,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-6 text-center text-slate-500 text-xs">
+                                <td colspan="6" class="py-6 text-center text-slate-500 text-xs">
                                     Tidak ada data kendaraan
                                 </td>
                             </tr>
