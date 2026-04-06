@@ -111,6 +111,22 @@
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold {{ $color }} whitespace-nowrap">
                                             {{ $label }}
                                         </span>
+                                        @if($item->status === 'diajukan' && !$item->signature_pemohon)
+                                            <div class="mt-0.5 text-[9px] text-amber-600 font-semibold flex items-center gap-0.5">
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/></svg>
+                                                Belum TTD
+                                            </div>
+                                        @elseif($item->status === 'diproses' && !$item->signature_pengelola_1)
+                                            <div class="mt-0.5 text-[9px] text-amber-600 font-semibold flex items-center gap-0.5">
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/></svg>
+                                                Belum TTD
+                                            </div>
+                                        @elseif($item->status === 'digunakan' && !$item->signature_driver)
+                                            <div class="mt-0.5 text-[9px] text-amber-600 font-semibold flex items-center gap-0.5">
+                                                <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01"/></svg>
+                                                Belum TTD
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-3 py-2 text-center">
                                         <a href="{{ route('admin.transport.show', $item) }}" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-emerald-700 transition whitespace-nowrap">
@@ -205,9 +221,17 @@
                             </div>
 
                             <!-- Action Button -->
-                            <a href="{{ route('admin.transport.show', $item) }}" class="block w-full text-center rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
-                                Lihat Detail
-                            </a>
+                            <div class="flex flex-col gap-1.5">
+                                @if(($item->status === 'diajukan' && !$item->signature_pemohon) || ($item->status === 'diproses' && !$item->signature_pengelola_1) || ($item->status === 'digunakan' && !$item->signature_driver))
+                                    <div class="text-[10px] text-amber-600 font-semibold text-center flex items-center justify-center gap-1">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/></svg>
+                                        Tanda tangan belum lengkap
+                                    </div>
+                                @endif
+                                <a href="{{ route('admin.transport.show', $item) }}" class="block w-full text-center rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                                    Lihat Detail
+                                </a>
+                            </div>
                         </div>
                     @empty
                         <div class="p-8 text-center">

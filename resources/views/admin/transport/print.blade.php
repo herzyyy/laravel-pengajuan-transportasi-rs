@@ -348,7 +348,7 @@
             <img src="{{ asset('images/logo.png') }}" alt="Logo RS Azra">
         </div>
         <div class="letterhead-info">
-            <h1>RS AZRA BOGOR</h1>
+            <h1>rs azra</h1>
             <p class="subtitle">Rumah Sakit Umum</p>
             <p class="contact">
                 Jl. Pajajaran No. 219, Bogor 16143<br>
@@ -521,7 +521,7 @@
                             <tr>
                                 <td>Alamat Asal</td>
                                 <td>:</td>
-                                <td>{{ $transportRequest->alamat_asal ?? 'RS Azra Bogor' }}</td>
+                                <td>{{ $transportRequest->alamat_asal ?? 'rs azra' }}</td>
                             </tr>
                             <tr>
                                 <td>Alamat Tujuan</td>
@@ -694,7 +694,7 @@
     <!-- Footer -->
     <div class="document-footer">
         <p>Dokumen ini dicetak secara otomatis pada {{ now()->format('d F Y, H:i') }} WIB</p>
-        <p>RS Azra Bogor - Sistem Pengajuan Transportasi</p>
+        <p>rs azra - Sistem Pengajuan Transportasi</p>
     </div>
 </body>
 </html>

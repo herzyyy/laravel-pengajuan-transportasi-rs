@@ -96,6 +96,11 @@ class TransportRequestController extends Controller
         
         // Validasi berdasarkan transisi status
         if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
+            // Tanda tangan pemohon wajib ada sebelum bisa disetujui
+            if (!$transportRequest->signature_pemohon) {
+                return redirect()->back()->withErrors(['status' => 'Pengajuan belum ditandatangani oleh pemohon. Tidak dapat disetujui.']);
+            }
+
             // Diajukan -> Disetujui: Wajib isi unit kendaraan
             $data = $request->validate([
                 'status' => ['required', 'in:diproses,tidak_disetujui'],
@@ -112,6 +117,12 @@ class TransportRequestController extends Controller
             }
             
         } elseif ($currentStatus === 'diproses' && $newStatus === 'digunakan') {
+            // Tanda tangan pengelola_1 wajib ada sebelum bisa diubah ke digunakan
+            if (!$transportRequest->signature_pengelola_1) {
+                return redirect()->route('signature.show', $transportRequest)
+                    ->with('error', 'Tanda tangan pengelola belum ada. Silakan tanda tangan terlebih dahulu.');
+            }
+
             // Disetujui -> Digunakan: Wajib isi supir dan KM keberangkatan
             $data = $request->validate([
                 'status' => ['required', 'in:digunakan'],
@@ -120,6 +131,12 @@ class TransportRequestController extends Controller
             ]);
             
         } elseif ($currentStatus === 'digunakan' && $newStatus === 'selesai') {
+            // Tanda tangan driver wajib ada sebelum bisa diselesaikan
+            if (!$transportRequest->signature_driver) {
+                return redirect()->route('signature.show', $transportRequest)
+                    ->with('error', 'Tanda tangan pengemudi belum ada. Silakan tanda tangan terlebih dahulu.');
+            }
+
             // Digunakan -> Selesai: Wajib isi KM tiba dan jam kedatangan
             $data = $request->validate([
                 'status' => ['required', 'in:selesai'],
@@ -149,13 +166,13 @@ class TransportRequestController extends Controller
         $needsSignature = false;
         $signatureMessage = '';
         
-        if ($newStatus === 'diproses' && (!isset($transportRequest->signature_pengelola_1) || !$transportRequest->signature_pengelola_1)) {
+        if ($newStatus === 'diproses' && !$transportRequest->fresh()->signature_pengelola_1) {
             $needsSignature = true;
             $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengelola.';
-        } elseif ($newStatus === 'digunakan' && (!isset($transportRequest->signature_driver) || !$transportRequest->signature_driver)) {
+        } elseif ($newStatus === 'digunakan' && !$transportRequest->fresh()->signature_driver) {
             $needsSignature = true;
             $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengemudi.';
-        } elseif ($newStatus === 'selesai' && (!isset($transportRequest->signature_pengelola_2) || !$transportRequest->signature_pengelola_2)) {
+        } elseif ($newStatus === 'selesai' && !$transportRequest->fresh()->signature_pengelola_2) {
             $needsSignature = true;
             $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengelola.';
         }

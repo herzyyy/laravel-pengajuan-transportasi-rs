@@ -38,10 +38,10 @@
                 @if($needsSignature)
                     <a href="{{ route('signature.show', $transportRequest) }}"
                        class="inline-flex items-center rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="white" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
-                        Tanda Tangan
+                        <span class="text-white font-semibold">Tanda Tangan</span>
                     </a>
                 @endif
                 
@@ -260,10 +260,44 @@
                     </h2>
                 </div>
 
+                @php
+                    $blockApprove = $transportRequest->status === 'diajukan' && !$transportRequest->signature_pemohon;
+                    $blockDiGunakan = $transportRequest->status === 'diproses' && !$transportRequest->signature_pengelola_1;
+                    $blockSelesai = $transportRequest->status === 'digunakan' && !$transportRequest->signature_driver;
+                    $isBlocked = $blockApprove || $blockDiGunakan || $blockSelesai;
+                @endphp
+
+                @if($blockApprove)
+                    <div class="mx-3 mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <span>Pengajuan belum ditandatangani oleh <strong>pemohon</strong>. Tidak dapat disetujui sebelum pemohon menandatangani.</span>
+                    </div>
+                @endif
+
+                @if($blockDiGunakan)
+                    <div class="mx-3 mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <span>Belum ada tanda tangan <strong>pengelola</strong>. Silakan <a href="{{ route('signature.show', $transportRequest) }}" class="underline font-semibold">tanda tangan terlebih dahulu</a> sebelum mengubah status ke Digunakan.</span>
+                    </div>
+                @endif
+
+                @if($blockSelesai)
+                    <div class="mx-3 mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
+                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
+                        </svg>
+                        <span>Belum ada tanda tangan <strong>pengemudi</strong>. Silakan <a href="{{ route('signature.show', $transportRequest) }}" class="underline font-semibold">tanda tangan terlebih dahulu</a> sebelum menyelesaikan pengajuan.</span>
+                    </div>
+                @endif
+
                 <form method="POST"
                       action="{{ route('admin.transport.update', $transportRequest) }}"
                       class="px-3 py-2.5 space-y-2.5 text-xs"
-                      x-data="{ currentStatus: '{{ $transportRequest->status }}' }">
+                      x-data="{ currentStatus: '{{ $transportRequest->status }}', savedStatus: '{{ $transportRequest->status }}' }">
                     @csrf
                     @method('PUT')
 
@@ -421,9 +455,12 @@
                         @endif
                     </div>
 
-                    <div class="pt-2 border-t border-slate-200 flex items-center justify-end gap-2">
+                    <div class="pt-2 border-t border-slate-200 flex items-center justify-end gap-2"
+                         x-show="currentStatus !== savedStatus">
                         <button type="submit"
-                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                @if($isBlocked) disabled @endif
+                                class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500
+                                    {{ $isBlocked ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700' }}">
                             Simpan
                         </button>
                     </div>

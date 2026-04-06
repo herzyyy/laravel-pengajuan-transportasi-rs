@@ -56,7 +56,7 @@
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Mobil <span class="text-red-500">*</span></label>
                         <select name="unit_mobil" required
-                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300">
                             <option value="" disabled {{ count($vehicles) > 1 ? 'selected' : '' }}>Pilih mobil</option>
                             @forelse($vehicles as $vehicle)
                                 <option value="{{ $vehicle->name }}" 
@@ -80,24 +80,24 @@
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Dari <span class="text-red-500">*</span></label>
                             <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required
-                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Dari <span class="text-red-500">*</span></label>
                             <input type="text" name="jam" value="{{ old('jam') }}" placeholder="00:00" required
                                 pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
-                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Sampai <span class="text-red-500">*</span></label>
                             <input type="date" name="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}" required
-                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Sampai <span class="text-red-500">*</span></label>
                             <input type="text" name="jam_sampai" value="{{ old('jam_sampai') }}" placeholder="00:00" required
                                 pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
-                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-emerald-500">
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
                     </div>
                     <div class="mt-2 flex items-center gap-2">
@@ -144,7 +144,7 @@
                     <div>
                         <label class="block text-[10px] font-semibold text-slate-700 mb-1">Alamat Tujuan <span class="text-red-500">*</span></label>
                         <textarea name="alamat_tujuan" rows="4" required
-                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
                             placeholder="Alamat lengkap lokasi tujuan">{{ old('alamat_tujuan') }}</textarea>
                     </div>
                 </div>
@@ -155,7 +155,7 @@
                         <label class="block text-[10px] font-semibold text-slate-700 mb-1">Keperluan <span class="text-red-500">*</span></label>
                         <input name="keperluan" list="keperluan_list" required
                             value="{{ old('keperluan') }}"
-                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
                             placeholder="Contoh: Ambil obat, Antar dokumen">
                     </div>
 
@@ -163,7 +163,7 @@
                         <label class="block text-[10px] font-semibold text-slate-700 mb-1">Keterangan Tambahan</label>
                         <input name="keterangan"
                             value="{{ old('keterangan') }}"
-                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500"
+                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
                             placeholder="Keterangan tambahan (opsional)">
                     </div>
                 </div>
@@ -177,7 +177,7 @@
                     ← Kembali
                 </a>
                 <button id="submitBtn" type="submit"
-                    class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:shadow-lg text-white px-4 py-2 text-xs font-semibold transition">
+                    class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:shadow-lg text-white px-4 py-2 text-xs font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>
@@ -195,11 +195,33 @@
 
             if (!btn) return;
 
+            // Disable submit by default until availability is checked
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.title = 'Lakukan cek ketersediaan terlebih dahulu';
+            }
+
+            function resetCheck() {
+                if (submitBtn) {
+                    submitBtn.disabled = true;
+                    submitBtn.title = 'Lakukan cek ketersediaan terlebih dahulu';
+                }
+                statusEl.textContent = 'Cek ketersediaan diperlukan';
+                statusEl.className = 'text-[10px] font-semibold text-amber-600';
+            }
+
+            // Reset when any relevant field changes
+            const form = btn.closest('form');
+            ['unit_mobil', 'tanggal', 'jam', 'tanggal_sampai', 'jam_sampai'].forEach(name => {
+                const el = form.querySelector(`[name="${name}"]`);
+                if (el) el.addEventListener('change', resetCheck);
+                if (el && el.tagName === 'INPUT') el.addEventListener('input', resetCheck);
+            });
+
             async function check() {
                 statusEl.textContent = 'Memeriksa…';
                 statusEl.className = 'text-[10px] font-semibold text-slate-600';
 
-                const form = btn.closest('form');
                 const unit = form.querySelector('select[name="unit_mobil"]').value;
                 const tanggal = form.querySelector('input[name="tanggal"]').value;
                 const jam = form.querySelector('input[name="jam"]').value;
@@ -227,7 +249,10 @@
                     if (data.available) {
                         statusEl.textContent = '✓ Tersedia';
                         statusEl.className = 'text-[10px] font-semibold text-emerald-600';
-                        if (submitBtn) submitBtn.disabled = false;
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.title = '';
+                        }
                     } else {
                         let msg = '✗ Tidak tersedia';
                         if (data.conflicts && data.conflicts.length > 0) {
@@ -236,7 +261,10 @@
                         }
                         statusEl.textContent = msg;
                         statusEl.className = 'text-[10px] font-semibold text-red-600';
-                        if (submitBtn) submitBtn.disabled = true;
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.title = 'Unit tidak tersedia pada waktu yang dipilih';
+                        }
                     }
                 } catch (err) {
                     statusEl.textContent = '⚠ Terjadi kesalahan';
@@ -245,6 +273,10 @@
             }
 
             btn.addEventListener('click', check);
+
+            // Show initial hint
+            statusEl.textContent = 'Cek ketersediaan diperlukan';
+            statusEl.className = 'text-[10px] font-semibold text-amber-600';
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -275,3 +307,4 @@
         });
     </script>
 </x-app-layout>
+

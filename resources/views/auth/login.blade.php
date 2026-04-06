@@ -10,7 +10,7 @@
                             <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-10 w-auto">
                         </div>
                         <h1 class="text-lg font-bold text-gray-900 text-center">Sistem Pengajuan Transportasi</h1>
-                        <p class="text-gray-600 text-xs">RS Azra Bogor</p>
+                        <p class="text-gray-600 text-xs">rs azra</p>
                     </div>
 
                     <!-- Login Card -->

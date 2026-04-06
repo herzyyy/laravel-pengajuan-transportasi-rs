@@ -207,14 +207,21 @@
 
                                 <!-- Aksi -->
                                 <td class="px-2 py-2 text-center">
-                                    <a href="{{ route('pengajuan.success', $item) }}"
-                                       class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 
-                                              hover:text-emerald-700 hover:underline transition">
-                                        Detail
-                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                                        </svg>
-                                    </a>
+                                    @if($item->status === 'diajukan' && !$item->signature_pemohon && $item->user_id === auth()->id())
+                                        <a href="{{ route('signature.show', $item) }}"
+                                           class="inline-flex items-center gap-1 text-[11px] font-semibold text-blue-600 hover:text-blue-700 hover:underline transition">
+                                            ✍️ TTD
+                                        </a>
+                                    @else
+                                        <a href="{{ route('pengajuan.success', $item) }}"
+                                           class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 
+                                                  hover:text-emerald-700 hover:underline transition">
+                                            Detail
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                            </svg>
+                                        </a>
+                                    @endif
                                 </td>
                             </tr>
 
@@ -323,9 +330,15 @@
                         </div>
 
                         <!-- Action Button -->
-                        <a href="{{ route('pengajuan.success', $item) }}" class="block w-full max-w-full text-center rounded-lg bg-white border border-emerald-600 px-4 py-2 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 transition">
-                            Lihat Detail
-                        </a>
+                        @if($item->status === 'diajukan' && !$item->signature_pemohon && $item->user_id === auth()->id())
+                            <a href="{{ route('signature.show', $item) }}" class="block w-full max-w-full text-center rounded-lg bg-blue-600 border border-blue-600 px-4 py-2 text-xs font-semibold text-white hover:bg-blue-700 transition">
+                                ✍️ Tanda Tangan Sekarang
+                            </a>
+                        @else
+                            <a href="{{ route('pengajuan.success', $item) }}" class="block w-full max-w-full text-center rounded-lg bg-white border border-emerald-600 px-4 py-2 text-xs font-semibold text-emerald-600 hover:bg-emerald-50 transition">
+                                Lihat Detail
+                            </a>
+                        @endif
                     </div>
 
                 @empty

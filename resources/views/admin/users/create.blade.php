@@ -51,7 +51,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Role *</label>
-                        <select name="role" required
+                        <select name="role" id="role" required
                                 class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="user" @selected(old('role') === 'user')>User</option>
                             <option value="admin" @selected(old('role') === 'admin')>Admin</option>
@@ -61,9 +61,9 @@
                         @enderror
                     </div>
 
-                    <div>
+                    <div id="priority-field" class="{{ old('role', 'user') === 'admin' ? 'hidden' : '' }}">
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Level Prioritas *</label>
-                        <select name="priority_level" required
+                        <select name="priority_level" id="priority_level"
                                 class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             <option value="0" @selected(old('priority_level', 0) == 0)>Normal</option>
                             <option value="1" @selected(old('priority_level') == 1)>Prioritas Tinggi</option>
@@ -73,6 +73,20 @@
                         @enderror
                     </div>
                 </div>
+
+                <script>
+                    document.getElementById('role').addEventListener('change', function () {
+                        const priorityField = document.getElementById('priority-field');
+                        const prioritySelect = document.getElementById('priority_level');
+                        if (this.value === 'admin') {
+                            priorityField.classList.add('hidden');
+                            prioritySelect.removeAttribute('required');
+                        } else {
+                            priorityField.classList.remove('hidden');
+                            prioritySelect.setAttribute('required', 'required');
+                        }
+                    });
+                </script>
 
                 <div class="flex items-center gap-2 pt-3 border-t border-slate-200">
                     <button type="submit"

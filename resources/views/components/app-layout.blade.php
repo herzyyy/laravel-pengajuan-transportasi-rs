@@ -14,10 +14,10 @@
     <div class="min-h-screen flex flex-col">
 
         {{-- Header --}}
-        <header class="sticky top-0 z-40 backdrop-blur-md bg-emerald-600 shadow-md">
+        <header class="sticky top-0 z-40 bg-emerald-600 shadow-md">
             <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
                 {{-- Mobile Menu Button --}}
-                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition">
+                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 border border-white/30 hover:bg-white/30 transition">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
@@ -28,7 +28,7 @@
                     </div>
                     <div>
                         <div class="text-xs text-emerald-100 font-medium">
-                            RS Azra Bogor
+                            rs azra
                         </div>
                         <div class="font-semibold text-white text-sm tracking-tight">
                             Sistem Pengajuan Transportasi
@@ -58,7 +58,7 @@
                         @endphp
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" 
-                                    class="relative flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition group">
+                                    class="relative flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 border border-white/30 hover:bg-white/30 transition group">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                                 </svg>
@@ -205,7 +205,7 @@
                         @endphp
                         <div class="relative" x-data="{ open: false }">
                             <button @click="open = !open" 
-                                    class="relative flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 hover:bg-white/30 transition group">
+                                    class="relative flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 border border-white/30 hover:bg-white/30 transition group">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                                 </svg>
@@ -323,13 +323,13 @@
                  x-transition:leave="transition-opacity ease-linear duration-300"
                  x-transition:leave-start="opacity-100"
                  x-transition:leave-end="opacity-0"
-                 class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-40 lg:hidden"
+                 class="fixed inset-0 bg-slate-900/50 z-30 lg:hidden"
                  style="display: none;">
             </div>
 
             {{-- Sidebar --}}
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-                   class="fixed left-0 top-[3.5rem] bottom-0 z-30 w-64 bg-white border-r border-emerald-100 flex flex-col shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0">
+                   class="fixed left-0 top-0 bottom-0 z-40 w-64 bg-white border-r border-emerald-100 flex flex-col shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:shadow-none">
                 <div class="px-3 py-4 border-b border-emerald-100">
                     <div class="rounded-lg bg-emerald-600 px-3 py-2.5 shadow-md text-white">
                         <div class="flex items-center gap-2 mb-1.5">
@@ -359,7 +359,7 @@
                     @if (auth()->user()->isAdmin())
                         {{-- Sidebar untuk Admin --}}
                         <a href="{{ route('admin.dashboard') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -373,7 +373,7 @@
                         </a>
 
                         <a href="{{ route('admin.transport.index') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -395,7 +395,7 @@
                         </div>
 
                         <a href="{{ route('admin.users.index') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -410,7 +410,7 @@
                         </a>
 
                         <a href="{{ route('admin.vehicles.index') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -425,7 +425,7 @@
                         </a>
 
                         <a href="{{ route('admin.drivers.index') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -443,7 +443,7 @@
                     @else
                         {{-- Sidebar untuk User biasa --}}
                         <a href="{{ route('dashboard') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -457,7 +457,7 @@
                         </a>
 
                         <a href="{{ route('pengajuan.index') }}"
-                           class="group flex items-center gap-2.5 px-3 py-2 text-sm 
+                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
                                   rounded-lg text-slate-700 
                                   hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
                                   transition-all duration-150">
@@ -474,7 +474,7 @@
             </aside>
 
             {{-- Main Content --}}
-            <main class="flex-1 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 lg:ml-64">
+            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50">
                 <div class="max-w-7xl mx-auto">
 
                     @if (session('status'))
