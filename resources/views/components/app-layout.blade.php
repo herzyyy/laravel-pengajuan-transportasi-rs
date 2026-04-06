@@ -359,11 +359,10 @@
                     @if (auth()->user()->isAdmin())
                         {{-- Sidebar untuk Admin --}}
                         <a href="{{ route('admin.dashboard') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.dashboard') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('admin.dashboard') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"
                                       class="fill-none stroke-current"
                                       stroke-width="2"
@@ -373,11 +372,10 @@
                         </a>
 
                         <a href="{{ route('admin.transport.index') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.transport.*') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('admin.transport.*') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <path d="M6 7h12M6 12h12M6 17h8"
                                       class="fill-none stroke-current"
                                       stroke-width="2"
@@ -395,11 +393,10 @@
                         </div>
 
                         <a href="{{ route('admin.users.index') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.users.*') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('admin.users.*') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"
                                       class="fill-none stroke-current"
                                       stroke-width="2"
@@ -410,11 +407,10 @@
                         </a>
 
                         <a href="{{ route('admin.vehicles.index') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.vehicles.*') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('admin.vehicles.*') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <path d="M5 17h14v-5H5v5Zm0 0v2a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-2M5 17l-2-5h18l-2 5M7 12V7a5 5 0 0 1 10 0v5"
                                       class="fill-none stroke-current"
                                       stroke-width="2"
@@ -425,11 +421,10 @@
                         </a>
 
                         <a href="{{ route('admin.drivers.index') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.drivers.*') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('admin.drivers.*') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <circle cx="12" cy="8" r="4"
                                         class="fill-none stroke-current"
                                         stroke-width="2" />
@@ -443,11 +438,10 @@
                     @else
                         {{-- Sidebar untuk User biasa --}}
                         <a href="{{ route('dashboard') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('dashboard') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('dashboard') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"
                                       class="fill-none stroke-current"
                                       stroke-width="2"
@@ -457,11 +451,10 @@
                         </a>
 
                         <a href="{{ route('pengajuan.index') }}"
-                           @click="sidebarOpen = false" class="group flex items-center gap-2.5 px-3 py-2 text-sm 
-                                  rounded-lg text-slate-700 
-                                  hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm
-                                  transition-all duration-150">
-                            <svg viewBox="0 0 24 24" class="w-4 h-4 text-emerald-500 group-hover:text-emerald-600 transition">
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('pengajuan.*') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('pengajuan.*') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
                                 <path d="M6 7h12M6 12h12M6 17h8"
                                       class="fill-none stroke-current"
                                       stroke-width="2"
