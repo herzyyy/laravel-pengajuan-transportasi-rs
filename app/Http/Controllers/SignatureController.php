@@ -47,7 +47,9 @@ class SignatureController extends Controller
             case 'driver':
                 $transportRequest->update(['signature_driver' => $signatureCode, 'signature_driver_at' => now()]);
                 $message = 'Tanda tangan pengemudi berhasil disimpan.';
-                $redirect = route('admin.transport.show', $transportRequest);
+                $redirect = auth()->user()->isDriver()
+                    ? route('driver.dashboard')
+                    : route('admin.transport.show', $transportRequest);
                 break;
             case 'pengelola_2':
                 $transportRequest->update(['signature_pengelola_2' => $signatureCode, 'signature_pengelola_2_at' => now(), 'signature_pengelola_2_name' => auth()->user()->full_name]);
@@ -113,9 +115,16 @@ class SignatureController extends Controller
     private function determineSignatureType(TransportRequest $transportRequest)
     {
         $user = auth()->user();
+
+        // Cek apakah user adalah supir yang ditugaskan
+        $isAssignedDriver = false;
+        if ($user->isDriver() && $user->driver) {
+            $isAssignedDriver = $transportRequest->driver_id === $user->driver->id;
+        }
+
         if ($transportRequest->status === 'diajukan' && !$transportRequest->signature_pemohon && $transportRequest->user_id === $user->id) return 'pemohon';
         if ($transportRequest->status === 'diproses' && !$transportRequest->signature_pengelola_1 && $user->isAdmin()) return 'pengelola_1';
-        if ($transportRequest->status === 'digunakan' && !$transportRequest->signature_driver && ($user->isAdmin() || $transportRequest->driver_id === $user->id)) return 'driver';
+        if ($transportRequest->status === 'digunakan' && !$transportRequest->signature_driver && ($user->isAdmin() || $isAssignedDriver)) return 'driver';
         if ($transportRequest->status === 'selesai' && !$transportRequest->signature_pengelola_2 && $user->isAdmin()) return 'pengelola_2';
         return null;
     }

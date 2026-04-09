@@ -1,17 +1,37 @@
 <x-app-layout>
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 pt-4 pb-6">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4 pt-4 pb-6"
+         x-data="{
+            showCreate: {{ $errors->any() && !session('edit_id') ? 'true' : 'false' }},
+            showEdit: {{ session('edit_id') ? 'true' : 'false' }},
+            editId: '{{ session('edit_id', '') }}',
+            editName: '{{ old('name', session('edit_name', '')) }}',
+            editPhone: '{{ old('phone', session('edit_phone', '')) }}',
+            editLicenseNumber: '{{ old('license_number', session('edit_license_number', '')) }}',
+            editUserId: '{{ old('user_id', session('edit_user_id', '')) }}',
+            editIsActive: '{{ old('is_active', session('edit_is_active', '1')) }}',
+            openEdit(id, name, phone, licenseNumber, userId, isActive) {
+                this.editId = id;
+                this.editName = name;
+                this.editPhone = phone;
+                this.editLicenseNumber = licenseNumber;
+                this.editUserId = userId;
+                this.editIsActive = isActive;
+                this.showEdit = true;
+            }
+         }">
+
         <div class="flex items-center justify-between mb-3">
             <div>
                 <h1 class="text-lg font-bold text-slate-800">Master Supir</h1>
                 <p class="text-slate-500 text-xs mt-0.5">Kelola data supir/pengemudi</p>
             </div>
-            <a href="{{ route('admin.drivers.create') }}"
+            <button @click="showCreate = true"
                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 text-white px-3 py-2 text-xs font-medium hover:bg-emerald-700 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="white" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 <span class="text-white font-semibold">Tambah</span>
-            </a>
+            </button>
         </div>
 
         @if(session('success'))
@@ -24,7 +44,7 @@
         <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-2.5 mb-3">
             <form action="{{ route('admin.drivers.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
                 <div class="flex-1">
-                    <input type="text" name="search" value="{{ request('search') }}" 
+                    <input type="text" name="search" value="{{ request('search') }}"
                            placeholder="Cari nama, telepon, atau nomor SIM..."
                            class="w-full rounded-lg border-slate-300 px-2.5 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
@@ -71,22 +91,19 @@
                                 <td class="py-2 px-3 text-slate-700">{{ $driver->license_number ?? '-' }}</td>
                                 <td class="py-2 px-3">
                                     @if($driver->is_active)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                            Aktif
-                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">
-                                            Nonaktif
-                                        </span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">Nonaktif</span>
                                     @endif
                                 </td>
                                 <td class="py-2 px-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <a href="{{ route('admin.drivers.edit', $driver) }}"
-                                           class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
+                                        <button
+                                            @click="openEdit('{{ $driver->id }}', '{{ addslashes($driver->name) }}', '{{ addslashes($driver->phone ?? '') }}', '{{ addslashes($driver->license_number ?? '') }}', '{{ $driver->user_id ?? '' }}', '{{ $driver->is_active ? '1' : '0' }}')"
+                                            class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                                             Edit
-                                        </a>
-                                        <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" 
+                                        </button>
+                                        <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST"
                                               onsubmit="return confirm('Yakin ingin menghapus supir ini?')">
                                             @csrf
                                             @method('DELETE')
@@ -100,16 +117,12 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-6 text-center text-slate-500 text-xs">
-                                    Tidak ada data supir
-                                </td>
+                                <td colspan="5" class="py-6 text-center text-slate-500 text-xs">Tidak ada data supir</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-
-            <!-- Pagination -->
             <div class="px-3 py-2 bg-slate-50 border-t border-slate-200">
                 {{ $drivers->links() }}
             </div>
@@ -126,20 +139,17 @@
                             <p class="text-xs text-slate-500 mt-0.5">SIM: {{ $driver->license_number ?? '-' }}</p>
                         </div>
                         @if($driver->is_active)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                Aktif
-                            </span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
                         @else
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">
-                                Nonaktif
-                            </span>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">Nonaktif</span>
                         @endif
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-                        <a href="{{ route('admin.drivers.edit', $driver) }}"
-                           class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
+                        <button
+                            @click="openEdit('{{ $driver->id }}', '{{ addslashes($driver->name) }}', '{{ addslashes($driver->phone ?? '') }}', '{{ addslashes($driver->license_number ?? '') }}', '{{ $driver->user_id ?? '' }}', '{{ $driver->is_active ? '1' : '0' }}')"
+                            class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                             Edit
-                        </a>
+                        </button>
                         <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" class="flex-1"
                               onsubmit="return confirm('Yakin ingin menghapus supir ini?')">
                             @csrf
@@ -156,13 +166,161 @@
                     Tidak ada data supir
                 </div>
             @endforelse
-
-            <!-- Pagination -->
             @if($drivers->hasPages())
-                <div class="pt-2">
-                    {{ $drivers->links() }}
-                </div>
+                <div class="pt-2">{{ $drivers->links() }}</div>
             @endif
         </div>
+
+        <!-- CREATE MODAL -->
+        <div x-show="showCreate" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="showCreate = false"></div>
+            <div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+                    <h2 class="text-sm font-bold text-slate-800">Tambah Supir Baru</h2>
+                    <button @click="showCreate = false" class="text-slate-400 hover:text-slate-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <form action="{{ route('admin.drivers.store') }}" method="POST" class="p-4 space-y-3">
+                    @csrf
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                        <input type="text" name="name" value="{{ old('name') }}" required
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-400 @enderror">
+                        @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Telepon</label>
+                            <input type="text" name="phone" value="{{ old('phone') }}" placeholder="081234567890"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            @error('phone')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor SIM</label>
+                            <input type="text" name="license_number" value="{{ old('license_number') }}" placeholder="A-1234-5678"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            @error('license_number')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Akun Login Supir</label>
+                        <select name="user_id"
+                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="">-- Tidak dihubungkan --</option>
+                            @foreach($driverUsers as $u)
+                                <option value="{{ $u->id }}" {{ old('user_id') == $u->id ? 'selected' : '' }}>{{ $u->full_name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-[10px] text-slate-500">Hubungkan ke akun dengan role "driver" agar supir bisa login</p>
+                        @error('user_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="is_active" value="1" {{ old('is_active', '1') === '1' ? 'checked' : '' }}
+                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
+                                <span class="text-sm text-slate-700">Aktif</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="is_active" value="0" {{ old('is_active') === '0' ? 'checked' : '' }}
+                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
+                                <span class="text-sm text-slate-700">Nonaktif</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-3 border-t border-slate-200">
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition">
+                            Simpan
+                        </button>
+                        <button type="button" @click="showCreate = false"
+                                class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- EDIT MODAL -->
+        <div x-show="showEdit" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="absolute inset-0 bg-black/50" @click="showEdit = false"></div>
+            <div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
+                    <h2 class="text-sm font-bold text-slate-800">Edit Supir</h2>
+                    <button @click="showEdit = false" class="text-slate-400 hover:text-slate-600">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <form :action="'{{ url('admin/drivers') }}/' + editId" method="POST" class="p-4 space-y-3">
+                    @csrf
+                    @method('PUT')
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                        <input type="text" name="name" :value="editName" required
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-400 @enderror">
+                        @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Telepon</label>
+                            <input type="text" name="phone" :value="editPhone"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            @error('phone')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor SIM</label>
+                            <input type="text" name="license_number" :value="editLicenseNumber"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            @error('license_number')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Akun Login Supir</label>
+                        <select name="user_id"
+                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                            <option value="">-- Tidak dihubungkan --</option>
+                            @foreach($driverUsers as $u)
+                                <option value="{{ $u->id }}" :selected="editUserId == '{{ $u->id }}'">{{ $u->full_name }}</option>
+                            @endforeach
+                        </select>
+                        <p class="mt-1 text-[10px] text-slate-500">Hubungkan ke akun dengan role "driver" agar supir bisa login</p>
+                        @error('user_id')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="is_active" value="1" :checked="editIsActive === '1'"
+                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
+                                <span class="text-sm text-slate-700">Aktif</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="is_active" value="0" :checked="editIsActive === '0'"
+                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
+                                <span class="text-sm text-slate-700">Nonaktif</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 pt-3 border-t border-slate-200">
+                        <button type="submit"
+                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition">
+                            Update
+                        </button>
+                        <button type="button" @click="showEdit = false"
+                                class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
+                            Batal
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
     </div>
 </x-app-layout>

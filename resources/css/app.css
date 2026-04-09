@@ -18,3 +18,5 @@
     --color-azra-teal: #007774;
     --color-azra-teal-light: #1a918d;
 }
+
+[x-cloak] { display: none !important; }

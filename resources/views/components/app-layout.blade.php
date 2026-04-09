@@ -435,6 +435,18 @@
                             </svg>
                             <span class="font-medium">Supir</span>
                         </a>
+                    @elseif(auth()->user()->isDriver())
+                        {{-- Sidebar untuk Supir --}}
+                        <a href="{{ route('driver.dashboard') }}"
+                           @click="sidebarOpen = false"
+                           class="group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('driver.*') ? 'bg-emerald-50 text-emerald-700 shadow-sm font-semibold' : 'text-slate-700 hover:bg-emerald-50 hover:text-emerald-700 hover:shadow-sm' }}">
+                            <svg viewBox="0 0 24 24" class="w-4 h-4 {{ request()->routeIs('driver.*') ? 'text-emerald-600' : 'text-emerald-500 group-hover:text-emerald-600' }} transition">
+                                <circle cx="12" cy="8" r="4" class="fill-none stroke-current" stroke-width="2"/>
+                                <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2" class="fill-none stroke-current" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span class="font-medium">Tugas Saya</span>
+                        </a>
                     @else
                         {{-- Sidebar untuk User biasa --}}
                         <a href="{{ route('dashboard') }}"

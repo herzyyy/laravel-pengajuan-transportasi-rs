@@ -211,14 +211,18 @@
             grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             page-break-inside: avoid;
+            align-items: stretch;
         }
 
         .signature-box {
             text-align: center;
-            padding: 5px;
+            padding: 6px 5px;
             border: 1px solid #e5e7eb;
             border-radius: 4px;
             background: #fafafa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
         .signature-box .title {
@@ -228,25 +232,35 @@
             margin: 0 0 1px 0;
         }
 
-        .signature-box .subtitle {
-            font-size: 7.5pt;
-            color: #6b7280;
-            margin: 0 0 5px 0;
+        /* Area atas: judul + QR — flex-grow agar mendorong nama ke bawah */
+        .signature-top {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
         }
 
         .signature-space {
-            height: 40px;
-            margin: 5px 0;
+            height: 80px;
+            width: 100%;
+            margin: 4px 0;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         
         .signature-space img {
-            max-width: 50px;
-            max-height: 50px;
-            width: auto;
-            height: auto;
+            width: 75px;
+            height: 75px;
+            object-fit: contain;
+        }
+
+        /* Area bawah: nama + subtitle — selalu di bawah */
+        .signature-bottom {
+            width: 100%;
+            text-align: center;
+            margin-top: auto;
+            padding-top: 4px;
         }
 
         .signature-box .name {
@@ -257,6 +271,13 @@
             border-bottom: 1px solid #1f2937;
             display: inline-block;
             padding-bottom: 1px;
+            min-width: 80%;
+        }
+
+        .signature-box .subtitle {
+            font-size: 7.5pt;
+            color: #6b7280;
+            margin: 2px 0 0 0;
         }
 
         .signature-box .detail {
@@ -587,19 +608,19 @@
                                 <tr>
                                     <td>KM Awal</td>
                                     <td>:</td>
-                                    <td class="value-highlight">{{ $transportRequest->km_awal ?? '-' }} km</td>
+                                    <td class="value-highlight">{{ $transportRequest->km_awal ? number_format($transportRequest->km_awal, 0, ',', '.') : '-' }} km</td>
                                 </tr>
                                 <tr>
                                     <td>KM Akhir</td>
                                     <td>:</td>
-                                    <td class="value-highlight">{{ $transportRequest->km_akhir ?? '-' }} km</td>
+                                    <td class="value-highlight">{{ $transportRequest->km_akhir ? number_format($transportRequest->km_akhir, 0, ',', '.') : '-' }} km</td>
                                 </tr>
                                 @if($transportRequest->km_awal && $transportRequest->km_akhir)
                                 <tr>
                                     <td>Total Jarak Tempuh</td>
                                     <td>:</td>
                                     <td style="background: #d1fae5; padding: 4px 8px; border-radius: 3px; font-weight: bold; color: #065f46;">
-                                        {{ $transportRequest->km_akhir - $transportRequest->km_awal }} km
+                                        {{ number_format($transportRequest->km_akhir - $transportRequest->km_awal, 0, ',', '.') }} km
                                     </td>
                                 </tr>
                                 @endif
@@ -620,74 +641,108 @@
 
     <!-- Signature Section -->
     <div class="signature-section">
+        @php
+            // NIP pemohon
+            $nipPemohon = $transportRequest->user->nip ?? '-';
+
+            // NIP pengelola — cari user berdasarkan nama yang tersimpan
+            $pengelola1Name = $transportRequest->signature_pengelola_1_name ?? '';
+            $pengelola1User = $pengelola1Name
+                ? \App\Models\User::whereRaw("TRIM(CONCAT(first_name, ' ', last_name)) = ?", [$pengelola1Name])->first()
+                : null;
+            $nipPengelola1 = $pengelola1User?->nip ?? '-';
+
+            // NIP supir — dari akun user yang terhubung ke driver
+            $nipDriver = $transportRequest->driver?->user?->nip ?? '-';
+
+            // NIP pengelola 2 (sama dengan pengelola 1 jika nama sama)
+            $pengelola2Name = $transportRequest->signature_pengelola_2_name ?: $pengelola1Name;
+            $pengelola2User = $pengelola2Name === $pengelola1Name
+                ? $pengelola1User
+                : (\App\Models\User::whereRaw("TRIM(CONCAT(first_name, ' ', last_name)) = ?", [$pengelola2Name])->first());
+            $nipPengelola2 = $pengelola2User?->nip ?? '-';
+        @endphp
+
         <div class="signature-box">
-            <p class="title">Yang Mengajukan</p>
-            <div class="signature-space">
-                @if(isset($transportRequest->signature_pemohon) && $transportRequest->signature_pemohon)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_pemohon)) }}" 
-                         alt="QR Signature">
+            <div class="signature-top">
+                <p class="title">Yang Mengajukan</p>
+                <div class="signature-space">
+                    @if($nipPemohon && $nipPemohon !== '-')
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($nipPemohon) }}" alt="QR NIP">
+                    @endif
+                </div>
+            </div>
+            <div class="signature-bottom">
+                <p class="name">{{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}</p>
+                <p class="detail">{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</p>
+                @if(isset($transportRequest->signature_pemohon_at) && $transportRequest->signature_pemohon_at)
+                    <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
+                        {{ is_string($transportRequest->signature_pemohon_at) ? $transportRequest->signature_pemohon_at : $transportRequest->signature_pemohon_at->format('d/m/Y H:i') }}
+                    </p>
                 @endif
             </div>
-            <p class="name">{{ $transportRequest->user->full_name ?? $transportRequest->pemohon_nama }}</p>
-            <p class="detail">{{ $transportRequest->user->unit_kerja ?? $transportRequest->pemohon_unit }}</p>
-            @if(isset($transportRequest->signature_pemohon_at) && $transportRequest->signature_pemohon_at)
-                <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
-                    {{ is_string($transportRequest->signature_pemohon_at) ? $transportRequest->signature_pemohon_at : $transportRequest->signature_pemohon_at->format('d/m/Y H:i') }}
-                </p>
-            @endif
         </div>
         
         <div class="signature-box">
-            <p class="title">Pengelola Transportasi</p>
-            <p class="subtitle">Menyetujui</p>
-            <div class="signature-space">
-                @if(isset($transportRequest->signature_pengelola_1) && $transportRequest->signature_pengelola_1)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_pengelola_1)) }}" 
-                         alt="QR Signature">
+            <div class="signature-top">
+                <p class="title">Pengelola Transportasi</p>
+                <div class="signature-space">
+                    @if($nipPengelola1 && $nipPengelola1 !== '-')
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($nipPengelola1) }}" alt="QR NIP">
+                    @endif
+                </div>
+            </div>
+            <div class="signature-bottom">
+                <p class="name">{{ $pengelola1Name }}</p>
+                <p class="subtitle">Menyetujui</p>
+                @if(isset($transportRequest->signature_pengelola_1_at) && $transportRequest->signature_pengelola_1_at)
+                    <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
+                        {{ is_string($transportRequest->signature_pengelola_1_at) ? $transportRequest->signature_pengelola_1_at : $transportRequest->signature_pengelola_1_at->format('d/m/Y H:i') }}
+                    </p>
                 @endif
             </div>
-            <p class="name">{{ $transportRequest->signature_pengelola_1_name ?? '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)' }}</p>
-            @if(isset($transportRequest->signature_pengelola_1_at) && $transportRequest->signature_pengelola_1_at)
-                <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
-                    {{ is_string($transportRequest->signature_pengelola_1_at) ? $transportRequest->signature_pengelola_1_at : $transportRequest->signature_pengelola_1_at->format('d/m/Y H:i') }}
-                </p>
-            @endif
         </div>
 
         <div class="signature-box">
-            <p class="title">Pengemudi</p>
-            <div class="signature-space">
-                @if(isset($transportRequest->signature_driver) && $transportRequest->signature_driver)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_driver)) }}" 
-                         alt="QR Signature">
+            <div class="signature-top">
+                <p class="title">Pengemudi</p>
+                <div class="signature-space">
+                    @if($nipDriver && $nipDriver !== '-')
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($nipDriver) }}" alt="QR NIP">
+                    @endif
+                </div>
+            </div>
+            <div class="signature-bottom">
+                <p class="name">{{ $transportRequest->driver->name ?? '' }}</p>
+                @if($transportRequest->driver && $transportRequest->driver->phone)
+                    <p class="detail">{{ $transportRequest->driver->phone }}</p>
+                @endif
+                @if(isset($transportRequest->signature_driver_at) && $transportRequest->signature_driver_at)
+                    <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
+                        {{ is_string($transportRequest->signature_driver_at) ? $transportRequest->signature_driver_at : $transportRequest->signature_driver_at->format('d/m/Y H:i') }}
+                    </p>
                 @endif
             </div>
-            <p class="name">{{ $transportRequest->driver->name ?? '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)' }}</p>
-            @if($transportRequest->driver && $transportRequest->driver->phone)
-                <p class="detail">{{ $transportRequest->driver->phone }}</p>
-            @endif
-            @if(isset($transportRequest->signature_driver_at) && $transportRequest->signature_driver_at)
-                <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
-                    {{ is_string($transportRequest->signature_driver_at) ? $transportRequest->signature_driver_at : $transportRequest->signature_driver_at->format('d/m/Y H:i') }}
-                </p>
-            @endif
         </div>
         
         <div class="signature-box">
-            <p class="title">Pengelola Transportasi</p>
-            <p class="subtitle">Mengetahui</p>
-            <div class="signature-space">
-                @if(isset($transportRequest->signature_pengelola_2) && $transportRequest->signature_pengelola_2)
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode(route('signature.verify', $transportRequest->signature_pengelola_2)) }}" 
-                         alt="QR Signature">
+            <div class="signature-top">
+                <p class="title">Pengelola Transportasi</p>
+                <div class="signature-space">
+                    @if($nipPengelola2 && $nipPengelola2 !== '-')
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($nipPengelola2) }}" alt="QR NIP">
+                    @endif
+                </div>
+            </div>
+            <div class="signature-bottom">
+                <p class="name">{{ $pengelola2Name }}</p>
+                <p class="subtitle">Mengetahui</p>
+                @if(isset($transportRequest->signature_pengelola_2_at) && $transportRequest->signature_pengelola_2_at)
+                    <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
+                        {{ is_string($transportRequest->signature_pengelola_2_at) ? $transportRequest->signature_pengelola_2_at : $transportRequest->signature_pengelola_2_at->format('d/m/Y H:i') }}
+                    </p>
                 @endif
             </div>
-            <p class="name">{{ $transportRequest->signature_pengelola_2_name ?? '(&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)' }}</p>
-            @if(isset($transportRequest->signature_pengelola_2_at) && $transportRequest->signature_pengelola_2_at)
-                <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
-                    {{ is_string($transportRequest->signature_pengelola_2_at) ? $transportRequest->signature_pengelola_2_at : $transportRequest->signature_pengelola_2_at->format('d/m/Y H:i') }}
-                </p>
-            @endif
         </div>
     </div>
 

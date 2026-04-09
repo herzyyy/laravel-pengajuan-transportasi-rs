@@ -23,10 +23,10 @@
                         <form method="POST" action="{{ route('login.store') }}" class="space-y-3">
                             @csrf
 
-                            <!-- First Name Field -->
+                            <!-- Username Field -->
                             <div>
-                                <label for="first_name" class="block text-[11px] font-semibold text-gray-700 mb-1">
-                                    Nama Depan
+                                <label for="username" class="block text-[11px] font-semibold text-gray-700 mb-1">
+                                    Username
                                 </label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
@@ -35,48 +35,18 @@
                                         </svg>
                                     </div>
                                     <input
-                                        id="first_name"
-                                        name="first_name"
+                                        id="username"
+                                        name="username"
                                         type="text"
-                                        value="{{ old('first_name') }}"
+                                        value="{{ old('username') }}"
                                         required
                                         autofocus
-                                        class="block w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('first_name') border-red-500 @enderror"
-                                        placeholder="Masukkan nama depan"
+                                        autocomplete="username"
+                                        class="block w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('username') border-red-500 @enderror"
+                                        placeholder="namadepan.namabelakang"
                                     >
                                 </div>
-                                @error('first_name')
-                                    <p class="mt-1 text-[10px] text-red-600 flex items-center">
-                                        <svg class="w-2.5 h-2.5 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        {{ $message }}
-                                    </p>
-                                @enderror
-                            </div>
-
-                            <!-- Last Name Field -->
-                            <div>
-                                <label for="last_name" class="block text-[11px] font-semibold text-gray-700 mb-1">
-                                    Nama Belakang
-                                </label>
-                                <div class="relative">
-                                    <div class="absolute inset-y-0 left-0 pl-2.5 flex items-center pointer-events-none">
-                                        <svg class="h-3.5 w-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                                        </svg>
-                                    </div>
-                                    <input
-                                        id="last_name"
-                                        name="last_name"
-                                        type="text"
-                                        value="{{ old('last_name') }}"
-                                        required
-                                        class="block w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('last_name') border-red-500 @enderror"
-                                        placeholder="Masukkan nama belakang"
-                                    >
-                                </div>
-                                @error('last_name')
+                                @error('username')
                                     <p class="mt-1 text-[10px] text-red-600 flex items-center">
                                         <svg class="w-2.5 h-2.5 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -102,7 +72,7 @@
                                         name="password"
                                         type="password"
                                         required
-                                        class="block w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('password') border-red-500 @enderror"
+                                        class="block w-full pl-9 pr-3 py-2 text-xs border border-gray-300 rounded-lg focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('password') border-red-500 @enderror"
                                         placeholder="Masukkan kata sandi"
                                     >
                                 </div>

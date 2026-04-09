@@ -37,7 +37,7 @@ class VehicleController extends Controller
 
     public function create()
     {
-        return view('admin.vehicles.create');
+        return redirect()->route('admin.vehicles.index');
     }
 
     public function store(Request $request)
@@ -62,12 +62,12 @@ class VehicleController extends Controller
 
     public function edit(Vehicle $vehicle)
     {
-        return view('admin.vehicles.edit', compact('vehicle'));
+        return redirect()->route('admin.vehicles.index');
     }
 
     public function update(Request $request, Vehicle $vehicle)
     {
-        $data = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:umum,ambulance'],
             'plate_number' => ['required', 'string', 'max:20', Rule::unique('vehicles')->ignore($vehicle->id)],
@@ -79,7 +79,14 @@ class VehicleController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $vehicle->update($data);
+        if ($validator->fails()) {
+            return redirect()->route('admin.vehicles.index')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('edit_id', $vehicle->id);
+        }
+
+        $vehicle->update($validator->validated());
 
         return redirect()->route('admin.vehicles.index')
             ->with('success', 'Kendaraan berhasil diupdate.');

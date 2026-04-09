@@ -1,0 +1,70 @@
+<?php
+
+namespace App\Http\Controllers\Driver;
+
+use App\Http\Controllers\Controller;
+use App\Models\TransportRequest;
+use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+
+class DashboardController extends Controller
+{
+    public function index()
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver) {
+            return view('driver.no_driver');
+        }
+
+        $activeRequests = TransportRequest::where('driver_id', $driver->id)
+            ->where('status', 'digunakan')
+            ->with('user')
+            ->orderByRaw("CONCAT(tanggal, ' ', jam) ASC")
+            ->get();
+
+        $historyRequests = TransportRequest::where('driver_id', $driver->id)
+            ->whereIn('status', ['selesai', 'tidak_disetujui'])
+            ->with('user')
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        return view('driver.dashboard', compact('driver', 'activeRequests', 'historyRequests'));
+    }
+
+    public function complete(Request $request, TransportRequest $transportRequest)
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver || $transportRequest->driver_id !== $driver->id) {
+            abort(403);
+        }
+
+        if ($transportRequest->status !== 'digunakan') {
+            return back()->withErrors(['status' => 'Pengajuan tidak dalam status digunakan.']);
+        }
+
+        $data = $request->validate([
+            'km_akhir' => ['required', 'integer', 'min:0'],
+            'jam_kedatangan' => ['required', 'string', 'max:10', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
+        ]);
+
+        if ($data['km_akhir'] <= $transportRequest->km_awal) {
+            throw ValidationException::withMessages(['km_akhir' => 'KM tiba harus lebih besar dari KM keberangkatan.']);
+        }
+
+        // Auto-sign driver + pengelola_2 saat selesai
+        $transportRequest->update(array_merge($data, [
+            'status' => 'selesai',
+            'signature_driver' => $transportRequest->signature_driver ?: \Illuminate\Support\Str::random(32),
+            'signature_driver_at' => $transportRequest->signature_driver_at ?: now(),
+            'signature_pengelola_2' => \Illuminate\Support\Str::random(32),
+            'signature_pengelola_2_at' => now(),
+            'signature_pengelola_2_name' => $transportRequest->signature_pengelola_1_name,
+        ]));
+
+        return redirect()->route('driver.dashboard')
+            ->with('success', 'Pengajuan berhasil diselesaikan.');
+    }
+}

@@ -21,6 +21,7 @@ class User extends Authenticatable
     protected $fillable = [
         'first_name',
         'last_name',
+        'nip',
         'unit_kerja',
         'password',
         'role',
@@ -55,9 +56,19 @@ class User extends Authenticatable
         return $this->hasMany(TransportRequest::class);
     }
 
+    public function driver()
+    {
+        return $this->hasOne(\App\Models\Driver::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function isDriver(): bool
+    {
+        return $this->role === 'driver';
     }
     
     public function isPriority(): bool

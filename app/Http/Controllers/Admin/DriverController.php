@@ -26,13 +26,14 @@ class DriverController extends Controller
         }
 
         $drivers = $query->paginate(15)->withQueryString();
+        $driverUsers = \App\Models\User::where('role', 'driver')->orderBy('first_name')->get();
 
-        return view('admin.drivers.index', compact('drivers'));
+        return view('admin.drivers.index', compact('drivers', 'driverUsers'));
     }
 
     public function create()
     {
-        return view('admin.drivers.create');
+        return redirect()->route('admin.drivers.index');
     }
 
     public function store(Request $request)
@@ -41,6 +42,7 @@ class DriverController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'license_number' => ['nullable', 'string', 'max:50'],
+            'user_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['boolean'],
         ]);
 
@@ -52,19 +54,27 @@ class DriverController extends Controller
 
     public function edit(Driver $driver)
     {
-        return view('admin.drivers.edit', compact('driver'));
+        return redirect()->route('admin.drivers.index');
     }
 
     public function update(Request $request, Driver $driver)
     {
-        $data = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'license_number' => ['nullable', 'string', 'max:50'],
+            'user_id' => ['nullable', 'exists:users,id'],
             'is_active' => ['boolean'],
         ]);
 
-        $driver->update($data);
+        if ($validator->fails()) {
+            return redirect()->route('admin.drivers.index')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('edit_id', $driver->id);
+        }
+
+        $driver->update($validator->validated());
 
         return redirect()->route('admin.drivers.index')
             ->with('success', 'Supir berhasil diupdate.');

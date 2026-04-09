@@ -22,29 +22,6 @@
                     </a>
                 @endif
                 
-                @php
-                    $needsSignature = false;
-                    if ($transportRequest->status === 'diajukan' && (!isset($transportRequest->signature_pemohon) || !$transportRequest->signature_pemohon) && $transportRequest->user_id === auth()->id()) {
-                        $needsSignature = true;
-                    } elseif ($transportRequest->status === 'diproses' && (!isset($transportRequest->signature_pengelola_1) || !$transportRequest->signature_pengelola_1) && auth()->user()->isAdmin()) {
-                        $needsSignature = true;
-                    } elseif ($transportRequest->status === 'digunakan' && (!isset($transportRequest->signature_driver) || !$transportRequest->signature_driver) && auth()->user()->isAdmin()) {
-                        $needsSignature = true;
-                    } elseif ($transportRequest->status === 'selesai' && (!isset($transportRequest->signature_pengelola_2) || !$transportRequest->signature_pengelola_2) && auth()->user()->isAdmin()) {
-                        $needsSignature = true;
-                    }
-                @endphp
-                
-                @if($needsSignature)
-                    <a href="{{ route('signature.show', $transportRequest) }}"
-                       class="inline-flex items-center rounded-lg bg-blue-600 px-2.5 py-1.5 text-xs font-semibold text-white hover:bg-blue-700">
-                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="white" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
-                        <span class="text-white font-semibold">Tanda Tangan</span>
-                    </a>
-                @endif
-                
                 <a href="{{ route('admin.transport.index') }}"
                    class="inline-flex items-center rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50">
                     Kembali
@@ -261,38 +238,8 @@
                 </div>
 
                 @php
-                    $blockApprove = $transportRequest->status === 'diajukan' && !$transportRequest->signature_pemohon;
-                    $blockDiGunakan = $transportRequest->status === 'diproses' && !$transportRequest->signature_pengelola_1;
-                    $blockSelesai = $transportRequest->status === 'digunakan' && !$transportRequest->signature_driver;
-                    $isBlocked = $blockApprove || $blockDiGunakan || $blockSelesai;
+                    $isBlocked = false;
                 @endphp
-
-                @if($blockApprove)
-                    <div class="mx-3 mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                        </svg>
-                        <span>Pengajuan belum ditandatangani oleh <strong>pemohon</strong>. Tidak dapat disetujui sebelum pemohon menandatangani.</span>
-                    </div>
-                @endif
-
-                @if($blockDiGunakan)
-                    <div class="mx-3 mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                        </svg>
-                        <span>Belum ada tanda tangan <strong>pengelola</strong>. Silakan <a href="{{ route('signature.show', $transportRequest) }}" class="underline font-semibold">tanda tangan terlebih dahulu</a> sebelum mengubah status ke Digunakan.</span>
-                    </div>
-                @endif
-
-                @if($blockSelesai)
-                    <div class="mx-3 mt-2.5 p-2.5 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800 flex items-start gap-2">
-                        <svg class="w-4 h-4 mt-0.5 shrink-0 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-                        </svg>
-                        <span>Belum ada tanda tangan <strong>pengemudi</strong>. Silakan <a href="{{ route('signature.show', $transportRequest) }}" class="underline font-semibold">tanda tangan terlebih dahulu</a> sebelum menyelesaikan pengajuan.</span>
-                    </div>
-                @endif
 
                 <form method="POST"
                       action="{{ route('admin.transport.update', $transportRequest) }}"
@@ -332,8 +279,10 @@
                         </p>
                     </div>
 
-                    <!-- Form untuk Diajukan -> Disetujui: Unit Kendaraan -->
-                    <div x-show="currentStatus === 'diproses' && '{{ $transportRequest->status }}' === 'diajukan'" class="space-y-2">
+                    <!-- Form untuk Diajukan -> Disetujui: tidak ada input tambahan -->
+
+                    <!-- Form untuk Disetujui -> Digunakan: Unit Kendaraan, Supir & KM Keberangkatan -->
+                    <div x-show="currentStatus === 'digunakan' && '{{ $transportRequest->status }}' === 'diproses'" class="space-y-2">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 Unit Kendaraan <span class="text-red-500">*</span>
@@ -342,19 +291,16 @@
                                     class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="">-- Pilih Unit --</option>
                                 @foreach($vehicles as $vehicle)
-                                    <option value="{{ $vehicle->name }}" 
+                                    <option value="{{ $vehicle->name }}"
                                             data-plate="{{ $vehicle->plate_number }}"
-                                            @selected(old('unit_mobil', $transportRequest->unit_mobil) == $vehicle->name)>
+                                            @selected(old('unit_mobil') == $vehicle->name)>
                                         {{ $vehicle->name }} ({{ $vehicle->plate_number }})
                                     </option>
                                 @endforeach
                             </select>
                             <input type="hidden" name="plat_nomor" id="plat_nomor" value="{{ old('plat_nomor', $transportRequest->plat_nomor) }}">
                         </div>
-                    </div>
 
-                    <!-- Form untuk Disetujui -> Digunakan: Supir & KM Keberangkatan -->
-                    <div x-show="currentStatus === 'digunakan' && '{{ $transportRequest->status }}' === 'diproses'" class="space-y-2">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 Nama Supir <span class="text-red-500">*</span>
@@ -363,7 +309,7 @@
                                     class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                                 <option value="">-- Pilih Supir --</option>
                                 @foreach($drivers as $driver)
-                                    <option value="{{ $driver->id }}" 
+                                    <option value="{{ $driver->id }}"
                                             @selected(old('driver_id', $transportRequest->driver_id) == $driver->id)>
                                         {{ $driver->name }}@if($driver->phone) ({{ $driver->phone }})@endif
                                     </option>
@@ -375,10 +321,13 @@
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 KM Keberangkatan <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="km_awal"
-                                   value="{{ old('km_awal', $transportRequest->km_awal) }}"
-                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Masukkan KM">
+                            <input type="text" id="km_awal_display"
+                                   value="{{ old('km_awal', $transportRequest->km_awal) ? number_format(old('km_awal', $transportRequest->km_awal), 0, ',', '.') : '' }}"
+                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
+                                   placeholder="Masukkan KM"
+                                   inputmode="numeric"
+                                   autocomplete="off">
+                            <input type="hidden" name="km_awal" id="km_awal" value="{{ old('km_awal', $transportRequest->km_awal) }}">
                         </div>
                     </div>
 
@@ -388,10 +337,13 @@
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 KM Tiba <span class="text-red-500">*</span>
                             </label>
-                            <input type="number" name="km_akhir"
-                                   value="{{ old('km_akhir', $transportRequest->km_akhir) }}"
-                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
-                                   placeholder="Masukkan KM">
+                            <input type="text" id="km_akhir_display"
+                                   value="{{ old('km_akhir', $transportRequest->km_akhir) ? number_format(old('km_akhir', $transportRequest->km_akhir), 0, ',', '.') : '' }}"
+                                   class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
+                                   placeholder="Masukkan KM"
+                                   inputmode="numeric"
+                                   autocomplete="off">
+                            <input type="hidden" name="km_akhir" id="km_akhir" value="{{ old('km_akhir', $transportRequest->km_akhir) }}">
                         </div>
 
                         <div>
@@ -409,7 +361,7 @@
                     </div>
 
                     <!-- Info Data yang Sudah Diisi -->
-                    <div x-show="'{{ $transportRequest->status }}' !== 'diajukan'" class="bg-slate-50 rounded-lg p-2 text-[10px] space-y-1">
+                    <div x-show="'{{ $transportRequest->status }}' === 'digunakan' || '{{ $transportRequest->status }}' === 'selesai'" class="bg-slate-50 rounded-lg p-2 text-[10px] space-y-1">
                         <div class="font-semibold text-slate-700 mb-1">Data Terisi:</div>
                         
                         @if($transportRequest->unit_mobil)
@@ -429,21 +381,21 @@
                         @if($transportRequest->km_awal)
                             <div class="flex justify-between gap-2">
                                 <span class="text-slate-500">KM Awal:</span>
-                                <span class="text-slate-900 font-medium">{{ $transportRequest->km_awal }} km</span>
+                                <span class="text-slate-900 font-medium">{{ number_format($transportRequest->km_awal, 0, ',', '.') }} km</span>
                             </div>
                         @endif
                         
                         @if($transportRequest->km_akhir)
                             <div class="flex justify-between gap-2">
                                 <span class="text-slate-500">KM Akhir:</span>
-                                <span class="text-slate-900 font-medium">{{ $transportRequest->km_akhir }} km</span>
+                                <span class="text-slate-900 font-medium">{{ number_format($transportRequest->km_akhir, 0, ',', '.') }} km</span>
                             </div>
                         @endif
                         
                         @if($transportRequest->km_awal && $transportRequest->km_akhir)
                             <div class="flex justify-between gap-2 border-t border-slate-200 pt-1 mt-1">
                                 <span class="text-slate-500">Total:</span>
-                                <span class="text-emerald-600 font-bold">{{ $transportRequest->km_akhir - $transportRequest->km_awal }} km</span>
+                                <span class="text-emerald-600 font-bold">{{ number_format($transportRequest->km_akhir - $transportRequest->km_awal, 0, ',', '.') }} km</span>
                             </div>
                         @endif
                         
@@ -543,6 +495,66 @@
                     }
                 });
             }
+            // Format KM inputs dengan pemisah ribuan
+            function setupKmInput(displayId, hiddenId) {
+                const display = document.getElementById(displayId);
+                const hidden = document.getElementById(hiddenId);
+                if (!display || !hidden) return;
+
+                display.addEventListener('input', function() {
+                    const raw = this.value.replace(/\D/g, '');
+                    const cursor = this.selectionStart;
+                    const prevLen = this.value.length;
+                    this.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+                    hidden.value = raw;
+                    const diff = this.value.length - prevLen;
+                    this.setSelectionRange(cursor + diff, cursor + diff);
+                    if (hiddenId === 'km_akhir') validateKm();
+                });
+
+                display.addEventListener('keypress', function(e) {
+                    if (!/[0-9]/.test(e.key)) e.preventDefault();
+                });
+            }
+
+            function validateKm() {
+                const kmAwal = parseInt(document.getElementById('km_awal')?.value) || 0;
+                const kmAkhir = parseInt(document.getElementById('km_akhir')?.value) || 0;
+                const display = document.getElementById('km_akhir_display');
+                if (!display) return true;
+
+                let alertEl = document.getElementById('km_akhir_alert');
+
+                if (kmAkhir > 0 && kmAwal > 0 && kmAkhir <= kmAwal) {
+                    display.classList.add('border-red-400');
+                    display.classList.remove('border-slate-300');
+                    if (!alertEl) {
+                        alertEl = document.createElement('p');
+                        alertEl.id = 'km_akhir_alert';
+                        alertEl.className = 'mt-0.5 text-[10px] text-red-600';
+                        display.parentNode.appendChild(alertEl);
+                    }
+                    alertEl.textContent = 'KM tiba harus lebih besar dari KM keberangkatan (' + kmAwal.toLocaleString('id-ID') + ' km).';
+                    return false;
+                } else {
+                    display.classList.remove('border-red-400');
+                    display.classList.add('border-slate-300');
+                    if (alertEl) alertEl.remove();
+                    return true;
+                }
+            }
+
+            setupKmInput('km_awal_display', 'km_awal');
+            setupKmInput('km_akhir_display', 'km_akhir');
+
+            // Blokir submit jika km_akhir <= km_awal
+            document.querySelector('form').addEventListener('submit', function(e) {
+                const kmAkhirDisplay = document.getElementById('km_akhir_display');
+                if (kmAkhirDisplay && kmAkhirDisplay.value !== '' && !validateKm()) {
+                    e.preventDefault();
+                    kmAkhirDisplay.focus();
+                }
+            });
         });
     </script>
 </x-app-layout>

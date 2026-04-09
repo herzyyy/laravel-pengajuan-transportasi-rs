@@ -45,83 +45,145 @@
             </div>
         </div>
 
-        <!-- Latest Requests Section -->
-        <div>
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
-                <div>
-                    <h2 class="text-sm font-bold text-slate-900">Pengajuan Terbaru</h2>
-                    <p class="text-xs text-slate-500 mt-0">5 pengajuan terakhir</p>
+        <!-- Latest Requests + Active Vehicles -->
+        <div class="grid grid-cols-1 xl:grid-cols-3 gap-3">
+
+            <!-- Tabel Pengajuan Terbaru (2/3) -->
+            <div class="xl:col-span-2">
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3 gap-2">
+                    <div>
+                        <h2 class="text-sm font-bold text-slate-900">Pengajuan Terbaru</h2>
+                        <p class="text-xs text-slate-500 mt-0">5 pengajuan terakhir</p>
+                    </div>
+                    <a href="{{ route('admin.transport.index') }}"
+                       class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50 rounded-lg transition self-start sm:self-auto">
+                        Lihat Semua
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                        </svg>
+                    </a>
                 </div>
-                <a href="{{ route('admin.transport.index') }}"
-                   class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-emerald-700 hover:bg-emerald-50 rounded-lg transition self-start sm:self-auto">
-                    Lihat Semua
-                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-                    </svg>
-                </a>
+
+                <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-xs">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
+                                    <th class="px-2 sm:px-3 py-2 text-left">No</th>
+                                    <th class="px-2 sm:px-3 py-2 text-left">Tanggal & Jam</th>
+                                    <th class="px-2 sm:px-3 py-2 text-left hidden sm:table-cell">Pemohon</th>
+                                    <th class="px-2 sm:px-3 py-2 text-left">Jenis</th>
+                                    <th class="px-2 sm:px-3 py-2 text-left">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                @forelse($latest as $item)
+                                    <tr class="hover:bg-slate-50 transition">
+                                        <td class="px-2 sm:px-3 py-2">
+                                            <a href="{{ route('admin.transport.show', $item) }}"
+                                               class="font-mono text-[11px] font-semibold text-emerald-700 hover:underline">
+                                                #{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                                            </a>
+                                        </td>
+                                        <td class="px-2 sm:px-3 py-2 text-slate-700 font-medium whitespace-nowrap">
+                                            <div>{{ $item->tanggal->format('d/m/Y') }}</div>
+                                            <div class="text-[10px] text-slate-500">{{ substr($item->jam, 0, 5) }}</div>
+                                        </td>
+                                        <td class="px-2 sm:px-3 py-2 hidden sm:table-cell">
+                                            <div class="font-medium text-slate-900 text-xs">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
+                                            <div class="text-[10px] text-slate-500">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
+                                        </td>
+                                        <td class="px-2 sm:px-3 py-2">
+                                            <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
+                                                <span class="text-slate-700 text-xs">{{ ucfirst($item->jenis) }}</span>
+                                                @if($item->prioritas === 'segera')
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-700 self-start">CITO</span>
+                                                @endif
+                                            </div>
+                                        </td>
+                                        <td class="px-2 sm:px-3 py-2">
+                                            @php
+                                                $statusConfig = match($item->status) {
+                                                    'diajukan' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'label' => 'Diajukan'],
+                                                    'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Disetujui'],
+                                                    'digunakan' => ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-800', 'label' => 'Digunakan'],
+                                                    'selesai' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'label' => 'Selesai'],
+                                                    'tidak_disetujui' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Tidak Disetujui'],
+                                                    default => ['bg' => 'bg-slate-100', 'text' => 'text-slate-800', 'label' => ucfirst($item->status)]
+                                                };
+                                            @endphp
+                                            <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-bold {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }}">
+                                                {{ $statusConfig['label'] }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="5" class="px-2 sm:px-3 py-6 sm:py-8 text-center">
+                                            <div class="flex flex-col items-center gap-2">
+                                                <svg class="w-8 sm:w-10 h-8 sm:h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                                </svg>
+                                                <p class="text-slate-500 font-medium text-xs">Belum ada pengajuan</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
 
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full text-xs">
-                        <thead class="bg-slate-50 border-b border-slate-200">
-                            <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
-                                <th class="px-2 sm:px-3 py-2 text-left">Tanggal</th>
-                                <th class="px-2 sm:px-3 py-2 text-left hidden sm:table-cell">Pemohon</th>
-                                <th class="px-2 sm:px-3 py-2 text-left">Jenis</th>
-                                <th class="px-2 sm:px-3 py-2 text-left">Status</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-slate-100">
-                            @forelse($latest as $item)
-                                <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-2 sm:px-3 py-2 text-slate-700 font-medium whitespace-nowrap">
-                                        {{ $item->tanggal->format('d/m/Y') }}
-                                    </td>
-                                    <td class="px-2 sm:px-3 py-2 hidden sm:table-cell">
-                                        <div class="font-medium text-slate-900 text-xs">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
-                                        <div class="text-[10px] text-slate-500">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
-                                    </td>
-                                    <td class="px-2 sm:px-3 py-2">
-                                        <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
-                                            <span class="text-slate-700 text-xs">{{ ucfirst($item->jenis) }}</span>
-                                            @if($item->prioritas === 'segera')
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-700 self-start">CITO</span>
-                                            @endif
+            <!-- Card Kendaraan Sedang Digunakan (1/3) -->
+            <div>
+                <div class="mb-3">
+                    <h2 class="text-sm font-bold text-slate-900">Sedang Digunakan</h2>
+                    <p class="text-xs text-slate-500 mt-0">Kendaraan aktif saat ini</p>
+                </div>
+
+                <div class="bg-white rounded-lg shadow-sm ring-1 ring-cyan-200 overflow-hidden">
+                    @if($activeVehicles->isEmpty())
+                        <div class="px-4 py-8 text-center">
+                            <svg class="w-8 h-8 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="text-xs text-slate-500 font-medium">Tidak ada kendaraan</p>
+                            <p class="text-[10px] text-slate-400 mt-0.5">yang sedang digunakan</p>
+                        </div>
+                    @else
+                        <div class="divide-y divide-slate-100">
+                            @foreach($activeVehicles as $v)
+                                <a href="{{ route('admin.transport.show', $v) }}"
+                                   class="flex items-start gap-2.5 px-3 py-2.5 hover:bg-cyan-50 transition">
+                                    <div class="mt-0.5 flex-shrink-0 w-7 h-7 rounded-lg bg-cyan-100 flex items-center justify-center">
+                                        <svg class="w-3.5 h-3.5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3 4h13l3 5v4H3V4z"/>
+                                        </svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <div class="text-xs font-semibold text-slate-900 truncate">
+                                            {{ $v->unit_mobil ?? '-' }}
                                         </div>
-                                    </td>
-                                    <td class="px-2 sm:px-3 py-2">
-                                        @php
-                                            $statusConfig = match($item->status) {
-                                                'diajukan' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'label' => 'Diajukan'],
-                                                'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Disetujui'],
-                                                'digunakan' => ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-800', 'label' => 'Digunakan'],
-                                                'selesai' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'label' => 'Selesai'],
-                                                'tidak_disetujui' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Tidak Disetujui'],
-                                                default => ['bg' => 'bg-slate-100', 'text' => 'text-slate-800', 'label' => ucfirst($item->status)]
-                                            };
-                                        @endphp
-                                        <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-bold {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }}">
-                                            {{ $statusConfig['label'] }}
-                                        </span>
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="4" class="px-2 sm:px-3 py-6 sm:py-8 text-center">
-                                        <div class="flex flex-col items-center gap-2">
-                                            <svg class="w-8 sm:w-10 h-8 sm:h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                                            </svg>
-                                            <p class="text-slate-500 font-medium text-xs">Belum ada pengajuan</p>
+                                        <div class="text-[10px] text-slate-500 mt-0.5">
+                                            {{ $v->tanggal->format('d/m/Y') }} {{ substr($v->jam, 0, 5) }}
+                                            <span class="text-slate-400">–</span>
+                                            {{ $v->tanggal_sampai->format('d/m/Y') }} {{ substr($v->jam_sampai, 0, 5) }}
                                         </div>
-                                    </td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                                        <div class="text-[10px] text-slate-400 truncate mt-0.5">
+                                            {{ $v->user->full_name ?? $v->pemohon_nama }}
+                                        </div>
+                                    </div>
+                                    @if($v->prioritas === 'segera')
+                                        <span class="flex-shrink-0 text-[9px] font-bold bg-red-100 text-red-700 px-1.5 py-0.5 rounded-full">CITO</span>
+                                    @endif
+                                </a>
+                            @endforeach
+                        </div>
+                    @endif
                 </div>
             </div>
+
         </div>
     </div>
 </x-app-layout>

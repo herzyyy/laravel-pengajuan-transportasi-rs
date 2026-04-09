@@ -11,9 +11,11 @@ Route::get('/', function () {
         return redirect()->route('login');
     }
 
-    // Jika sudah login, arahkan sesuai role
     if (auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
+    }
+    if (auth()->user()->isDriver()) {
+        return redirect()->route('driver.dashboard');
     }
     return redirect()->route('dashboard');
 })->name('home');
@@ -84,4 +86,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::resource('vehicles', \App\Http\Controllers\Admin\VehicleController::class);
     Route::resource('drivers', \App\Http\Controllers\Admin\DriverController::class);
+});
+
+// Driver Routes
+Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(function () {
+    Route::get('/dashboard', [\App\Http\Controllers\Driver\DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/complete/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'complete'])->name('complete');
 });

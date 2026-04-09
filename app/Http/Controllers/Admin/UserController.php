@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
@@ -34,7 +35,7 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.users.create');
+        return redirect()->route('admin.users.index');
     }
 
     public function store(Request $request)
@@ -42,11 +43,15 @@ class UserController extends Controller
         $data = $request->validate([
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
+            'nip' => ['nullable', 'string', 'max:50'],
             'password' => ['required', 'string', 'min:8'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
-            'role' => ['required', 'in:user,admin'],
-            'priority_level' => ['required', 'integer', 'in:0,1'],
+            'role' => ['required', 'in:user,admin,driver'],
+            'priority_level' => ['nullable', 'integer', 'in:0,1'],
         ]);
+
+        // Default priority_level ke 0 jika tidak diisi
+        $data['priority_level'] = $data['priority_level'] ?? 0;
 
         $data['password'] = Hash::make($data['password']);
 
@@ -58,19 +63,30 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        return redirect()->route('admin.users.index');
     }
 
     public function update(Request $request, User $user)
     {
-        $data = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'first_name' => ['required', 'string', 'max:255'],
             'last_name' => ['required', 'string', 'max:255'],
+            'nip' => ['nullable', 'string', 'max:50'],
             'password' => ['nullable', 'string', 'min:8'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
-            'role' => ['required', 'in:user,admin'],
-            'priority_level' => ['required', 'integer', 'in:0,1'],
+            'role' => ['required', 'in:user,admin,driver'],
+            'priority_level' => ['nullable', 'integer', 'in:0,1'],
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.users.index')
+                ->withErrors($validator)
+                ->withInput()
+                ->with('edit_id', $user->id);
+        }
+
+        $data = $validator->validated();
+        $data['priority_level'] = $data['priority_level'] ?? 0;
 
         if (empty($data['password'])) {
             unset($data['password']);

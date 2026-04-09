@@ -10,9 +10,11 @@ class AuthController extends Controller
     public function create()
     {
         if (Auth::check()) {
-            // Jika sudah login dan akses /login, arahkan sesuai role
             if (Auth::user()->isAdmin()) {
                 return redirect()->route('admin.dashboard');
+            }
+            if (Auth::user()->isDriver()) {
+                return redirect()->route('driver.dashboard');
             }
             return redirect()->route('dashboard');
         }
@@ -23,30 +25,35 @@ class AuthController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'first_name' => ['required', 'string'],
-            'last_name' => ['required', 'string'],
+            'username' => ['required', 'string'],
             'password' => ['required', 'string'],
         ]);
 
         $remember = $request->boolean('remember');
 
-        // Find user by first_name and last_name
-        $user = \App\Models\User::where('first_name', $request->first_name)
-            ->where('last_name', $request->last_name)
+        // Parse username format: namadepan.namabelakang
+        $parts = explode('.', $request->username, 2);
+        $firstName = $parts[0] ?? '';
+        $lastName = $parts[1] ?? '';
+
+        $user = \App\Models\User::where('first_name', $firstName)
+            ->where('last_name', $lastName)
             ->first();
 
         if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
             return back()
-                ->withErrors(['first_name' => 'Nama atau password salah.'])
-                ->onlyInput('first_name', 'last_name');
+                ->withErrors(['username' => 'Username atau password salah.'])
+                ->onlyInput('username');
         }
 
         Auth::login($user, $remember);
         $request->session()->regenerate();
 
-        // Setelah login berhasil, arahkan sesuai role
         if (Auth::user()->isAdmin()) {
             return redirect()->route('admin.dashboard');
+        }
+        if (Auth::user()->isDriver()) {
+            return redirect()->route('driver.dashboard');
         }
         
         return redirect()->route('dashboard');

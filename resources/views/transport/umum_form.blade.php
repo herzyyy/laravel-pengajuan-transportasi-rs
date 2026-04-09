@@ -45,32 +45,11 @@
 
             <div class="p-3 space-y-3">
 
-                <!-- Unit Kerja & Mobil (2 kolom) -->
-                <div class="grid md:grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Kerja</label>
-                        <input value="{{ auth()->user()->unit_kerja ?? '-' }}" readonly
-                            class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 font-medium">
-                    </div>
-
-                    <div>
-                        <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Mobil <span class="text-red-500">*</span></label>
-                        <select name="unit_mobil" required
-                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300">
-                            <option value="" disabled {{ count($vehicles) > 1 ? 'selected' : '' }}>Pilih mobil</option>
-                            @forelse($vehicles as $vehicle)
-                                <option value="{{ $vehicle->name }}" 
-                                    @selected(old('unit_mobil') === $vehicle->name || (count($vehicles) === 1))>
-                                    {{ $vehicle->name }} - {{ $vehicle->brand }} {{ $vehicle->model }} ({{ $vehicle->plate_number }})
-                                </option>
-                            @empty
-                                <option value="" disabled>Tidak ada kendaraan tersedia</option>
-                            @endforelse
-                        </select>
-                        @error('unit_mobil')
-                            <div class="mt-0.5 text-[10px] text-red-600">{{ $message }}</div>
-                        @enderror
-                    </div>
+                <!-- Unit Kerja -->
+                <div>
+                    <label class="block text-[10px] font-semibold text-slate-700 mb-1">Unit Kerja</label>
+                    <input value="{{ auth()->user()->unit_kerja ?? '-' }}" readonly
+                        class="w-full rounded-lg border border-slate-200 bg-slate-50 px-2 py-1.5 text-xs text-slate-700 font-medium">
                 </div>
 
                 <!-- Waktu Penggunaan (4 kolom dalam 1 baris) -->
@@ -79,8 +58,9 @@
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Dari <span class="text-red-500">*</span></label>
-                            <input type="date" name="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required
-                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
+                            <input type="text" id="tanggal_display" placeholder="dd/mm/yyyy" autocomplete="off"
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300 cursor-pointer">
+                            <input type="hidden" name="tanggal" id="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required>
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Dari <span class="text-red-500">*</span></label>
@@ -90,8 +70,9 @@
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Sampai <span class="text-red-500">*</span></label>
-                            <input type="date" name="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}" required
-                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
+                            <input type="text" id="tanggal_sampai_display" placeholder="dd/mm/yyyy" autocomplete="off"
+                                class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300 cursor-pointer">
+                            <input type="hidden" name="tanggal_sampai" id="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}" required>
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Sampai <span class="text-red-500">*</span></label>
@@ -100,11 +81,13 @@
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
                     </div>
+
+                    <!-- Tombol cek ketersediaan -->
                     <div class="mt-2 flex items-center gap-2">
                         <button id="checkAvailabilityBtn" type="button"
                             class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-[10px] font-semibold transition">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
                             </svg>
                             Cek Ketersediaan
                         </button>
@@ -176,7 +159,7 @@
                     class="text-[10px] font-medium text-slate-600 hover:text-slate-900 transition">
                     ← Kembali
                 </a>
-                <button id="submitBtn" type="submit"
+                <button id="submitBtn" type="submit" disabled
                     class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:shadow-lg text-white px-4 py-2 text-xs font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none">
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
@@ -187,6 +170,9 @@
         </div>
     </form>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <script>
         (function(){
             const btn = document.getElementById('checkAvailabilityBtn');
@@ -195,47 +181,34 @@
 
             if (!btn) return;
 
-            // Disable submit by default until availability is checked
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.title = 'Lakukan cek ketersediaan terlebih dahulu';
-            }
-
             function resetCheck() {
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.title = 'Lakukan cek ketersediaan terlebih dahulu';
-                }
+                submitBtn.disabled = true;
                 statusEl.textContent = 'Cek ketersediaan diperlukan';
                 statusEl.className = 'text-[10px] font-semibold text-amber-600';
             }
 
-            // Reset when any relevant field changes
             const form = btn.closest('form');
-            ['unit_mobil', 'tanggal', 'jam', 'tanggal_sampai', 'jam_sampai'].forEach(name => {
+            ['tanggal', 'jam', 'tanggal_sampai', 'jam_sampai'].forEach(name => {
                 const el = form.querySelector(`[name="${name}"]`);
-                if (el) el.addEventListener('change', resetCheck);
-                if (el && el.tagName === 'INPUT') el.addEventListener('input', resetCheck);
+                if (el) { el.addEventListener('change', resetCheck); el.addEventListener('input', resetCheck); }
             });
 
-            async function check() {
-                statusEl.textContent = 'Memeriksa…';
-                statusEl.className = 'text-[10px] font-semibold text-slate-600';
-
-                const unit = form.querySelector('select[name="unit_mobil"]').value;
+            btn.addEventListener('click', async function() {
                 const tanggal = form.querySelector('input[name="tanggal"]').value;
                 const jam = form.querySelector('input[name="jam"]').value;
                 const tanggal_sampai = form.querySelector('input[name="tanggal_sampai"]').value;
                 const jam_sampai = form.querySelector('input[name="jam_sampai"]').value;
 
-                if (!unit || !tanggal || !jam || !tanggal_sampai || !jam_sampai) {
-                    statusEl.textContent = 'Lengkapi semua kolom terlebih dahulu';
+                if (!tanggal || !jam || !tanggal_sampai || !jam_sampai) {
+                    statusEl.textContent = 'Lengkapi tanggal dan jam terlebih dahulu';
                     statusEl.className = 'text-[10px] font-semibold text-amber-600';
                     return;
                 }
 
+                statusEl.textContent = 'Memeriksa…';
+                statusEl.className = 'text-[10px] font-semibold text-slate-600';
+
                 const url = new URL('{{ route('pengajuan.umum.check') }}', window.location.origin);
-                url.searchParams.set('unit_mobil', unit);
                 url.searchParams.set('tanggal', tanggal);
                 url.searchParams.set('jam', jam);
                 url.searchParams.set('tanggal_sampai', tanggal_sampai);
@@ -243,43 +216,60 @@
 
                 try {
                     const res = await fetch(url.toString(), { credentials: 'same-origin' });
-                    if (!res.ok) throw new Error('HTTP ' + res.status);
                     const data = await res.json();
-
                     if (data.available) {
-                        statusEl.textContent = '✓ Tersedia';
+                        statusEl.textContent = `✓ Tersedia (${data.available_units} dari ${data.total_units} unit)`;
                         statusEl.className = 'text-[10px] font-semibold text-emerald-600';
-                        if (submitBtn) {
-                            submitBtn.disabled = false;
-                            submitBtn.title = '';
-                        }
+                        submitBtn.disabled = false;
                     } else {
-                        let msg = '✗ Tidak tersedia';
-                        if (data.conflicts && data.conflicts.length > 0) {
-                            const conflict = data.conflicts[0];
-                            msg += ` - Bentrok dengan ${conflict.jenis} (${conflict.status})`;
-                        }
-                        statusEl.textContent = msg;
+                        statusEl.textContent = `✗ Tidak tersedia — semua ${data.total_units} unit sedang digunakan`;
                         statusEl.className = 'text-[10px] font-semibold text-red-600';
-                        if (submitBtn) {
-                            submitBtn.disabled = true;
-                            submitBtn.title = 'Unit tidak tersedia pada waktu yang dipilih';
-                        }
+                        submitBtn.disabled = true;
                     }
                 } catch (err) {
                     statusEl.textContent = '⚠ Terjadi kesalahan';
                     statusEl.className = 'text-[10px] font-semibold text-red-600';
                 }
-            }
+            });
 
-            btn.addEventListener('click', check);
-
-            // Show initial hint
-            statusEl.textContent = 'Cek ketersediaan diperlukan';
-            statusEl.className = 'text-[10px] font-semibold text-amber-600';
+            resetCheck();
         })();
 
+        function initFlatpickr() {
+            if (typeof flatpickr === 'undefined') {
+                setTimeout(initFlatpickr, 50);
+                return;
+            }
+            const fpConfig = {
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'd/m/Y',
+                allowInput: false,
+                locale: { firstDayOfWeek: 1 },
+            };
+            flatpickr('#tanggal_display', {
+                ...fpConfig,
+                defaultDate: document.getElementById('tanggal').value || new Date(),
+                onChange: function(selectedDates, dateStr) {
+                    const hidden = document.getElementById('tanggal');
+                    hidden.value = dateStr;
+                    hidden.dispatchEvent(new Event('change'));
+                }
+            });
+            flatpickr('#tanggal_sampai_display', {
+                ...fpConfig,
+                defaultDate: document.getElementById('tanggal_sampai').value || new Date(),
+                onChange: function(selectedDates, dateStr) {
+                    const hidden = document.getElementById('tanggal_sampai');
+                    hidden.value = dateStr;
+                    hidden.dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            initFlatpickr();
+
             function setupTimeInput(el) {
                 el.addEventListener('input', function() {
                     let v = el.value.replace(/[^0-9]/g, '');

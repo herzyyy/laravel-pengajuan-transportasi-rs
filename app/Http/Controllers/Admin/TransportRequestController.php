@@ -41,7 +41,13 @@ class TransportRequestController extends Controller
             ->limit(5)
             ->get();
 
-        return view('admin.dashboard', compact('summary', 'latest'));
+        // Kendaraan yang sedang digunakan
+        $activeVehicles = TransportRequest::with('user')
+            ->where('status', 'digunakan')
+            ->orderByRaw("CONCAT(tanggal, ' ', jam) ASC")
+            ->get();
+
+        return view('admin.dashboard', compact('summary', 'latest', 'activeVehicles'));
     }
 
     public function index(Request $request)
@@ -85,7 +91,35 @@ class TransportRequestController extends Controller
     public function show(TransportRequest $transportRequest)
     {
         $drivers = \App\Models\Driver::where('is_active', true)->orderBy('name')->get();
-        $vehicles = \App\Models\Vehicle::where('is_active', true)->orderBy('name')->get();
+        $vehicleType = $transportRequest->jenis === 'ambulance' ? 'ambulance' : 'umum';
+
+        // Cari unit yang sedang digunakan pada rentang waktu pengajuan ini
+        $mulai = \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' '.$transportRequest->jam);
+        $sampai = \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai);
+        if ($sampai->lte($mulai)) $sampai->addDay();
+
+        $busyVehicleNames = TransportRequest::where('status', 'digunakan')
+            ->whereNotNull('unit_mobil')
+            ->where('id', '!=', $transportRequest->id)
+            ->get()
+            ->filter(function ($r) use ($mulai, $sampai) {
+                $rMulai = \Carbon\Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                    ? \Carbon\Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                    : $rMulai->copy()->addHour();
+                if ($rSampai->lte($rMulai)) $rSampai->addDay();
+                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+            })
+            ->pluck('unit_mobil')
+            ->unique()
+            ->values();
+
+        $vehicles = \App\Models\Vehicle::where('type', $vehicleType)
+            ->where('is_active', true)
+            ->whereNotIn('name', $busyVehicleNames)
+            ->orderBy('name')
+            ->get();
+
         return view('admin.transport.show', compact('transportRequest', 'drivers', 'vehicles'));
     }
 
@@ -94,93 +128,58 @@ class TransportRequestController extends Controller
         $currentStatus = $transportRequest->status;
         $newStatus = $request->input('status');
         
-        // Validasi berdasarkan transisi status
         if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
-            // Tanda tangan pemohon wajib ada sebelum bisa disetujui
-            if (!$transportRequest->signature_pemohon) {
-                return redirect()->back()->withErrors(['status' => 'Pengajuan belum ditandatangani oleh pemohon. Tidak dapat disetujui.']);
-            }
-
-            // Diajukan -> Disetujui: Wajib isi unit kendaraan
             $data = $request->validate([
                 'status' => ['required', 'in:diproses,tidak_disetujui'],
+            ]);
+            // Auto-sign pengelola_1
+            $data['signature_pengelola_1'] = \Illuminate\Support\Str::random(32);
+            $data['signature_pengelola_1_at'] = now();
+            $data['signature_pengelola_1_name'] = auth()->user()->full_name;
+
+        } elseif ($currentStatus === 'diproses' && $newStatus === 'digunakan') {
+            $data = $request->validate([
+                'status' => ['required', 'in:digunakan'],
                 'unit_mobil' => ['required', 'string', 'max:100'],
                 'plat_nomor' => ['nullable', 'string', 'max:20'],
+                'driver_id' => ['required', 'exists:drivers,id'],
+                'km_awal' => ['required', 'integer', 'min:0'],
             ]);
-            
-            // Auto-fill plat nomor jika kosong
+
             if (empty($data['plat_nomor']) && !empty($data['unit_mobil'])) {
                 $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
                 if ($vehicle) {
                     $data['plat_nomor'] = $vehicle->plate_number;
                 }
             }
-            
-        } elseif ($currentStatus === 'diproses' && $newStatus === 'digunakan') {
-            // Tanda tangan pengelola_1 wajib ada sebelum bisa diubah ke digunakan
-            if (!$transportRequest->signature_pengelola_1) {
-                return redirect()->route('signature.show', $transportRequest)
-                    ->with('error', 'Tanda tangan pengelola belum ada. Silakan tanda tangan terlebih dahulu.');
-            }
+            // Auto-sign driver
+            $data['signature_driver'] = \Illuminate\Support\Str::random(32);
+            $data['signature_driver_at'] = now();
 
-            // Disetujui -> Digunakan: Wajib isi supir dan KM keberangkatan
-            $data = $request->validate([
-                'status' => ['required', 'in:digunakan'],
-                'driver_id' => ['required', 'exists:drivers,id'],
-                'km_awal' => ['required', 'integer', 'min:0'],
-            ]);
-            
         } elseif ($currentStatus === 'digunakan' && $newStatus === 'selesai') {
-            // Tanda tangan driver wajib ada sebelum bisa diselesaikan
-            if (!$transportRequest->signature_driver) {
-                return redirect()->route('signature.show', $transportRequest)
-                    ->with('error', 'Tanda tangan pengemudi belum ada. Silakan tanda tangan terlebih dahulu.');
-            }
-
-            // Digunakan -> Selesai: Wajib isi KM tiba dan jam kedatangan
             $data = $request->validate([
                 'status' => ['required', 'in:selesai'],
                 'km_akhir' => ['required', 'integer', 'min:0'],
                 'jam_kedatangan' => ['required', 'string', 'max:10', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
             ]);
             
-            // Validasi KM akhir harus lebih besar dari KM awal
             if ($data['km_akhir'] <= $transportRequest->km_awal) {
                 throw ValidationException::withMessages(['km_akhir' => 'KM tiba harus lebih besar dari KM keberangkatan.']);
             }
-            
+            // Auto-sign pengelola_2
+            $data['signature_pengelola_2'] = \Illuminate\Support\Str::random(32);
+            $data['signature_pengelola_2_at'] = now();
+            $data['signature_pengelola_2_name'] = auth()->user()->full_name;
+
         } elseif ($currentStatus === 'diajukan' && $newStatus === 'tidak_disetujui') {
-            // Diajukan -> Tidak Disetujui
             $data = $request->validate([
                 'status' => ['required', 'in:tidak_disetujui'],
             ]);
-            
         } else {
-            // Transisi status tidak valid
             return redirect()->back()->withErrors(['status' => 'Transisi status tidak valid.']);
         }
 
         $transportRequest->update($data);
-
-        // Redirect ke signature jika perlu tanda tangan
-        $needsSignature = false;
-        $signatureMessage = '';
-        
-        if ($newStatus === 'diproses' && !$transportRequest->fresh()->signature_pengelola_1) {
-            $needsSignature = true;
-            $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengelola.';
-        } elseif ($newStatus === 'digunakan' && !$transportRequest->fresh()->signature_driver) {
-            $needsSignature = true;
-            $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengemudi.';
-        } elseif ($newStatus === 'selesai' && !$transportRequest->fresh()->signature_pengelola_2) {
-            $needsSignature = true;
-            $signatureMessage = 'Status berhasil diperbarui. Silakan tanda tangan sebagai pengelola.';
-        }
-        
-        if ($needsSignature) {
-            return redirect()->route('signature.show', $transportRequest)
-                ->with('success', $signatureMessage);
-        }
 
         return redirect()->route('admin.transport.show', $transportRequest)
             ->with('success', 'Status pengajuan berhasil diperbarui.');
