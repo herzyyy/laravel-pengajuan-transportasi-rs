@@ -27,10 +27,20 @@ class DashboardController extends Controller
             ->whereIn('status', ['selesai', 'tidak_disetujui'])
             ->with('user')
             ->latest()
-            ->limit(10)
-            ->get();
+            ->paginate(5);
 
         return view('driver.dashboard', compact('driver', 'activeRequests', 'historyRequests'));
+    }
+
+    public function detail(TransportRequest $transportRequest)
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver || $transportRequest->driver_id !== $driver->id) {
+            abort(403);
+        }
+
+        return view('driver.detail', compact('transportRequest'));
     }
 
     public function complete(Request $request, TransportRequest $transportRequest)

@@ -91,5 +91,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 // Driver Routes
 Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Driver\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/detail/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'detail'])->name('detail');
     Route::post('/complete/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'complete'])->name('complete');
 });

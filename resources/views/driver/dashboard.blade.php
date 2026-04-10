@@ -111,20 +111,37 @@
                 <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
                     <div class="divide-y divide-slate-100">
                         @foreach($historyRequests as $item)
-                            <div class="px-3 py-2 text-[10px] flex items-center justify-between gap-2">
-                                <div class="min-w-0">
-                                    <span class="font-medium text-slate-800">{{ $item->unit_mobil ?? '-' }}</span>
-                                    <span class="text-slate-400 mx-1">·</span>
-                                    <span class="text-slate-500">{{ $item->tanggal->format('d/m/Y') }}</span>
-                                    <span class="text-slate-400 mx-1">·</span>
-                                    <span class="text-slate-500 truncate">{{ $item->user->full_name ?? $item->pemohon_nama }}</span>
+                            <a href="{{ route('driver.detail', $item) }}"
+                               class="px-3 py-2.5 text-[10px] flex items-center justify-between gap-2 hover:bg-slate-50 transition">
+                                <div class="min-w-0 flex-1">
+                                    <div class="flex items-center gap-1.5 mb-0.5">
+                                        <span class="font-mono text-slate-400">#{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}</span>
+                                        <span class="font-semibold text-slate-800">{{ $item->unit_mobil ?? '-' }}</span>
+                                        <span class="text-slate-400">·</span>
+                                        <span class="text-slate-500">{{ ucfirst($item->jenis) }}</span>
+                                    </div>
+                                    <div class="text-slate-500">
+                                        {{ $item->tanggal->format('d/m/Y') }}
+                                        <span class="mx-1">·</span>
+                                        {{ $item->user->full_name ?? $item->pemohon_nama }}
+                                    </div>
                                 </div>
-                                @php $s = $item->status === 'selesai' ? ['bg-emerald-100','text-emerald-800','Selesai'] : ['bg-red-100','text-red-800','Ditolak']; @endphp
-                                <span class="inline-flex shrink-0 items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold {{ $s[0] }} {{ $s[1] }}">{{ $s[2] }}</span>
-                            </div>
+                                <div class="flex items-center gap-1.5 shrink-0">
+                                    @php $s = $item->status === 'selesai' ? ['bg-emerald-100','text-emerald-800','Selesai'] : ['bg-red-100','text-red-800','Ditolak']; @endphp
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold {{ $s[0] }} {{ $s[1] }}">{{ $s[2] }}</span>
+                                    <svg class="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                                    </svg>
+                                </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
+                @if($historyRequests->hasPages())
+                    <div class="px-3 py-2 bg-slate-50 border-t border-slate-100">
+                        {{ $historyRequests->links() }}
+                    </div>
+                @endif
             </div>
         @endif
     </div>

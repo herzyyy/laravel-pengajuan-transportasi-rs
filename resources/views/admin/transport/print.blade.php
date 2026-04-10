@@ -652,8 +652,10 @@
                 : null;
             $nipPengelola1 = $pengelola1User?->nip ?? '-';
 
-            // NIP supir — dari akun user yang terhubung ke driver
-            $nipDriver = $transportRequest->driver?->user?->nip ?? '-';
+            // NIP supir — dari akun user yang terhubung ke driver, fallback ke license_number
+            $nipDriver = $transportRequest->driver?->user?->nip
+                ?? $transportRequest->driver?->license_number
+                ?? '-';
 
             // NIP pengelola 2 (sama dengan pengelola 1 jika nama sama)
             $pengelola2Name = $transportRequest->signature_pengelola_2_name ?: $pengelola1Name;

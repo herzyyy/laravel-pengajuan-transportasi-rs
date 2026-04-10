@@ -83,21 +83,42 @@ class TransportRequestController extends Controller
             $query->whereDate('tanggal', $request->tanggal);
         }
 
-        $items = $query->paginate(15)->withQueryString();
+        $items = $query->paginate(10)->withQueryString();
 
         return view('admin.transport.index', compact('items'));
     }
 
     public function show(TransportRequest $transportRequest)
     {
-        $drivers = \App\Models\Driver::where('is_active', true)->orderBy('name')->get();
         $vehicleType = $transportRequest->jenis === 'ambulance' ? 'ambulance' : 'umum';
 
-        // Cari unit yang sedang digunakan pada rentang waktu pengajuan ini
         $mulai = \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' '.$transportRequest->jam);
         $sampai = \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai);
         if ($sampai->lte($mulai)) $sampai->addDay();
 
+        // Supir yang sedang bertugas pada rentang waktu ini
+        $busyDriverIds = TransportRequest::where('status', 'digunakan')
+            ->whereNotNull('driver_id')
+            ->where('id', '!=', $transportRequest->id)
+            ->get()
+            ->filter(function ($r) use ($mulai, $sampai) {
+                $rMulai = \Carbon\Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                    ? \Carbon\Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                    : $rMulai->copy()->addHour();
+                if ($rSampai->lte($rMulai)) $rSampai->addDay();
+                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+            })
+            ->pluck('driver_id')
+            ->unique()
+            ->values();
+
+        $drivers = \App\Models\Driver::where('is_active', true)
+            ->whereNotIn('id', $busyDriverIds)
+            ->orderBy('name')
+            ->get();
+
+        // Unit kendaraan yang sedang digunakan pada rentang waktu ini
         $busyVehicleNames = TransportRequest::where('status', 'digunakan')
             ->whereNotNull('unit_mobil')
             ->where('id', '!=', $transportRequest->id)
