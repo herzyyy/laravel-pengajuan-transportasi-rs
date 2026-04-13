@@ -16,12 +16,16 @@
         {{-- Header --}}
         <header class="sticky top-0 z-40 bg-emerald-600 shadow-md">
             <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
-                {{-- Mobile Menu Button --}}
+                {{-- Mobile Menu Button (hidden for driver) --}}
+                @if(!auth()->user()->isDriver())
                 <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg bg-white/20 border border-white/30 hover:bg-white/30 transition">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
+                @else
+                <div class="w-9 lg:hidden"></div>
+                @endif
                 <div class="flex items-center gap-3 min-w-0">
                     <div class="bg-white rounded-lg p-1.5 shadow-lg">
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-7 w-auto">
@@ -192,7 +196,7 @@
                         </div>
                     @endif
 
-                    @if (!auth()->user()->isAdmin())
+                    @if (!auth()->user()->isAdmin() && !auth()->user()->isDriver())
                         {{-- Notification Dropdown for User --}}
                         @php
                             $approvedRequests = \App\Models\TransportRequest::where('user_id', auth()->id())
@@ -296,6 +300,45 @@
                         </div>
                     @endif
                     
+                    @if(auth()->user()->isDriver())
+                        {{-- Info User untuk Supir di Header --}}
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open" class="flex items-center gap-2 text-white focus:outline-none">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 border border-white/30">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                                {{-- Tampil teks di sm ke atas, sembunyikan di mobile --}}
+                                <div class="hidden sm:block leading-tight text-left">
+                                    <div class="text-xs font-semibold text-white">{{ auth()->user()->full_name }}</div>
+                                    <div class="text-[10px] text-emerald-100">Supir</div>
+                                </div>
+                                {{-- Chevron hanya di mobile --}}
+                                <svg class="sm:hidden w-3 h-3 text-white/70 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                                </svg>
+                            </button>
+
+                            {{-- Dropdown hanya muncul di mobile (sm ke bawah) --}}
+                            <div x-show="open"
+                                 @click.away="open = false"
+                                 x-transition:enter="transition ease-out duration-150"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-100"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="sm:hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 z-50 overflow-hidden"
+                                 style="display: none;">
+                                <div class="px-4 py-3 bg-emerald-50 border-b border-emerald-100">
+                                    <div class="text-[10px] uppercase tracking-wider text-emerald-600 font-semibold mb-1">Supir</div>
+                                    <div class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
@@ -314,7 +357,8 @@
 
         <div class="flex flex-1 relative">
 
-            {{-- Mobile Sidebar Overlay --}}
+            {{-- Mobile Sidebar Overlay (hidden for driver) --}}
+            @if(!auth()->user()->isDriver())
             <div x-show="sidebarOpen" 
                  @click="sidebarOpen = false"
                  x-transition:enter="transition-opacity ease-linear duration-300"
@@ -330,6 +374,7 @@
             {{-- Sidebar --}}
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
                    class="fixed left-0 top-0 bottom-0 z-40 w-64 bg-white border-r border-emerald-100 flex flex-col shadow-lg transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:z-auto lg:shadow-none">
+                @if(!auth()->user()->isDriver())
                 <div class="px-3 py-4 border-b border-emerald-100">
                     <div class="rounded-lg bg-emerald-600 px-3 py-2.5 shadow-md text-white">
                         <div class="flex items-center gap-2 mb-1.5">
@@ -354,6 +399,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
 
                 <nav class="flex-1 px-2 py-3 space-y-1">
                     @if (auth()->user()->isAdmin())
@@ -477,6 +523,7 @@
                     @endif
                 </nav>
             </aside>
+            @endif
 
             {{-- Main Content --}}
             <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50">
