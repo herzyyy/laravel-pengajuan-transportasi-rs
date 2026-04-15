@@ -11,7 +11,7 @@ class TransportRequestController extends Controller
 {
     public function choose()
     {
-        return view('transport.choose');
+        return view('user.transport.choose');
     }
 
     public function index(Request $request)
@@ -32,12 +32,12 @@ class TransportRequestController extends Controller
 
         $items = $query->paginate(10)->withQueryString();
 
-        return view('transport.index', compact('items'));
+        return view('user.transport.index', compact('items'));
     }
 
     public function createUmum()
     {
-        return view('transport.umum_form');
+        return view('user.transport.umum_form');
     }
 
     public function storeUmum(Request $request)
@@ -94,15 +94,11 @@ class TransportRequestController extends Controller
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
         if ($sampai->lte($mulai)) $sampai->addDay();
 
-        // Total unit umum aktif
         $totalUnits = \App\Models\Vehicle::where('type', 'umum')->where('is_active', true)->count();
 
-        // Unit umum yang sedang digunakan pada rentang waktu ini
-        $umumVehicleNames = \App\Models\Vehicle::where('type', 'umum')->where('is_active', true)->pluck('name');
-
-        $usedUnits = TransportRequest::where('status', 'digunakan')
-            ->whereNotNull('unit_mobil')
-            ->whereIn('unit_mobil', $umumVehicleNames)
+        // Hitung pengajuan yang overlap pada rentang waktu ini dengan status disetujui atau sedang digunakan
+        $conflicting = TransportRequest::where('jenis', 'umum')
+            ->whereIn('status', ['diproses', 'digunakan'])
             ->get()
             ->filter(function ($r) use ($mulai, $sampai) {
                 $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
@@ -111,10 +107,12 @@ class TransportRequestController extends Controller
                     : $rMulai->copy()->addHour();
                 if ($rSampai->lte($rMulai)) $rSampai->addDay();
                 return $mulai->lt($rSampai) && $rMulai->lt($sampai);
-            })
-            ->pluck('unit_mobil')
-            ->unique()
-            ->count();
+            });
+
+        // Hitung unit unik yang sudah di-assign; sisanya dihitung per pengajuan tanpa unit
+        $assignedUnits = $conflicting->whereNotNull('unit_mobil')->pluck('unit_mobil')->unique()->count();
+        $unassignedCount = $conflicting->whereNull('unit_mobil')->count();
+        $usedUnits = $assignedUnits + $unassignedCount;
 
         $available = $usedUnits < $totalUnits;
 
@@ -129,7 +127,7 @@ class TransportRequestController extends Controller
     public function createAmbulance()
     {
         $purpose = old('purpose', 'antar');
-        return view('transport.ambulance_form', compact('purpose'));
+        return view('user.transport.ambulance_form', compact('purpose'));
     }
 
     public function storeAmbulance(Request $request)
@@ -202,15 +200,11 @@ class TransportRequestController extends Controller
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
         if ($sampai->lte($mulai)) $sampai->addDay();
 
-        // Total unit ambulance aktif
         $totalUnits = \App\Models\Vehicle::where('type', 'ambulance')->where('is_active', true)->count();
 
-        // Unit ambulance yang sedang digunakan pada rentang waktu ini
-        $ambulanceVehicleNames = \App\Models\Vehicle::where('type', 'ambulance')->where('is_active', true)->pluck('name');
-
-        $usedUnits = TransportRequest::where('status', 'digunakan')
-            ->whereNotNull('unit_mobil')
-            ->whereIn('unit_mobil', $ambulanceVehicleNames)
+        // Hitung pengajuan yang overlap pada rentang waktu ini dengan status disetujui atau sedang digunakan
+        $conflicting = TransportRequest::where('jenis', 'ambulance')
+            ->whereIn('status', ['diproses', 'digunakan'])
             ->get()
             ->filter(function ($r) use ($mulai, $sampai) {
                 $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
@@ -219,10 +213,12 @@ class TransportRequestController extends Controller
                     : $rMulai->copy()->addHour();
                 if ($rSampai->lte($rMulai)) $rSampai->addDay();
                 return $mulai->lt($rSampai) && $rMulai->lt($sampai);
-            })
-            ->pluck('unit_mobil')
-            ->unique()
-            ->count();
+            });
+
+        // Hitung unit unik yang sudah di-assign; sisanya dihitung per pengajuan tanpa unit
+        $assignedUnits = $conflicting->whereNotNull('unit_mobil')->pluck('unit_mobil')->unique()->count();
+        $unassignedCount = $conflicting->whereNull('unit_mobil')->count();
+        $usedUnits = $assignedUnits + $unassignedCount;
 
         $available = $usedUnits < $totalUnits;
 
@@ -238,7 +234,7 @@ class TransportRequestController extends Controller
     {
         abort_unless($transportRequest->user_id === $request->user()->id, 403);
 
-        return view('transport.success', [
+        return view('user.transport.success', [
             'item' => $transportRequest,
         ]);
     }

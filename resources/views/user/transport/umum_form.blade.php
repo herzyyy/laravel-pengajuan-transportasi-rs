@@ -222,7 +222,7 @@
                         statusEl.className = 'text-[10px] font-semibold text-emerald-600';
                         submitBtn.disabled = false;
                     } else {
-                        statusEl.textContent = `✗ Tidak tersedia — semua ${data.total_units} unit sedang digunakan`;
+                        statusEl.textContent = `✗ Tidak tersedia di waktu tersebut (${data.available_units} dari ${data.total_units})`;
                         statusEl.className = 'text-[10px] font-semibold text-red-600';
                         submitBtn.disabled = true;
                     }

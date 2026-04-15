@@ -60,7 +60,7 @@
                             value="{{ old('username') }}"
                             required autofocus autocomplete="username"
                             placeholder="Masukan username"
-                            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('username') border-red-400 @enderror"
+                            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('username') border-red-400 @enderror"
                         >
                         @error('username')
                             <p class="mt-1 text-[10px] text-red-600">{{ $message }}</p>
@@ -77,7 +77,7 @@
                                 :type="showPass ? 'text' : 'password'"
                                 required
                                 placeholder="Password"
-                                class="w-full px-3 py-2 pr-10 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition @error('password') border-red-400 @enderror"
+                                class="w-full px-3 py-2 pr-10 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('password') border-red-400 @enderror"
                             >
                             <button type="button" @click="showPass = !showPass"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">
