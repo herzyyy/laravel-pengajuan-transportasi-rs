@@ -31,14 +31,7 @@ class AuthController extends Controller
 
         $remember = $request->boolean('remember');
 
-        // Parse username format: namadepan.namabelakang
-        $parts = explode('.', $request->username, 2);
-        $firstName = $parts[0] ?? '';
-        $lastName = $parts[1] ?? '';
-
-        $user = \App\Models\User::where('first_name', $firstName)
-            ->where('last_name', $lastName)
-            ->first();
+        $user = \App\Models\User::where('username', $request->username)->first();
 
         if (!$user || !\Illuminate\Support\Facades\Hash::check($request->password, $user->password)) {
             return back()

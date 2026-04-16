@@ -26,7 +26,7 @@
                     </div>
                     <div>
                         <div class="text-xl font-bold tracking-tight">RS Azra</div>
-                        <div class="text-xs text-emerald-200 mt-1 leading-relaxed">
+                        <div class="text-base text-emerald-200 mt-1 leading-relaxed font-medium">
                             Sistem Pengajuan<br>Transportasi
                         </div>
                     </div>

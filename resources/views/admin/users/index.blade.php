@@ -4,16 +4,14 @@
             showCreate: {{ $errors->any() && !session('edit_id') ? 'true' : 'false' }},
             showEdit: {{ session('edit_id') ? 'true' : 'false' }},
             editId: '{{ session('edit_id', '') }}',
-            editFirstName: '{{ old('first_name', session('edit_first_name', '')) }}',
-            editLastName: '{{ old('last_name', session('edit_last_name', '')) }}',
+            editNamaLengkap: '{{ old('nama_lengkap', session('edit_nama_lengkap', '')) }}',
             editNip: '{{ old('nip', session('edit_nip', '')) }}',
             editUnitKerja: '{{ old('unit_kerja', session('edit_unit_kerja', '')) }}',
             editRole: '{{ old('role', session('edit_role', 'user')) }}',
             editPriorityLevel: '{{ old('priority_level', session('edit_priority_level', '0')) }}',
-            openEdit(id, firstName, lastName, nip, unitKerja, role, priorityLevel) {
+            openEdit(id, namaLengkap, nip, unitKerja, role, priorityLevel) {
                 this.editId = id;
-                this.editFirstName = firstName;
-                this.editLastName = lastName;
+                this.editNamaLengkap = namaLengkap;
                 this.editNip = nip;
                 this.editUnitKerja = unitKerja;
                 this.editRole = role;
@@ -82,8 +80,8 @@
                 <table class="w-full text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                            <th class="py-2 px-3 text-left">Nama Depan</th>
-                            <th class="py-2 px-3 text-left">Nama Belakang</th>
+                            <th class="py-2 px-3 text-left">Nama Lengkap</th>
+                            <th class="py-2 px-3 text-left">Username</th>
                             <th class="py-2 px-3 text-left">NIP</th>
                             <th class="py-2 px-3 text-left">Unit Kerja</th>
                             <th class="py-2 px-3 text-left">Role</th>
@@ -94,11 +92,9 @@
                         @forelse($users as $user)
                             <tr class="hover:bg-slate-50 transition">
                                 <td class="py-2 px-3">
-                                    <div class="font-medium text-slate-900">{{ $user->first_name }}</div>
+                                    <div class="font-medium text-slate-900">{{ $user->first_name }} {{ $user->last_name }}</div>
                                 </td>
-                                <td class="py-2 px-3">
-                                    <div class="font-medium text-slate-900">{{ $user->last_name }}</div>
-                                </td>
+                                <td class="py-2 px-3 text-slate-600 font-mono text-[11px]">{{ $user->username ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700 font-mono">{{ $user->nip ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700">{{ $user->unit_kerja ?? '-' }}</td>
                                 <td class="py-2 px-3">
@@ -113,7 +109,7 @@
                                 <td class="py-2 px-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <button
-                                            @click="openEdit('{{ $user->id }}', '{{ addslashes($user->first_name) }}', '{{ addslashes($user->last_name) }}', '{{ addslashes($user->nip ?? '') }}', '{{ addslashes($user->unit_kerja ?? '') }}', '{{ $user->role }}', '{{ $user->priority_level ?? 0 }}')"
+                                            @click="openEdit('{{ $user->id }}', '{{ addslashes($user->first_name . ($user->last_name ? ' ' . $user->last_name : '')) }}', '{{ addslashes($user->nip ?? '') }}', '{{ addslashes($user->unit_kerja ?? '') }}', '{{ $user->role }}', '{{ $user->priority_level ?? 0 }}')"
                                             class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                                             Edit
                                         </button>
@@ -161,7 +157,7 @@
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
                         <button
-                            @click="openEdit('{{ $user->id }}', '{{ addslashes($user->first_name) }}', '{{ addslashes($user->last_name) }}', '{{ addslashes($user->nip ?? '') }}', '{{ addslashes($user->unit_kerja ?? '') }}', '{{ $user->role }}', '{{ $user->priority_level ?? 0 }}')"
+                            @click="openEdit('{{ $user->id }}', '{{ addslashes($user->first_name . ($user->last_name ? ' ' . $user->last_name : '')) }}', '{{ addslashes($user->nip ?? '') }}', '{{ addslashes($user->unit_kerja ?? '') }}', '{{ $user->role }}', '{{ $user->priority_level ?? 0 }}')"
                             class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                             Edit
                         </button>
@@ -198,21 +194,22 @@
                         </svg>
                     </button>
                 </div>
-                <form action="{{ route('admin.users.store') }}" method="POST" class="p-4 space-y-3">
+                <form action="{{ route('admin.users.store') }}" method="POST" class="p-4 space-y-3"
+                      x-data="usernameGen()">
                     @csrf
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Depan *</label>
-                            <input type="text" name="first_name" value="{{ old('first_name') }}" required
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('first_name') border-red-400 @enderror">
-                            @error('first_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Belakang *</label>
-                            <input type="text" name="last_name" value="{{ old('last_name') }}" required
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('last_name') border-red-400 @enderror">
-                            @error('last_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required
+                               x-model="namaLengkap" @input="generateUsername()"
+                               placeholder="Contoh: dr. Budi Santoso M.Kes"
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_lengkap') border-red-400 @enderror">
+                        @error('nama_lengkap')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Username (otomatis)</label>
+                        <input type="text" readonly :value="username"
+                               class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 font-mono cursor-not-allowed">
+                        <p class="mt-1 text-[10px] text-slate-400">Dibuat otomatis dari nama lengkap</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
@@ -276,22 +273,23 @@
                         </svg>
                     </button>
                 </div>
-                <form :action="'{{ url('admin/users') }}/' + editId" method="POST" class="p-4 space-y-3">
+                <form :action="'{{ url('admin/users') }}/' + editId" method="POST" class="p-4 space-y-3"
+                      x-data="usernameGen()" x-init="namaLengkap = $root.editNamaLengkap; generateUsername()">
                     @csrf
                     @method('PUT')
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Depan *</label>
-                            <input type="text" name="first_name" :value="editFirstName" required
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('first_name') border-red-400 @enderror">
-                            @error('first_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Belakang *</label>
-                            <input type="text" name="last_name" :value="editLastName" required
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('last_name') border-red-400 @enderror">
-                            @error('last_name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
+                        <input type="text" name="nama_lengkap" :value="$root.editNamaLengkap" required
+                               x-model="namaLengkap" @input="generateUsername()"
+                               placeholder="Contoh: dr. Budi Santoso M.Kes"
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_lengkap') border-red-400 @enderror">
+                        @error('nama_lengkap')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Username (otomatis)</label>
+                        <input type="text" readonly :value="username"
+                               class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 font-mono cursor-not-allowed">
+                        <p class="mt-1 text-[10px] text-slate-400">Dibuat otomatis dari nama lengkap</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
@@ -344,4 +342,30 @@
         </div>
 
     </div>
+
+    <script>
+        function usernameGen() {
+            return {
+                namaLengkap: '',
+                username: '',
+                generateUsername() {
+                    const raw = this.namaLengkap.trim();
+                    if (!raw) { this.username = ''; return; }
+
+                    const parts = raw.split(/\s+/);
+
+                    const w1 = (parts[0] || '').toLowerCase().replace(/[^a-z0-9.]/g, '');
+                    const w2raw = parts[1] || null;
+
+                    // Jika kata ke-2 mengandung titik (gelar/singkatan), abaikan
+                    const w2 = (w2raw && !w2raw.includes('.'))
+                        ? w2raw.toLowerCase().replace(/[^a-z0-9]/g, '')
+                        : null;
+
+                    const base = w1.replace(/\.+$/, '');
+                    this.username = (w2 && w2 !== '') ? `${base}.${w2}` : base;
+                }
+            }
+        }
+    </script>
 </x-app-layout>

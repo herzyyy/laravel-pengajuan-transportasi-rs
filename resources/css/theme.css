@@ -11,6 +11,16 @@
     --color-secondary-gray: #F5F5F5;
 }
 
+/* ── Border-radius override: lebih lancip di seluruh aplikasi ── */
+.rounded-sm   { border-radius: 0.125rem !important; }
+.rounded      { border-radius: 0.2rem   !important; }
+.rounded-md   { border-radius: 0.25rem  !important; }
+.rounded-lg   { border-radius: 0.35rem  !important; }
+.rounded-xl   { border-radius: 0.5rem   !important; }
+.rounded-2xl  { border-radius: 0.65rem  !important; }
+.rounded-3xl  { border-radius: 0.85rem  !important; }
+.rounded-full { border-radius: 9999px   !important; }
+
 /* Accent Line Styles */
 .accent-left-yellow {
     position: relative;
@@ -50,7 +60,7 @@
 /* Card Styles */
 .card-accent {
     background: white;
-    border-radius: 0.75rem;
+    border-radius: 0.35rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
@@ -75,7 +85,7 @@
 /* Card with Left Accent */
 .card-left-accent {
     background: white;
-    border-radius: 0.75rem;
+    border-radius: 0.35rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     position: relative;
     overflow: hidden;
@@ -271,7 +281,6 @@
 .border-emerald-100 { border-color: #c9e8cb !important; }
 .border-emerald-200 { border-color: #aee0a5 !important; }
 .border-emerald-400 { border-color: #68c45f !important; }
-.border-emerald-500 { border-color: var(--color-brand-primary) !important; }
 
 .text-emerald-50  { color: #e8f8e8 !important; }
 .text-emerald-100 { color: #c8e9c4 !important; }
@@ -346,21 +355,36 @@
     color: var(--color-accent-teal);
 }
 
-/* Form Input Styling */
+/* Form Input Styling — border normal abu-abu, hijau hanya saat focus */
+input,
+select,
+textarea {
+    border-color: #CBD5E1 !important;
+    --tw-ring-shadow: none !important;
+    box-shadow: none !important;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
 input:focus,
 select:focus,
 textarea:focus,
-button:focus {
-    outline: none;
+.focus\:ring-2:focus,
+.focus\:border-emerald-500:focus,
+.focus\:ring-emerald-500:focus {
     border-color: var(--color-brand-primary) !important;
+    --tw-ring-color: rgba(0, 119, 116, 0.1) !important;
     box-shadow: 0 0 0 3px rgba(0, 119, 116, 0.1) !important;
+    outline: none;
 }
 
-/* Tailwind Focus Ring Override */
-.focus\:ring-2:focus,
-.focus\:border-emerald-500:focus {
-    border-color: var(--color-brand-primary) !important;
-    box-shadow: 0 0 0 3px rgba(0, 119, 116, 0.1) !important;
+/* Paksa hapus ring saat tidak focus */
+input:not(:focus),
+select:not(:focus),
+textarea:not(:focus) {
+    --tw-ring-shadow: 0 0 #0000 !important;
+    --tw-ring-offset-shadow: 0 0 #0000 !important;
+    box-shadow: none !important;
 }
 
 /* Link & Active States */
@@ -378,16 +402,15 @@ a:hover {
 .is-active,
 [aria-current="page"] {
     color: var(--color-brand-primary) !important;
-    border-color: var(--color-brand-primary) !important;
 }
 
 /* Responsive Utilities */
 @media (max-width: 768px) {
     .card-accent {
-        border-radius: 0.5rem;
+        border-radius: 0.25rem;
     }
 
     .card-left-accent {
-        border-radius: 0.5rem;
+        border-radius: 0.25rem;
     }
 }
