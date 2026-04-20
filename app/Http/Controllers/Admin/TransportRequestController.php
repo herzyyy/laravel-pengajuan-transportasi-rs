@@ -9,6 +9,38 @@ use Illuminate\Validation\ValidationException;
 
 class TransportRequestController extends Controller
 {
+    /**
+     * Cek apakah masih ada unit tersedia untuk jenis dan rentang waktu pengajuan ini.
+     * Menghitung pengajuan berstatus diproses + digunakan yang overlap (exclude pengajuan ini sendiri).
+     */
+    private function isUnitAvailable(TransportRequest $transportRequest): bool
+    {
+        $jenis = $transportRequest->jenis;
+        $mulai = \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' '.$transportRequest->jam);
+        $sampai = \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai);
+        if ($sampai->lte($mulai)) $sampai->addDay();
+
+        $totalUnits = \App\Models\Vehicle::where('type', $jenis)->where('is_active', true)->count();
+
+        $conflicting = TransportRequest::where('jenis', $jenis)
+            ->whereIn('status', ['diproses', 'digunakan'])
+            ->where('id', '!=', $transportRequest->id)
+            ->get()
+            ->filter(function ($r) use ($mulai, $sampai) {
+                $rMulai = \Carbon\Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                    ? \Carbon\Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                    : $rMulai->copy()->addHour();
+                if ($rSampai->lte($rMulai)) $rSampai->addDay();
+                return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+            });
+
+        $assignedUnits = $conflicting->whereNotNull('unit_mobil')->pluck('unit_mobil')->unique()->count();
+        $unassignedCount = $conflicting->whereNull('unit_mobil')->count();
+        $usedUnits = $assignedUnits + $unassignedCount;
+
+        return $usedUnits < $totalUnits;
+    }
     public function dashboard()
     {
         $counts = TransportRequest::selectRaw('status, COUNT(*) as total')
@@ -141,7 +173,11 @@ class TransportRequestController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.transport.show', compact('transportRequest', 'drivers', 'vehicles'));
+        $unitAvailable = $transportRequest->status === 'diajukan'
+            ? $this->isUnitAvailable($transportRequest)
+            : true;
+
+        return view('admin.transport.show', compact('transportRequest', 'drivers', 'vehicles', 'unitAvailable'));
     }
 
     public function update(Request $request, TransportRequest $transportRequest)
@@ -150,6 +186,11 @@ class TransportRequestController extends Controller
         $newStatus = $request->input('status');
         
         if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
+            // Cek ketersediaan unit sebelum menyetujui
+            if (!$this->isUnitAvailable($transportRequest)) {
+                return redirect()->back()->withErrors(['status' => 'Tidak dapat menyetujui — semua unit kendaraan sudah penuh di waktu tersebut.']);
+            }
+
             $data = $request->validate([
                 'status' => ['required', 'in:diproses,tidak_disetujui'],
             ]);
@@ -157,6 +198,27 @@ class TransportRequestController extends Controller
             $data['signature_pengelola_1'] = \Illuminate\Support\Str::random(32);
             $data['signature_pengelola_1_at'] = now();
             $data['signature_pengelola_1_name'] = auth()->user()->full_name;
+
+        } elseif ($currentStatus === 'digunakan' && $newStatus === 'digunakan' && $request->input('_edit_digunakan')) {
+            // Edit data saat status digunakan
+            $data = $request->validate([
+                'status'     => ['required', 'in:digunakan'],
+                'unit_mobil' => ['nullable', 'string', 'max:100'],
+                'plat_nomor' => ['nullable', 'string', 'max:20'],
+                'driver_id'  => ['nullable', 'exists:drivers,id'],
+                'km_awal'    => ['nullable', 'integer', 'min:0'],
+            ]);
+
+            if (empty($data['plat_nomor']) && !empty($data['unit_mobil'])) {
+                $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
+                if ($vehicle) $data['plat_nomor'] = $vehicle->plate_number;
+            }
+
+            unset($data['status']);
+            $transportRequest->update($data);
+
+            return redirect()->route('admin.transport.show', $transportRequest)
+                ->with('success', 'Data kendaraan berhasil diperbarui.');
 
         } elseif ($currentStatus === 'diproses' && $newStatus === 'digunakan') {
             $data = $request->validate([
@@ -195,6 +257,7 @@ class TransportRequestController extends Controller
         } elseif ($currentStatus === 'diajukan' && $newStatus === 'tidak_disetujui') {
             $data = $request->validate([
                 'status' => ['required', 'in:tidak_disetujui'],
+                'rejection_reason' => ['required', 'string', 'max:500'],
             ]);
         } else {
             return redirect()->back()->withErrors(['status' => 'Transisi status tidak valid.']);

@@ -7,42 +7,27 @@
         </div>
 
         <!-- Summary Statistics Cards -->
-        <div class="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-3 sm:mb-4">
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-2 sm:p-3 hover:shadow-md transition">
-                <div class="text-[10px] font-semibold text-slate-600 uppercase tracking-wide mb-1">Total</div>
-                <div class="text-xl sm:text-2xl font-bold text-slate-900">{{ $summary['total'] }}</div>
-                <p class="text-[10px] text-slate-500 mt-0.5 hidden sm:block">Semua pengajuan</p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2 sm:gap-3 mb-3 sm:mb-4">
+            @foreach([
+                ['label'=>'Total',          'value'=>$summary['total'],                    'color'=>'slate',   'path'=>'M9 2a1 1 0 000 2h2a1 1 0 100-2H9zM4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z'],
+                ['label'=>'Diajukan',       'value'=>$summary['diajukan'],                 'color'=>'amber',   'path'=>'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'],
+                ['label'=>'Disetujui',      'value'=>$summary['diproses'],                 'color'=>'blue',    'path'=>'M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z'],
+                ['label'=>'Digunakan',      'value'=>$summary['digunakan'] ?? 0,           'color'=>'cyan',    'path'=>'M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1V5a1 1 0 00-1-1H3z'],
+                ['label'=>'Selesai',        'value'=>$summary['selesai'],                  'color'=>'emerald', 'path'=>'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'],
+                ['label'=>'Tidak Disetujui','value'=>$summary['tidak_disetujui'],          'color'=>'red',     'path'=>'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'],
+            ] as $stat)
+            <div class="bg-white border border-{{ $stat['color'] }}-200 rounded-lg px-3 py-4 flex items-center gap-3 shadow-sm hover:shadow-md transition">
+                <div class="shrink-0 rounded-lg p-2 bg-{{ $stat['color'] }}-100">
+                    <svg class="w-4 h-4 text-{{ $stat['color'] }}-600" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="{{ $stat['path'] }}" clip-rule="evenodd"/>
+                    </svg>
+                </div>
+                <div class="min-w-0">
+                    <p class="text-[9px] font-semibold text-{{ $stat['color'] }}-600 uppercase tracking-wide truncate">{{ $stat['label'] }}</p>
+                    <p class="text-2xl font-bold text-slate-900 leading-none mt-1">{{ $stat['value'] }}</p>
+                </div>
             </div>
-
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-amber-200 p-2 sm:p-3 hover:shadow-md transition">
-                <div class="text-[10px] font-semibold text-amber-700 uppercase tracking-wide mb-1">Diajukan</div>
-                <div class="text-xl sm:text-2xl font-bold text-amber-900">{{ $summary['diajukan'] }}</div>
-                <p class="text-[10px] text-amber-600 mt-0.5 hidden sm:block">Menunggu persetujuan</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-blue-200 p-2 sm:p-3 hover:shadow-md transition">
-                <div class="text-[10px] font-semibold text-blue-700 uppercase tracking-wide mb-1">Disetujui</div>
-                <div class="text-xl sm:text-2xl font-bold text-blue-900">{{ $summary['diproses'] }}</div>
-                <p class="text-[10px] text-blue-600 mt-0.5 hidden sm:block">Sudah disetujui</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-cyan-200 p-2 sm:p-3 hover:shadow-md transition">
-                <div class="text-[10px] font-semibold text-cyan-700 uppercase tracking-wide mb-1">Digunakan</div>
-                <div class="text-xl sm:text-2xl font-bold text-cyan-900">{{ $summary['digunakan'] ?? 0 }}</div>
-                <p class="text-[10px] text-cyan-600 mt-0.5 hidden sm:block">Sedang digunakan</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-emerald-200 p-2 sm:p-3 hover:shadow-md transition">
-                <div class="text-[10px] font-semibold text-emerald-700 uppercase tracking-wide mb-1">Selesai</div>
-                <div class="text-xl sm:text-2xl font-bold text-emerald-900">{{ $summary['selesai'] }}</div>
-                <p class="text-[10px] text-emerald-600 mt-0.5 hidden sm:block">Sudah selesai</p>
-            </div>
-
-            <div class="bg-white rounded-lg shadow-sm ring-1 ring-red-200 p-2 sm:p-3 hover:shadow-md transition">
-                <div class="text-[10px] font-semibold text-red-700 uppercase tracking-wide mb-1">Tidak Disetujui</div>
-                <div class="text-xl sm:text-2xl font-bold text-red-900">{{ $summary['tidak_disetujui'] }}</div>
-                <p class="text-[10px] text-red-600 mt-0.5 hidden sm:block">Ditolak/kadaluarsa</p>
-            </div>
+            @endforeach
         </div>
 
         <!-- Latest Requests + Active Vehicles -->
@@ -82,12 +67,13 @@
                                         <td class="px-2 sm:px-3 py-2">
                                             <a href="{{ route('admin.transport.show', $item) }}"
                                                class="font-mono text-[11px] font-semibold text-emerald-700 hover:underline">
-                                                #{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}
+                                                {{ $item->nomor_pengajuan }}
                                             </a>
                                         </td>
                                         <td class="px-2 sm:px-3 py-2 text-slate-700 font-medium whitespace-nowrap">
                                             <div>{{ $item->tanggal->format('d/m/Y') }}</div>
                                             <div class="text-[10px] text-slate-500">{{ substr($item->jam, 0, 5) }}</div>
+                                            <div class="text-[9px] text-slate-400 mt-0.5">Dibuat: {{ $item->created_at->format('d/m/Y, H:i') }}</div>
                                         </td>
                                         <td class="px-2 sm:px-3 py-2 hidden sm:table-cell">
                                             <div class="font-medium text-slate-900 text-xs">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>

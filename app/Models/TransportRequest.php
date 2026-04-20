@@ -4,12 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class TransportRequest extends Model
 {
     use HasFactory;
 
     protected $fillable = [
+        'nomor_pengajuan',
         'user_id',
         'jenis', // umum | ambulance
         'keperluan', // umum: aktivitas; ambulance: antar|jemput
@@ -45,6 +47,7 @@ class TransportRequest extends Model
         'alamat_pasien',
         'pendamping_nama',
         'status',
+        'rejection_reason',
         
         // signatures
         'signature_pemohon',
@@ -77,6 +80,20 @@ class TransportRequest extends Model
     public function driver()
     {
         return $this->belongsTo(Driver::class);
+    }
+
+    public static function generateNomor(): string
+    {
+        $dateKey = now()->format('ymd');
+
+        $last = DB::table('transport_requests')
+            ->where('nomor_pengajuan', 'like', $dateKey . '%')
+            ->orderByDesc('nomor_pengajuan')
+            ->value('nomor_pengajuan');
+
+        $seq = $last ? ((int) substr($last, 6)) + 1 : 1;
+
+        return $dateKey . $seq;
     }
 }
 

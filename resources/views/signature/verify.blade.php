@@ -96,7 +96,7 @@
                         <div class="grid grid-cols-2 gap-x-3 gap-y-1.5">
                             <div>
                                 <p class="text-[9px] text-slate-400">No. Pengajuan</p>
-                                <p class="text-xs font-mono font-bold text-slate-800">#{{ str_pad($transportRequest->id, 4, '0', STR_PAD_LEFT) }}</p>
+                                <p class="text-xs font-mono font-bold text-slate-800">{{ $transportRequest->nomor_pengajuan }}</p>
                             </div>
                             <div>
                                 <p class="text-[9px] text-slate-400">Jenis</p>

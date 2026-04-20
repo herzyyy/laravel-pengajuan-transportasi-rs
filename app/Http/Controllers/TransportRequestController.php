@@ -65,6 +65,7 @@ class TransportRequestController extends Controller
         $transportRequest = TransportRequest::create([
             'user_id' => $request->user()->id,
             'jenis' => 'umum',
+            'nomor_pengajuan' => TransportRequest::generateNomor(),
             'unit_mobil' => null,
             'keperluan' => $data['keperluan'],
             'prioritas' => $data['prioritas'],
@@ -169,6 +170,7 @@ class TransportRequestController extends Controller
         $transportRequest = TransportRequest::create([
             'user_id' => $request->user()->id,
             'jenis' => 'ambulance',
+            'nomor_pengajuan' => TransportRequest::generateNomor(),
             'unit_mobil' => null,
             'keperluan' => $purpose,
             'prioritas' => $data['prioritas'],
@@ -228,6 +230,13 @@ class TransportRequestController extends Controller
             'used_units' => $usedUnits,
             'available_units' => max(0, $totalUnits - $usedUnits),
         ]);
+    }
+
+    public function print(Request $request, TransportRequest $transportRequest)
+    {
+        abort_unless($transportRequest->user_id === $request->user()->id, 403);
+        $transportRequest->load('driver');
+        return view('admin.transport.print', compact('transportRequest'));
     }
 
     public function success(Request $request, TransportRequest $transportRequest)

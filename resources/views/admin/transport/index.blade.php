@@ -80,6 +80,7 @@
                                     <td class="px-3 py-2">
                                         <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</div>
                                         <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ substr($item->jam, 0, 5) }} - {{ substr($item->jam_sampai, 0, 5) }}</div>
+                                        <div class="text-[9px] text-slate-400 mt-0.5 whitespace-nowrap">Dibuat: {{ $item->created_at->format('d/m/Y, H:i') }}</div>
                                     </td>
                                     <td class="px-3 py-2">
                                         @if($item->unit_mobil)
@@ -196,6 +197,7 @@
                                     <span class="text-slate-700 font-medium">{{ $item->tanggal->format('d M Y') }}</span>
                                     <span class="text-slate-500">{{ $item->jam }} - {{ $item->jam_sampai }}</span>
                                 </div>
+                                <div class="text-[10px] text-slate-400 mt-0.5">Dibuat: {{ $item->created_at->format('d M Y, H:i') }}</div>
 
                                 @if($item->unit_mobil)
                                     <div class="flex items-center gap-2">
@@ -228,7 +230,7 @@
                                         Tanda tangan belum lengkap
                                     </div>
                                 @endif
-                                <a href="{{ route('admin.transport.show', $item) }}" class="block w-full text-center rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                                <a href="{{ route('admin.transport.show', $item) }}" class="block w-full text-center rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold hover:bg-emerald-700 transition" style="color: white !important;">
                                     Lihat Detail
                                 </a>
                             </div>

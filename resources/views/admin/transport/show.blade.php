@@ -6,7 +6,7 @@
                     Detail Pengajuan Transportasi
                 </h1>
                 <p class="text-slate-500 text-xs mt-0.5">
-                    ID: #{{ str_pad($transportRequest->id, 4, '0', STR_PAD_LEFT) }}
+                    ID: {{ $transportRequest->nomor_pengajuan }}
                 </p>
             </div>
 
@@ -83,6 +83,11 @@
                             <dd class="flex-1 text-slate-800 font-medium">
                                 {{ $transportRequest->tanggal->format('d/m/Y') }} {{ substr($transportRequest->jam, 0, 5) }} - {{ $transportRequest->tanggal_sampai->format('d/m/Y') }} {{ substr($transportRequest->jam_sampai, 0, 5) }}
                             </dd>
+                        </div>
+
+                        <div class="flex">
+                            <dt class="w-24 text-slate-500">Tgl Dibuat</dt>
+                            <dd class="flex-1 text-slate-500">{{ $transportRequest->created_at->format('d/m/Y, H:i') }}</dd>
                         </div>
 
                         <div class="flex">
@@ -244,7 +249,7 @@
                 <form method="POST"
                       action="{{ route('admin.transport.update', $transportRequest) }}"
                       class="px-3 py-2.5 space-y-2.5 text-xs"
-                      x-data="{ currentStatus: '{{ $transportRequest->status }}', savedStatus: '{{ $transportRequest->status }}' }">
+                      x-data="{ currentStatus: '{{ $transportRequest->status }}', savedStatus: '{{ $transportRequest->status }}', editOpen: false }">
                     @csrf
                     @method('PUT')
 
@@ -256,7 +261,9 @@
                                 class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             @if($transportRequest->status === 'diajukan')
                                 <option value="diajukan" selected>Diajukan (Menunggu)</option>
+                                @if($unitAvailable)
                                 <option value="diproses">Disetujui</option>
+                                @endif
                                 <option value="tidak_disetujui">Tidak Disetujui</option>
                             @elseif($transportRequest->status === 'diproses')
                                 <option value="diproses" selected>Disetujui</option>
@@ -277,9 +284,30 @@
                             <span x-show="currentStatus === 'selesai'">Status sudah selesai</span>
                             <span x-show="currentStatus === 'tidak_disetujui'">Pengajuan tidak disetujui</span>
                         </p>
+                        @if($transportRequest->status === 'diajukan' && !$unitAvailable)
+                        <div class="mt-1.5 flex items-start gap-1.5 rounded-lg bg-red-50 border border-red-200 px-2.5 py-2">
+                            <svg class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                            <p class="text-[10px] text-red-700 font-medium">Semua unit kendaraan sudah penuh di waktu ini. Pengajuan hanya bisa ditolak.</p>
+                        </div>
+                        @endif
                     </div>
 
                     <!-- Form untuk Diajukan -> Disetujui: tidak ada input tambahan -->
+
+                    <!-- Input alasan penolakan -->
+                    <div x-show="currentStatus === 'tidak_disetujui' && savedStatus === 'diajukan'" class="space-y-1">
+                        <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
+                            Alasan Penolakan <span class="text-red-500">*</span>
+                        </label>
+                        <textarea name="rejection_reason" rows="3"
+                                  class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                                  placeholder="Tuliskan alasan pengajuan tidak disetujui...">{{ old('rejection_reason') }}</textarea>
+                        @error('rejection_reason')
+                            <p class="text-[10px] text-red-600">{{ $message }}</p>
+                        @enderror
+                    </div>
 
                     <!-- Form untuk Disetujui -> Digunakan: Unit Kendaraan, Supir & KM Keberangkatan -->
                     <div x-show="currentStatus === 'digunakan' && '{{ $transportRequest->status }}' === 'diproses'" class="space-y-2">
@@ -360,7 +388,7 @@
                         </div>
                     </div>
 
-                    <!-- Info Data yang Sudah Diisi -->
+                    <!-- Info Data yang Sudah Diisi + Edit untuk status digunakan -->
                     <div x-show="'{{ $transportRequest->status }}' === 'digunakan' || '{{ $transportRequest->status }}' === 'selesai'" class="bg-slate-50 rounded-lg p-2 text-[10px] space-y-1">
                         <div class="font-semibold text-slate-700 mb-1">Data Terisi:</div>
                         
@@ -407,16 +435,102 @@
                         @endif
                     </div>
 
+                    @if($transportRequest->status === 'digunakan')
+                    <!-- Tombol Edit Data Digunakan — di luar form utama -->
+                    <div x-show="currentStatus !== 'selesai'" class="border-t border-slate-200 pt-2">
+                        <button type="button" @click="editOpen = !editOpen"
+                                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition"
+                                :class="editOpen ? 'bg-slate-100 text-slate-700 border border-slate-300' : 'text-white'"
+                                :style="editOpen ? '' : 'background-color: #00685E;'">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                            </svg>
+                            <span x-text="editOpen ? 'Tutup' : 'Edit Unit / Supir / KM'"></span>
+                        </button>
+                    </div>
+                    @endif
+
                     <div class="pt-2 border-t border-slate-200 flex items-center justify-end gap-2"
                          x-show="currentStatus !== savedStatus">
                         <button type="submit"
                                 @if($isBlocked) disabled @endif
-                                class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold text-white focus:outline-none focus:ring-2 focus:ring-emerald-500
+                                class="inline-flex items-center justify-center rounded-lg px-3 py-1.5 text-xs font-semibold text-white focus:outline-none
                                     {{ $isBlocked ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-700' }}">
-                            Simpan
+                            <span x-text="currentStatus === 'selesai' ? 'Simpan Selesai' : 'Simpan'"></span>
                         </button>
                     </div>
                 </form>
+
+                @if($transportRequest->status === 'digunakan')
+                <!-- Form Edit terpisah (di luar form utama) -->
+                <div x-data="{ editOpen: false }" id="editDigunakanWrapper" class="px-3 pb-3">
+                    <div x-show="editOpen" x-transition class="mt-2 pt-2 border-t border-slate-200">
+                        <form method="POST"
+                              action="{{ route('admin.transport.update', $transportRequest) }}"
+                              class="space-y-2 text-xs">
+                            @csrf
+                            @method('PUT')
+                            <input type="hidden" name="status" value="digunakan">
+                            <input type="hidden" name="_edit_digunakan" value="1">
+
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">Unit Kendaraan</label>
+                                <select name="unit_mobil" id="unit_mobil_edit"
+                                        class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs">
+                                    <option value="">-- Pilih Unit --</option>
+                                    @foreach($vehicles as $vehicle)
+                                        <option value="{{ $vehicle->name }}"
+                                                data-plate="{{ $vehicle->plate_number }}"
+                                                @selected($transportRequest->unit_mobil == $vehicle->name)>
+                                            {{ $vehicle->name }} ({{ $vehicle->plate_number }})
+                                        </option>
+                                    @endforeach
+                                    @if($transportRequest->unit_mobil && !$vehicles->contains('name', $transportRequest->unit_mobil))
+                                        <option value="{{ $transportRequest->unit_mobil }}" selected>
+                                            {{ $transportRequest->unit_mobil }} ({{ $transportRequest->plat_nomor }}) — saat ini
+                                        </option>
+                                    @endif
+                                </select>
+                                <input type="hidden" name="plat_nomor" id="plat_nomor_edit" value="{{ $transportRequest->plat_nomor }}">
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">Supir</label>
+                                <select name="driver_id"
+                                        class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs">
+                                    <option value="">-- Pilih Supir --</option>
+                                    @foreach($drivers as $driver)
+                                        <option value="{{ $driver->id }}"
+                                                @selected($transportRequest->driver_id == $driver->id)>
+                                            {{ $driver->name }}@if($driver->phone) ({{ $driver->phone }})@endif
+                                        </option>
+                                    @endforeach
+                                    @if($transportRequest->driver_id && !$drivers->contains('id', $transportRequest->driver_id))
+                                        <option value="{{ $transportRequest->driver_id }}" selected>
+                                            {{ $transportRequest->driver->name ?? '-' }} — saat ini
+                                        </option>
+                                    @endif
+                                </select>
+                            </div>
+
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">KM Keberangkatan</label>
+                                <input type="text" id="km_awal_edit_display"
+                                       value="{{ $transportRequest->km_awal ? number_format($transportRequest->km_awal, 0, ',', '.') : '' }}"
+                                       class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs"
+                                       placeholder="Masukkan KM" inputmode="numeric" autocomplete="off">
+                                <input type="hidden" name="km_awal" id="km_awal_edit" value="{{ $transportRequest->km_awal }}">
+                            </div>
+
+                            <button type="submit"
+                                    class="w-full rounded-lg text-white px-3 py-1.5 text-xs font-semibold transition"
+                                    style="background-color: #00685E; color: white !important;">
+                                Simpan Perubahan
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -546,6 +660,33 @@
 
             setupKmInput('km_awal_display', 'km_awal');
             setupKmInput('km_akhir_display', 'km_akhir');
+
+            // Setup form edit digunakan
+            setupKmInput('km_awal_edit_display', 'km_awal_edit');
+
+            const unitMobilEdit = document.getElementById('unit_mobil_edit');
+            const platNomorEdit = document.getElementById('plat_nomor_edit');
+            if (unitMobilEdit && platNomorEdit) {
+                unitMobilEdit.addEventListener('change', function() {
+                    const plate = this.options[this.selectedIndex].getAttribute('data-plate');
+                    platNomorEdit.value = plate || '';
+                });
+            }
+
+            // Sync tombol edit di form utama (Alpine) dengan wrapper edit terpisah
+            document.addEventListener('alpine:init', () => {});
+            document.addEventListener('alpine:initialized', () => {
+                const mainForm = document.querySelector('[x-data*="editOpen"]');
+                const editWrapper = document.getElementById('editDigunakanWrapper');
+                if (mainForm && editWrapper) {
+                    const mainData = Alpine.$data(mainForm);
+                    const editData = Alpine.$data(editWrapper);
+                    // Watch editOpen di form utama, sync ke wrapper
+                    Alpine.effect(() => {
+                        editData.editOpen = mainData.editOpen;
+                    });
+                }
+            });
 
             // Blokir submit jika km_akhir <= km_awal
             document.querySelector('form').addEventListener('submit', function(e) {

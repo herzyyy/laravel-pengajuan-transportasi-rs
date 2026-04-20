@@ -8,7 +8,7 @@
                     </svg>
                 </div>
                 <h1 class="text-base font-bold text-white">Sudah Ditandatangani</h1>
-                <p class="text-xs text-slate-200 mt-0.5">Pengajuan #{{ str_pad($transportRequest->id, 4, '0', STR_PAD_LEFT) }}</p>
+                <p class="text-xs text-slate-200 mt-0.5">Pengajuan {{ $transportRequest->nomor_pengajuan }}</p>
             </div>
             <div class="p-4 text-center space-y-3">
                 <p class="text-sm text-slate-600">Tidak ada tanda tangan yang diperlukan untuk pengajuan ini saat ini.</p>

@@ -11,6 +11,13 @@
     --color-secondary-gray: #F5F5F5;
 }
 
+/* Font global */
+body, * {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 /* ── Border-radius override: lebih lancip di seluruh aplikasi ── */
 .rounded-sm   { border-radius: 0.125rem !important; }
 .rounded      { border-radius: 0.2rem   !important; }
@@ -243,6 +250,52 @@
 
 .sidebar-nav-item.active::before {
     background-color: var(--color-primary-green);
+}
+
+/* Header Button Hover */
+.header-btn {
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.header-btn:hover {
+    background-color: #007774 !important;
+    color: white !important;
+    border-color: #007774 !important;
+}
+
+.header-btn:hover svg {
+    color: white !important;
+}
+
+/* Clean Sidebar Link */
+.sidebar-link {
+    color: #64748b;
+    text-decoration: none;
+}
+
+.sidebar-link:hover {
+    background-color: #f0fafa;
+    color: #007774;
+}
+
+.sidebar-link:hover .sidebar-icon {
+    background-color: rgba(0, 119, 116, 0.1);
+    color: #007774;
+}
+
+.sidebar-link .sidebar-icon {
+    background-color: #f1f5f9;
+    color: #94a3b8;
+}
+
+.sidebar-link-active {
+    background-color: rgba(0, 119, 116, 0.08) !important;
+    color: #007774 !important;
+}
+
+.sidebar-link-active .sidebar-icon {
+    background-color: rgba(0, 119, 116, 0.15) !important;
+    color: #007774 !important;
 }
 
 /* Form Elements */

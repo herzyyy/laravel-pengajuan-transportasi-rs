@@ -10,7 +10,7 @@
                 </div>
                 <div>
                     <h1 class="text-sm font-bold text-slate-900">Pengajuan Berhasil</h1>
-                    <p class="text-slate-500 text-xs">Ref: <span class="font-semibold text-emerald-600">#{{ str_pad($item->id, 4, '0', STR_PAD_LEFT) }}</span></p>
+                    <p class="text-slate-500 text-xs">Ref: <span class="font-semibold text-emerald-600">{{ $item->nomor_pengajuan }}</span></p>
                 </div>
             </div>
 
@@ -71,6 +71,11 @@
                         </dd>
                     </div>
 
+                    <div class="py-2 flex justify-between gap-3">
+                        <dt class="text-slate-500">Tgl Dibuat</dt>
+                        <dd class="text-slate-500 text-right">{{ $item->created_at->format('d/m/Y, H:i') }}</dd>
+                    </div>
+
                     @if ($item->kontak)
                     <div class="py-2 flex justify-between gap-3">
                         <dt class="text-slate-500">Kontak</dt>
@@ -126,6 +131,20 @@
                             </span>
                         </dd>
                     </div>
+
+                    @if ($item->status === 'tidak_disetujui' && $item->rejection_reason)
+                    <div class="py-2">
+                        <div class="rounded-lg bg-red-50 border border-red-200 px-3 py-2.5">
+                            <div class="flex items-center gap-1.5 mb-1">
+                                <svg class="w-3.5 h-3.5 text-red-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                                </svg>
+                                <span class="text-[10px] font-semibold text-red-700">Alasan Penolakan</span>
+                            </div>
+                            <p class="text-xs text-red-800">{{ $item->rejection_reason }}</p>
+                        </div>
+                    </div>
+                    @endif
                 </dl>
             </div>
 
@@ -133,6 +152,13 @@
             <div class="bg-slate-50 px-3 py-2.5 border-t border-slate-100 flex flex-col-reverse sm:flex-row gap-2 sm:justify-end">
                 <a href="{{ route('pengajuan.index') }}" class="inline-flex justify-center items-center px-3 py-2 border border-slate-300 text-xs font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors w-full sm:w-auto">
                     Lihat Riwayat
+                </a>
+                <a href="{{ route('pengajuan.print', $item) }}" target="_blank"
+                   class="inline-flex justify-center items-center gap-1.5 px-3 py-2 border border-slate-300 text-xs font-semibold rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors w-full sm:w-auto">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    Print Surat
                 </a>
                 <a href="{{ route('dashboard') }}" class="inline-flex justify-center items-center px-3 py-2 border border-transparent text-xs font-semibold rounded-lg text-white bg-emerald-600 hover:bg-emerald-700 transition-colors w-full sm:w-auto">
                     <span class="text-white font-semibold">Buat Pengajuan Baru</span>

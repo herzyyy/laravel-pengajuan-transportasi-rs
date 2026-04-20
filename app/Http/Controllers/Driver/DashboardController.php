@@ -9,6 +9,23 @@ use Illuminate\Validation\ValidationException;
 
 class DashboardController extends Controller
 {
+    public function history()
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver) {
+            return view('driver.no_driver');
+        }
+
+        $historyRequests = TransportRequest::where('driver_id', $driver->id)
+            ->whereIn('status', ['selesai', 'tidak_disetujui'])
+            ->with('user')
+            ->latest()
+            ->paginate(5);
+
+        return view('driver.history', compact('driver', 'historyRequests'));
+    }
+
     public function index()
     {
         $driver = auth()->user()->driver;
@@ -23,13 +40,11 @@ class DashboardController extends Controller
             ->orderByRaw("CONCAT(tanggal, ' ', jam) ASC")
             ->get();
 
-        $historyRequests = TransportRequest::where('driver_id', $driver->id)
-            ->whereIn('status', ['selesai', 'tidak_disetujui'])
-            ->with('user')
-            ->latest()
-            ->paginate(5);
+        $totalTugas    = TransportRequest::where('driver_id', $driver->id)->count();
+        $tugasSaatIni  = $activeRequests->count();
+        $tugasSelesai  = TransportRequest::where('driver_id', $driver->id)->where('status', 'selesai')->count();
 
-        return view('driver.dashboard', compact('driver', 'activeRequests', 'historyRequests'));
+        return view('driver.dashboard', compact('driver', 'activeRequests', 'totalTugas', 'tugasSaatIni', 'tugasSelesai'));
     }
 
     public function detail(TransportRequest $transportRequest)
@@ -41,6 +56,18 @@ class DashboardController extends Controller
         }
 
         return view('driver.detail', compact('transportRequest'));
+    }
+
+    public function print(TransportRequest $transportRequest)
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver || $transportRequest->driver_id !== $driver->id) {
+            abort(403);
+        }
+
+        $transportRequest->load('driver');
+        return view('admin.transport.print', compact('transportRequest'));
     }
 
     public function complete(Request $request, TransportRequest $transportRequest)

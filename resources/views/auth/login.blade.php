@@ -4,8 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Login — {{ config('app.name', 'Transportasi RSAzra') }}</title>
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
@@ -19,14 +20,14 @@
         <div class="flex rounded-2xl overflow-hidden" style="min-height: 360px; box-shadow: 0 8px 40px rgba(0,0,0,0.18), 0 2px 8px rgba(0,0,0,0.10);">
 
             {{-- Kiri: Branding --}}
-            <div class="hidden sm:flex w-2/5 flex-col items-center justify-center px-8 py-10 text-white" style="background-color: #00685E;">
+            <div class="hidden sm:flex w-2/5 flex-col items-center justify-center px-8 py-10" style="background-color: white; border-right: 2px solid #007774;">
                 <div class="flex flex-col items-center text-center space-y-4">
-                    <div class="bg-white rounded-2xl p-4 shadow-lg">
-                        <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-16 w-auto">
+                    <div class="rounded-2xl p-4">
+                        <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-20 w-auto">
                     </div>
                     <div>
-                        <div class="text-xl font-bold tracking-tight">RS Azra</div>
-                        <div class="text-base text-emerald-200 mt-1 leading-relaxed font-medium">
+                        <div class="text-lg font-bold tracking-tight mb-2" style="color: #81BD41;">RS Azra</div>
+                        <div class="text-lg font-bold leading-snug" style="color: #007774;">
                             Sistem Pengajuan<br>Transportasi
                         </div>
                     </div>
@@ -53,15 +54,22 @@
                     {{-- Username --}}
                     <div>
                         <label for="username" class="block text-xs font-semibold text-slate-700 mb-1">Username</label>
-                        <input
-                            id="username"
-                            name="username"
-                            type="text"
-                            value="{{ old('username') }}"
-                            required autofocus autocomplete="username"
-                            placeholder="Masukan username"
-                            class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('username') border-red-400 @enderror"
-                        >
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </span>
+                            <input
+                                id="username"
+                                name="username"
+                                type="text"
+                                value="{{ old('username') }}"
+                                required autofocus autocomplete="username"
+                                placeholder="Masukan username"
+                                class="w-full pl-9 pr-3 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('username') border-red-400 @enderror"
+                            >
+                        </div>
                         @error('username')
                             <p class="mt-1 text-[10px] text-red-600">{{ $message }}</p>
                         @enderror
@@ -71,13 +79,18 @@
                     <div>
                         <label for="password" class="block text-xs font-semibold text-slate-700 mb-1">Password</label>
                         <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                </svg>
+                            </span>
                             <input
                                 id="password"
                                 name="password"
                                 :type="showPass ? 'text' : 'password'"
                                 required
                                 placeholder="Password"
-                                class="w-full px-3 py-2 pr-10 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('password') border-red-400 @enderror"
+                                class="w-full pl-9 pr-10 py-2 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-300 focus:border-slate-400 transition @error('password') border-red-400 @enderror"
                             >
                             <button type="button" @click="showPass = !showPass"
                                     class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600">

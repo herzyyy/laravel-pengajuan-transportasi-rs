@@ -62,6 +62,8 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/sukses/{transportRequest}', [TransportRequestController::class, 'success'])
             ->name('success');
+        Route::get('/sukses/{transportRequest}/print', [TransportRequestController::class, 'print'])
+            ->name('print');
         Route::get('/riwayat', [TransportRequestController::class, 'index'])
             ->name('index');
     });
@@ -91,6 +93,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 // Driver Routes
 Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(function () {
     Route::get('/dashboard', [\App\Http\Controllers\Driver\DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/history', [\App\Http\Controllers\Driver\DashboardController::class, 'history'])->name('history');
     Route::get('/detail/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'detail'])->name('detail');
+    Route::get('/detail/{transportRequest}/print', [\App\Http\Controllers\Driver\DashboardController::class, 'print'])->name('print');
     Route::post('/complete/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'complete'])->name('complete');
 });

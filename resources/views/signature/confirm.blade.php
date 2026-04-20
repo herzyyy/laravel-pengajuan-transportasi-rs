@@ -24,7 +24,7 @@
                 <div class="bg-slate-50 rounded-lg p-3 space-y-2">
                     <div class="flex justify-between text-xs">
                         <span class="text-slate-500">No. Pengajuan</span>
-                        <span class="font-mono font-semibold text-slate-800">#{{ str_pad($transportRequest->id, 4, '0', STR_PAD_LEFT) }}</span>
+                        <span class="font-mono font-semibold text-slate-800">{{ $transportRequest->nomor_pengajuan }}</span>
                     </div>
                     <div class="flex justify-between text-xs">
                         <span class="text-slate-500">Jenis</span>

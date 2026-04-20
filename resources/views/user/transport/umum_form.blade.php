@@ -240,25 +240,30 @@
                 setTimeout(initFlatpickr, 50);
                 return;
             }
+            const today = new Date();
             const fpConfig = {
                 dateFormat: 'Y-m-d',
                 altInput: true,
                 altFormat: 'd/m/Y',
                 allowInput: false,
+                minDate: 'today',
                 locale: { firstDayOfWeek: 1 },
             };
             flatpickr('#tanggal_display', {
                 ...fpConfig,
-                defaultDate: document.getElementById('tanggal').value || new Date(),
+                defaultDate: document.getElementById('tanggal').value || today,
                 onChange: function(selectedDates, dateStr) {
                     const hidden = document.getElementById('tanggal');
                     hidden.value = dateStr;
                     hidden.dispatchEvent(new Event('change'));
+                    // Jika tanggal sampai lebih awal dari tanggal dipilih, reset
+                    const fpSampai = document.getElementById('tanggal_sampai_display')._flatpickr;
+                    if (fpSampai) fpSampai.set('minDate', dateStr);
                 }
             });
             flatpickr('#tanggal_sampai_display', {
                 ...fpConfig,
-                defaultDate: document.getElementById('tanggal_sampai').value || new Date(),
+                defaultDate: document.getElementById('tanggal_sampai').value || today,
                 onChange: function(selectedDates, dateStr) {
                     const hidden = document.getElementById('tanggal_sampai');
                     hidden.value = dateStr;
@@ -269,6 +274,74 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             initFlatpickr();
+
+            // Kembalikan jam minimal berdasarkan apakah tanggal = hari ini
+            function getMinJam(tanggalValue) {
+                const today = new Date();
+                const todayStr = today.toISOString().slice(0, 10);
+                if (tanggalValue === todayStr) {
+                    const h = String(today.getHours()).padStart(2, '0');
+                    const m = String(today.getMinutes()).padStart(2, '0');
+                    return h + ':' + m;
+                }
+                return null;
+            }
+
+            function enforceMinJam(jamInput, tanggalHiddenId) {
+                const tanggalHidden = document.getElementById(tanggalHiddenId);
+                jamInput.addEventListener('blur', function() {
+                    const minJam = getMinJam(tanggalHidden ? tanggalHidden.value : '');
+                    if (minJam && jamInput.value && jamInput.value < minJam) {
+                        showJamError(jamInput, 'Jam tidak boleh kurang dari jam sekarang');
+                        return;
+                    } else {
+                        clearJamError(jamInput);
+                    }
+
+                    // Validasi jam_sampai tidak boleh <= jam jika tanggal sama
+                    if (jamInput.name === 'jam_sampai') {
+                        const jamDari = document.querySelector('input[name="jam"]');
+                        const tanggalDari = document.getElementById('tanggal');
+                        const tanggalSampai = document.getElementById('tanggal_sampai');
+                        if (jamDari && tanggalDari && tanggalSampai &&
+                            tanggalDari.value === tanggalSampai.value &&
+                            jamInput.value && jamDari.value &&
+                            jamInput.value <= jamDari.value) {
+                            showJamError(jamInput, 'Jam sampai harus lebih besar dari jam dari');
+                        } else {
+                            clearJamError(jamInput);
+                        }
+                    }
+                });
+
+                // Hapus error saat user mulai mengetik ulang
+                jamInput.addEventListener('input', function() {
+                    clearJamError(jamInput);
+                });
+            }
+
+            function showJamError(input, msg) {
+                clearJamError(input);
+                input.classList.add('border-red-400');
+                const err = document.createElement('p');
+                err.className = 'jam-error-msg mt-1 text-[10px] text-red-600';
+                err.textContent = msg;
+                input.parentNode.appendChild(err);
+                updateCheckBtn();
+            }
+
+            function clearJamError(input) {
+                input.classList.remove('border-red-400');
+                const existing = input.parentNode.querySelector('.jam-error-msg');
+                if (existing) existing.remove();
+                updateCheckBtn();
+            }
+
+            function updateCheckBtn() {
+                const hasError = document.querySelectorAll('.jam-error-msg').length > 0;
+                const checkBtn = document.getElementById('checkAvailabilityBtn');
+                if (checkBtn) checkBtn.disabled = hasError;
+            }
 
             function setupTimeInput(el) {
                 el.addEventListener('input', function() {
@@ -290,9 +363,14 @@
                     if (!/[0-9]/.test(e.key)) e.preventDefault();
                 });
             }
+
             ['jam','jam_sampai'].forEach(name => {
                 const input = document.querySelector('input[name="'+name+'"]');
-                if (input) setupTimeInput(input);
+                if (input) {
+                    setupTimeInput(input);
+                    const tanggalId = name === 'jam' ? 'tanggal' : 'tanggal_sampai';
+                    enforceMinJam(input, tanggalId);
+                }
             });
         });
     </script>

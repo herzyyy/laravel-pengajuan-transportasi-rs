@@ -381,7 +381,7 @@
     <!-- Document Title -->
     <div class="document-title">
         <h2>Surat Pengajuan Transportasi</h2>
-        <p class="doc-number">No: {{ str_pad($transportRequest->id, 5, '0', STR_PAD_LEFT) }}/TRANS/RSA/{{ $transportRequest->created_at->format('m/Y') }}</p>
+        <p class="doc-number">No: {{ $transportRequest->nomor_pengajuan }}/TRANS/RSA/{{ $transportRequest->created_at->format('m/Y') }}</p>
     </div>
 
     <!-- Content -->
@@ -731,19 +731,23 @@
             <div class="signature-top">
                 <p class="title">Pengelola Transportasi</p>
                 <div class="signature-space">
-                    @if($nipPengelola2 && $nipPengelola2 !== '-')
+                    @if($transportRequest->status === 'selesai' && $nipPengelola2 && $nipPengelola2 !== '-')
                         <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($nipPengelola2) }}" alt="QR NIP">
                     @endif
                 </div>
             </div>
             <div class="signature-bottom">
-                <p class="name">{{ $pengelola2Name }}</p>
-                <p class="subtitle">Mengetahui</p>
-                @if(isset($transportRequest->signature_pengelola_2_at) && $transportRequest->signature_pengelola_2_at)
-                    <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
-                        {{ is_string($transportRequest->signature_pengelola_2_at) ? $transportRequest->signature_pengelola_2_at : $transportRequest->signature_pengelola_2_at->format('d/m/Y H:i') }}
-                    </p>
+                @if($transportRequest->status === 'selesai')
+                    <p class="name">{{ $pengelola2Name }}</p>
+                    @if(isset($transportRequest->signature_pengelola_2_at) && $transportRequest->signature_pengelola_2_at)
+                        <p class="detail" style="font-size: 6.5pt; margin-top: 2px;">
+                            {{ is_string($transportRequest->signature_pengelola_2_at) ? $transportRequest->signature_pengelola_2_at : $transportRequest->signature_pengelola_2_at->format('d/m/Y H:i') }}
+                        </p>
+                    @endif
+                @else
+                    <p class="name" style="color: #d1d5db;">——————————</p>
                 @endif
+                <p class="subtitle">Mengetahui</p>
             </div>
         </div>
     </div>

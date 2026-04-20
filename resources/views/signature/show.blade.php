@@ -25,7 +25,7 @@
                         @endif
                     </p>
                     <p class="text-[10px] text-slate-500">
-                        Pengajuan #{{ str_pad($transportRequest->id, 4, '0', STR_PAD_LEFT) }}
+                        Pengajuan {{ $transportRequest->nomor_pengajuan }}
                     </p>
                 </div>
             </div>
