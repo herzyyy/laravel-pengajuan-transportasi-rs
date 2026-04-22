@@ -26,7 +26,7 @@
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-20 w-auto">
                     </div>
                     <div>
-                        <div class="text-lg font-bold tracking-tight mb-2" style="color: #81BD41;">RS Azra</div>
+                        <div class="text-lg font-bold tracking-widest uppercase mb-2" style="color: #6DB33F;">SIPETRANS</div>
                         <div class="text-lg font-bold leading-snug" style="color: #007774;">
                             Sistem Pengajuan<br>Transportasi
                         </div>
@@ -41,7 +41,7 @@
                 <div class="sm:hidden flex items-center gap-3 mb-6">
                     <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-9 w-auto">
                     <div>
-                        <div class="text-sm font-bold text-slate-800">RS Azra</div>
+                        <div class="text-sm font-bold tracking-widest uppercase" style="color: #6DB33F;">SIPETRANS</div>
                         <div class="text-[10px] text-slate-500">Sistem Pengajuan Transportasi</div>
                     </div>
                 </div>

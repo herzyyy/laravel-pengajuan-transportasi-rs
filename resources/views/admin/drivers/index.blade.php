@@ -25,13 +25,13 @@
                 <h1 class="text-lg font-bold text-slate-800">Master Supir</h1>
                 <p class="text-slate-500 text-xs mt-0.5">Kelola data supir/pengemudi</p>
             </div>
-            <button @click="showCreate = true"
+            <a href="{{ route('admin.drivers.create') }}"
                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 text-white px-3 py-2 text-xs font-medium hover:bg-emerald-700 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="white" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 <span class="text-white font-semibold">Tambah</span>
-            </button>
+            </a>
         </div>
 
         @if(session('success'))
@@ -98,11 +98,10 @@
                                 </td>
                                 <td class="py-2 px-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button
-                                            @click="openEdit('{{ $driver->id }}', '{{ addslashes($driver->name) }}', '{{ addslashes($driver->phone ?? '') }}', '{{ addslashes($driver->license_number ?? '') }}', '{{ $driver->user_id ?? '' }}', '{{ $driver->is_active ? '1' : '0' }}')"
+                                        <a href="{{ route('admin.drivers.edit', $driver) }}"
                                             class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                                             Edit
-                                        </button>
+                                        </a>
                                         <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST"
                                               onsubmit="return confirm('Yakin ingin menghapus supir ini?')">
                                             @csrf
@@ -145,11 +144,10 @@
                         @endif
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-                        <button
-                            @click="openEdit('{{ $driver->id }}', '{{ addslashes($driver->name) }}', '{{ addslashes($driver->phone ?? '') }}', '{{ addslashes($driver->license_number ?? '') }}', '{{ $driver->user_id ?? '' }}', '{{ $driver->is_active ? '1' : '0' }}')"
+                        <a href="{{ route('admin.drivers.edit', $driver) }}"
                             class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                             Edit
-                        </button>
+                        </a>
                         <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" class="flex-1"
                               onsubmit="return confirm('Yakin ingin menghapus supir ini?')">
                             @csrf

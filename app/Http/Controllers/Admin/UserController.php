@@ -19,30 +19,26 @@ class UserController extends Controller
      */
     private function parseNama(string $namaLengkap): array
     {
-        $parts = preg_split('/\s+/', trim($namaLengkap));
+        // Potong gelar setelah koma, misal "Helmi, S.Kom." → "Helmi"
+        $namaLengkap = trim(explode(',', $namaLengkap)[0]);
+
+        $parts = preg_split('/\s+/', $namaLengkap);
 
         $firstName = $parts[0] ?? '';
         $lastName  = count($parts) >= 2
             ? implode(' ', array_slice($parts, 1))
             : '';
 
-        // Username: kata ke-1 dan ke-2, strip non-alphanumeric kecuali titik di akhir kata ke-1
+        // Username: ambil kata ke-1 dan ke-2 (jika ada), lowercase, strip non-alphanumeric
         $w1 = strtolower($parts[0] ?? '');
+        $w1 = preg_replace('/[^a-z0-9]/', '', $w1);
+
         $w2 = isset($parts[1]) ? strtolower($parts[1]) : null;
-
-        // Bersihkan karakter selain huruf, angka, dan titik
-        $w1 = preg_replace('/[^a-z0-9.]/', '', $w1);
-
-        // Jika kata ke-2 mengandung titik (gelar/singkatan), abaikan — username hanya kata ke-1
-        if ($w2 !== null && strpos($w2, '.') !== false) {
-            $w2 = null;
-        } else {
-            $w2 = $w2 !== null ? preg_replace('/[^a-z0-9]/', '', $w2) : null;
-        }
+        $w2 = $w2 !== null ? preg_replace('/[^a-z0-9]/', '', $w2) : null;
 
         $username = ($w2 !== null && $w2 !== '')
-            ? rtrim($w1, '.') . '.' . $w2
-            : rtrim($w1, '.');
+            ? $w1 . '.' . $w2
+            : $w1;
 
         return compact('firstName', 'lastName', 'username');
     }
@@ -56,7 +52,9 @@ class UserController extends Controller
             $query->where(function($q) use ($search) {
                 $q->where('first_name', 'like', "%{$search}%")
                   ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('unit_kerja', 'like', "%{$search}%");
+                  ->orWhere('unit_kerja', 'like', "%{$search}%")
+                  ->orWhere('nip', 'like', "%{$search}%")
+                  ->orWhere('username', 'like', "%{$search}%");
             });
         }
 
@@ -71,7 +69,7 @@ class UserController extends Controller
 
     public function create()
     {
-        return redirect()->route('admin.users.index');
+        return view('admin.users.create');
     }
 
     public function store(Request $request)
@@ -79,8 +77,11 @@ class UserController extends Controller
         $data = $request->validate([
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'nip' => ['nullable', 'string', 'max:50'],
-            'password' => ['required', 'string', 'min:8'],
+            'password' => ['required', 'string'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
+            'posisi_pekerjaan' => ['nullable', 'string', 'max:255'],
+            'profesi' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'in:user,admin,driver'],
             'priority_level' => ['nullable', 'integer', 'in:0,1'],
         ]);
@@ -96,14 +97,17 @@ class UserController extends Controller
         }
 
         User::create([
-            'first_name'     => $parsed['firstName'],
-            'last_name'      => $parsed['lastName'],
-            'username'       => $username,
-            'nip'            => $data['nip'] ?? null,
-            'password'       => Hash::make($data['password']),
-            'unit_kerja'     => $data['unit_kerja'] ?? null,
-            'role'           => $data['role'],
-            'priority_level' => $data['priority_level'] ?? 0,
+            'first_name'       => $parsed['firstName'],
+            'last_name'        => $parsed['lastName'],
+            'username'         => $username,
+            'nip'              => $data['nip'] ?? null,
+            'password'         => Hash::make($data['password']),
+            'unit_kerja'       => $data['unit_kerja'] ?? null,
+            'posisi_pekerjaan' => $data['posisi_pekerjaan'] ?? null,
+            'profesi'          => $data['profesi'] ?? null,
+            'jabatan'          => $data['jabatan'] ?? null,
+            'role'             => $data['role'],
+            'priority_level'   => $data['priority_level'] ?? 0,
         ]);
 
         return redirect()->route('admin.users.index')
@@ -112,30 +116,37 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return redirect()->route('admin.users.index');
+        return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
         $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
-            'nama_lengkap' => ['required', 'string', 'max:255'],
+            'nama_lengkap' => ['nullable', 'string', 'max:255'],
             'nip' => ['nullable', 'string', 'max:50'],
-            'password' => ['nullable', 'string', 'min:8'],
+            'password' => ['nullable', 'string'],
             'unit_kerja' => ['nullable', 'string', 'max:255'],
+            'posisi_pekerjaan' => ['nullable', 'string', 'max:255'],
+            'profesi' => ['nullable', 'string', 'max:255'],
+            'jabatan' => ['nullable', 'string', 'max:255'],
             'role' => ['required', 'in:user,admin,driver'],
             'priority_level' => ['nullable', 'integer', 'in:0,1'],
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.users.index')
+            return redirect()->route('admin.users.edit', $user)
                 ->withErrors($validator)
-                ->withInput()
-                ->with('edit_id', $user->id)
-                ->with('edit_nama_lengkap', $request->input('nama_lengkap'));
+                ->withInput();
         }
 
         $data = $validator->validated();
-        $parsed = $this->parseNama($data['nama_lengkap']);
+
+        // Gunakan nama dari DB jika tidak dikirim
+        $namaLengkap = !empty($data['nama_lengkap'])
+            ? $data['nama_lengkap']
+            : trim($user->first_name . ' ' . $user->last_name);
+
+        $parsed = $this->parseNama($namaLengkap);
 
         // Pastikan username unik, kecuali milik user ini sendiri
         $baseUsername = $parsed['username'];
@@ -146,13 +157,16 @@ class UserController extends Controller
         }
 
         $updateData = [
-            'first_name'     => $parsed['firstName'],
-            'last_name'      => $parsed['lastName'],
-            'username'       => $username,
-            'nip'            => $data['nip'] ?? null,
-            'unit_kerja'     => $data['unit_kerja'] ?? null,
-            'role'           => $data['role'],
-            'priority_level' => $data['priority_level'] ?? 0,
+            'first_name'       => $parsed['firstName'],
+            'last_name'        => $parsed['lastName'],
+            'username'         => $username,
+            'nip'              => $data['nip'] ?? null,
+            'unit_kerja'       => $data['unit_kerja'] ?? null,
+            'posisi_pekerjaan' => $data['posisi_pekerjaan'] ?? null,
+            'profesi'          => $data['profesi'] ?? null,
+            'jabatan'          => $data['jabatan'] ?? null,
+            'role'             => $data['role'],
+            'priority_level'   => $data['priority_level'] ?? 0,
         ];
 
         if (!empty($data['password'])) {

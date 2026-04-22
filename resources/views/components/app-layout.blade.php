@@ -15,7 +15,7 @@
     <div class="min-h-screen flex flex-col">
 
         {{-- Header --}}
-        <header class="sticky top-0 z-40 bg-white shadow-sm" style="border-bottom: 2px solid #007774;">
+        <header class="sticky top-0 z-40 bg-white shadow-sm {{ auth()->user()->isAdmin() ? 'lg:pl-64' : (auth()->user()->isDriver() ? '' : 'lg:pl-64') }}" style="border-bottom: 2px solid #007774;">
             <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
                 {{-- Mobile Menu Button (hanya untuk admin) --}}
                 @if(!auth()->user()->isDriver())
@@ -27,7 +27,7 @@
                 @else
                 {{-- tidak ada spacer, logo langsung di kiri --}}
                 @endif
-                <div class="flex items-center gap-3 min-w-0">
+                <div class="flex items-center gap-3 min-w-0 {{ auth()->user()->isDriver() ? '' : 'lg:hidden' }}">
                     <div class="rounded-lg p-1.5">
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-10 w-auto">
                     </div>
@@ -41,7 +41,7 @@
                     </div>
                 </div>
 
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-4 ml-auto">
                     @if (auth()->user()->isAdmin())
                         {{-- Notification Dropdown for Admin --}}
                         @php
@@ -383,15 +383,22 @@
 
             {{-- Sidebar: selalu tampil di desktop, di mobile hanya untuk admin --}}
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
-                   class="fixed left-0 top-0 bottom-0 z-40 w-64 bg-white flex flex-col transition-transform duration-300 ease-in-out
-                          {{ auth()->user()->isAdmin() ? 'lg:translate-x-0 lg:static lg:z-auto lg:shadow-none' : 'lg:translate-x-0 lg:static lg:z-auto lg:shadow-none hidden lg:flex' }}"
+                   class="fixed left-0 top-0 bottom-0 z-40 w-64 bg-white flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto
+                          {{ auth()->user()->isAdmin() ? 'lg:translate-x-0' : 'lg:translate-x-0 hidden lg:flex' }}"
                    style="border-right: 1px solid #e2eded; box-shadow: 2px 0 8px rgba(0,0,0,0.04);">
                 @if(!auth()->user()->isDriver())
-                <div class="px-4 py-4" style="border-bottom: 1px solid #e8f0ef;">
-                    <div class="flex items-center gap-3 px-3 py-3 rounded-lg" style="background: rgba(0,119,116,0.04);">
-                        <div class="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0"
+                {{-- Branding --}}
+                <div class="px-4 pt-5 pb-4" style="border-bottom: 1px solid #e8f0ef;">
+                    <div class="flex items-center gap-3 mb-1">
+                        <img src="{{ asset('images/logo.png') }}" alt="Logo" class="h-12 w-auto flex-shrink-0 object-contain">
+                        <div class="text-lg font-bold leading-tight tracking-wide uppercase" style="color: #007774;">SiPetrans</div>
+                    </div>
+                    <div class="text-sm font-medium text-slate-500 mb-6 pl-0.5">Sistem Pengajuan Transportasi</div>
+                    {{-- Profil --}}
+                    <div class="flex items-center gap-3 px-3 py-2.5 rounded-lg" style="background: rgba(0,119,116,0.04);">
+                        <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0"
                              style="background-color: #007774;">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                             </svg>
                         </div>
@@ -535,7 +542,7 @@
             @endif
 
             {{-- Main Content --}}
-            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 {{ !auth()->user()->isAdmin() ? 'pb-20 lg:pb-6' : '' }}">
+            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 {{ auth()->user()->isAdmin() ? 'lg:pl-64' : (!auth()->user()->isDriver() ? 'lg:pl-64' : '') }} {{ !auth()->user()->isAdmin() ? 'pb-20 lg:pb-6' : '' }}">
                 <div class="max-w-7xl mx-auto">
 
                     @if (session('status'))

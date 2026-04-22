@@ -21,8 +21,8 @@ class DriverController extends Controller
             });
         }
 
-        if ($request->filled('is_active')) {
-            $query->where('is_active', $request->is_active === '1');
+        if ($request->has('is_active') && $request->input('is_active') !== '') {
+            $query->where('is_active', (int) $request->input('is_active'));
         }
 
         $drivers = $query->paginate(15)->withQueryString();
@@ -33,7 +33,8 @@ class DriverController extends Controller
 
     public function create()
     {
-        return redirect()->route('admin.drivers.index');
+        $driverUsers = \App\Models\User::where('role', 'driver')->orderBy('first_name')->get();
+        return view('admin.drivers.create', compact('driverUsers'));
     }
 
     public function store(Request $request)
@@ -54,7 +55,8 @@ class DriverController extends Controller
 
     public function edit(Driver $driver)
     {
-        return redirect()->route('admin.drivers.index');
+        $driverUsers = \App\Models\User::where('role', 'driver')->orderBy('first_name')->get();
+        return view('admin.drivers.edit', compact('driver', 'driverUsers'));
     }
 
     public function update(Request $request, Driver $driver)
@@ -68,10 +70,9 @@ class DriverController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.drivers.index')
+            return redirect()->route('admin.drivers.edit', $driver)
                 ->withErrors($validator)
-                ->withInput()
-                ->with('edit_id', $driver->id);
+                ->withInput();
         }
 
         $driver->update($validator->validated());

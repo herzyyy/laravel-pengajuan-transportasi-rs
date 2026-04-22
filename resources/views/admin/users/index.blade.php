@@ -7,13 +7,19 @@
             editNamaLengkap: '{{ old('nama_lengkap', session('edit_nama_lengkap', '')) }}',
             editNip: '{{ old('nip', session('edit_nip', '')) }}',
             editUnitKerja: '{{ old('unit_kerja', session('edit_unit_kerja', '')) }}',
+            editPosisiPekerjaan: '{{ old('posisi_pekerjaan', session('edit_posisi_pekerjaan', '')) }}',
+            editProfesi: '{{ old('profesi', session('edit_profesi', '')) }}',
+            editJabatan: '{{ old('jabatan', session('edit_jabatan', '')) }}',
             editRole: '{{ old('role', session('edit_role', 'user')) }}',
             editPriorityLevel: '{{ old('priority_level', session('edit_priority_level', '0')) }}',
-            openEdit(id, namaLengkap, nip, unitKerja, role, priorityLevel) {
+            openEdit(id, namaLengkap, nip, unitKerja, posisiPekerjaan, profesi, jabatan, role, priorityLevel) {
                 this.editId = id;
                 this.editNamaLengkap = namaLengkap;
                 this.editNip = nip;
                 this.editUnitKerja = unitKerja;
+                this.editPosisiPekerjaan = posisiPekerjaan;
+                this.editProfesi = profesi;
+                this.editJabatan = jabatan;
                 this.editRole = role;
                 this.editPriorityLevel = priorityLevel;
                 this.showEdit = true;
@@ -25,13 +31,13 @@
                 <h1 class="text-lg font-bold text-slate-800">Master User</h1>
                 <p class="text-slate-500 text-xs mt-0.5">Kelola data user sistem</p>
             </div>
-            <button @click="showCreate = true"
+            <a href="{{ route('admin.users.create') }}"
                class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 text-white px-3 py-2 text-xs font-medium hover:bg-emerald-700 transition">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="white" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
                 <span class="text-white font-semibold">Tambah</span>
-            </button>
+            </a>
         </div>
 
         @if(session('success'))
@@ -51,7 +57,7 @@
             <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
                 <div class="flex-1">
                     <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Cari nama atau unit kerja..."
+                           placeholder="Cari nama, NIP, username, atau unit kerja..."
                            class="w-full rounded-lg border-slate-300 px-2.5 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
                 <div class="w-full sm:w-40">
@@ -59,6 +65,7 @@
                         <option value="">Semua Role</option>
                         <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
                         <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
+                        <option value="driver" {{ request('role') == 'driver' ? 'selected' : '' }}>Supir</option>
                     </select>
                 </div>
                 <div class="flex gap-2">
@@ -84,6 +91,9 @@
                             <th class="py-2 px-3 text-left">Username</th>
                             <th class="py-2 px-3 text-left">NIP</th>
                             <th class="py-2 px-3 text-left">Unit Kerja</th>
+                            <th class="py-2 px-3 text-left">Posisi</th>
+                            <th class="py-2 px-3 text-left">Profesi</th>
+                            <th class="py-2 px-3 text-left">Jabatan</th>
                             <th class="py-2 px-3 text-left">Role</th>
                             <th class="py-2 px-3 text-right">Aksi</th>
                         </tr>
@@ -97,6 +107,9 @@
                                 <td class="py-2 px-3 text-slate-600 font-mono text-[11px]">{{ $user->username ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700 font-mono">{{ $user->nip ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700">{{ $user->unit_kerja ?? '-' }}</td>
+                                <td class="py-2 px-3 text-slate-700">{{ $user->posisi_pekerjaan ?? '-' }}</td>
+                                <td class="py-2 px-3 text-slate-700">{{ $user->profesi ?? '-' }}</td>
+                                <td class="py-2 px-3 text-slate-700">{{ $user->jabatan ?? '-' }}</td>
                                 <td class="py-2 px-3">
                                     @if($user->role === 'admin')
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800">Admin</span>
@@ -108,11 +121,10 @@
                                 </td>
                                 <td class="py-2 px-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
-                                        <button
-                                            @click="openEdit('{{ $user->id }}', '{{ addslashes($user->first_name . ($user->last_name ? ' ' . $user->last_name : '')) }}', '{{ addslashes($user->nip ?? '') }}', '{{ addslashes($user->unit_kerja ?? '') }}', '{{ $user->role }}', '{{ $user->priority_level ?? 0 }}')"
+                                        <a href="{{ route('admin.users.edit', $user) }}"
                                             class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                                             Edit
-                                        </button>
+                                        </a>
                                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
                                               onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                                             @csrf
@@ -127,7 +139,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-6 text-center text-slate-500 text-xs">Tidak ada data user</td>
+                                <td colspan="9" class="py-6 text-center text-slate-500 text-xs">Tidak ada data user</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -156,11 +168,10 @@
                         @endif
                     </div>
                     <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
-                        <button
-                            @click="openEdit('{{ $user->id }}', '{{ addslashes($user->first_name . ($user->last_name ? ' ' . $user->last_name : '')) }}', '{{ addslashes($user->nip ?? '') }}', '{{ addslashes($user->unit_kerja ?? '') }}', '{{ $user->role }}', '{{ $user->priority_level ?? 0 }}')"
+                        <a href="{{ route('admin.users.edit', $user) }}"
                             class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
                             Edit
-                        </button>
+                        </a>
                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="flex-1"
                               onsubmit="return confirm('Yakin ingin menghapus user ini?')">
                             @csrf
@@ -201,9 +212,10 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
                         <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required
                                x-model="namaLengkap" @input="generateUsername()"
-                               placeholder="Contoh: dr. Budi Santoso M.Kes"
+                               placeholder="Contoh: Budi Santoso, S.Kom."
                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_lengkap') border-red-400 @enderror">
                         @error('nama_lengkap')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
+                        <p class="mt-1 text-[10px] text-slate-400">Gelar diletakkan di belakang nama, pisahkan dengan koma. Contoh: <span class="font-medium">Budi Santoso, S.Kom.</span></p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Username (otomatis)</label>
@@ -219,7 +231,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Password *</label>
-                        <input type="password" name="password" required placeholder="Minimal 8 karakter"
+                        <input type="password" name="password" required
                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('password') border-red-400 @enderror">
                         @error('password')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
                     </div>
@@ -227,6 +239,23 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Kerja</label>
                         <input type="text" name="unit_kerja" value="{{ old('unit_kerja') }}"
                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Posisi Pekerjaan</label>
+                        <input type="text" name="posisi_pekerjaan" value="{{ old('posisi_pekerjaan') }}"
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Profesi</label>
+                            <input type="text" name="profesi" value="{{ old('profesi') }}"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                            <input type="text" name="jabatan" value="{{ old('jabatan') }}"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
                     </div>
                     <div x-data="{ createRole: '{{ old('role', 'user') }}' }" class="grid grid-cols-2 gap-3">
                         <div>
@@ -273,23 +302,13 @@
                         </svg>
                     </button>
                 </div>
-                <form :action="'{{ url('admin/users') }}/' + editId" method="POST" class="p-4 space-y-3"
-                      x-data="usernameGen()" x-init="namaLengkap = $root.editNamaLengkap; generateUsername()">
+                <form :action="'{{ url('admin/users') }}/' + editId" method="POST" class="p-4 space-y-3">
                     @csrf
                     @method('PUT')
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap *</label>
-                        <input type="text" name="nama_lengkap" :value="$root.editNamaLengkap" required
-                               x-model="namaLengkap" @input="generateUsername()"
-                               placeholder="Contoh: dr. Budi Santoso M.Kes"
-                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('nama_lengkap') border-red-400 @enderror">
-                        @error('nama_lengkap')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Username (otomatis)</label>
-                        <input type="text" readonly :value="username"
-                               class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-600 font-mono cursor-not-allowed">
-                        <p class="mt-1 text-[10px] text-slate-400">Dibuat otomatis dari nama lengkap</p>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                        <div class="w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700" x-text="editNamaLengkap"></div>
+                        <input type="hidden" name="nama_lengkap" :value="editNamaLengkap">
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-slate-700 mb-1">NIP</label>
@@ -307,6 +326,23 @@
                         <label class="block text-xs font-semibold text-slate-700 mb-1">Unit Kerja</label>
                         <input type="text" name="unit_kerja" :value="editUnitKerja"
                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-700 mb-1">Posisi Pekerjaan</label>
+                        <input type="text" name="posisi_pekerjaan" :value="editPosisiPekerjaan"
+                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                    </div>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Profesi</label>
+                            <input type="text" name="profesi" :value="editProfesi"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jabatan</label>
+                            <input type="text" name="jabatan" :value="editJabatan"
+                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
                     </div>
                     <div x-data="{ get editRoleLocal() { return $root.editRole; }, set editRoleLocal(v) { $root.editRole = v; } }" class="grid grid-cols-2 gap-3">
                         <div>
@@ -349,21 +385,15 @@
                 namaLengkap: '',
                 username: '',
                 generateUsername() {
-                    const raw = this.namaLengkap.trim();
+                    // Potong gelar setelah koma
+                    const raw = (this.namaLengkap.split(',')[0] || '').trim();
                     if (!raw) { this.username = ''; return; }
 
                     const parts = raw.split(/\s+/);
+                    const w1 = (parts[0] || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+                    const w2raw = parts[1] ? parts[1].toLowerCase().replace(/[^a-z0-9]/g, '') : null;
 
-                    const w1 = (parts[0] || '').toLowerCase().replace(/[^a-z0-9.]/g, '');
-                    const w2raw = parts[1] || null;
-
-                    // Jika kata ke-2 mengandung titik (gelar/singkatan), abaikan
-                    const w2 = (w2raw && !w2raw.includes('.'))
-                        ? w2raw.toLowerCase().replace(/[^a-z0-9]/g, '')
-                        : null;
-
-                    const base = w1.replace(/\.+$/, '');
-                    this.username = (w2 && w2 !== '') ? `${base}.${w2}` : base;
+                    this.username = (w2raw && w2raw !== '') ? `${w1}.${w2raw}` : w1;
                 }
             }
         }

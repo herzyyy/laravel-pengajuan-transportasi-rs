@@ -26,8 +26,8 @@ class VehicleController extends Controller
             $query->where('type', $request->type);
         }
 
-        if ($request->filled('is_active')) {
-            $query->where('is_active', $request->is_active === '1');
+        if ($request->has('is_active') && $request->input('is_active') !== '') {
+            $query->where('is_active', (int) $request->input('is_active'));
         }
 
         $vehicles = $query->paginate(15)->withQueryString();
@@ -37,7 +37,7 @@ class VehicleController extends Controller
 
     public function create()
     {
-        return redirect()->route('admin.vehicles.index');
+        return view('admin.vehicles.create');
     }
 
     public function store(Request $request)
@@ -62,7 +62,7 @@ class VehicleController extends Controller
 
     public function edit(Vehicle $vehicle)
     {
-        return redirect()->route('admin.vehicles.index');
+        return view('admin.vehicles.edit', compact('vehicle'));
     }
 
     public function update(Request $request, Vehicle $vehicle)
@@ -80,10 +80,9 @@ class VehicleController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return redirect()->route('admin.vehicles.index')
+            return redirect()->route('admin.vehicles.edit', $vehicle)
                 ->withErrors($validator)
-                ->withInput()
-                ->with('edit_id', $vehicle->id);
+                ->withInput();
         }
 
         $vehicle->update($validator->validated());
