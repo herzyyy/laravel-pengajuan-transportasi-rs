@@ -17,7 +17,9 @@ class TransportRequestController extends Controller
     {
         $jenis = $transportRequest->jenis;
         $mulai = \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' '.$transportRequest->jam);
-        $sampai = \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai);
+        $sampai = ($transportRequest->tanggal_sampai && $transportRequest->jam_sampai)
+            ? \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai)
+            : \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' 23:59');
         if ($sampai->lte($mulai)) $sampai->addDay();
 
         $totalUnits = \App\Models\Vehicle::where('type', $jenis)->where('is_active', true)->count();
@@ -120,12 +122,38 @@ class TransportRequestController extends Controller
         return view('admin.transport.index', compact('items'));
     }
 
+    public function laporan(Request $request)
+    {
+        $query = TransportRequest::with(['user', 'driver'])->latest();
+
+        if ($request->filled('nomor'))      $query->where('nomor_pengajuan', 'like', '%'.$request->nomor.'%');
+        if ($request->filled('jenis'))      $query->where('jenis', $request->jenis);
+        if ($request->filled('status'))     $query->where('status', $request->status);
+        if ($request->filled('prioritas'))  $query->where('prioritas', $request->prioritas);
+        if ($request->filled('unit_kerja')) $query->whereHas('user', fn($q) => $q->where('unit_kerja', 'like', '%'.$request->unit_kerja.'%'));
+        if ($request->filled('unit_mobil')) $query->where('unit_mobil', 'like', '%'.$request->unit_mobil.'%');
+        if ($request->filled('tanggal_dari')) $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+        if ($request->filled('tanggal_sampai_filter')) $query->whereDate('tanggal', '<=', $request->tanggal_sampai_filter);
+
+        $items = $query->paginate(25)->withQueryString();
+
+        return view('admin.laporan', compact('items'));
+    }
+
+    public function laporanDetail(TransportRequest $transportRequest)
+    {
+        $transportRequest->load(['user', 'driver']);
+        return view('admin.laporan-detail', compact('transportRequest'));
+    }
+
     public function show(TransportRequest $transportRequest)
     {
         $vehicleType = $transportRequest->jenis === 'ambulance' ? 'ambulance' : 'umum';
 
         $mulai = \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' '.$transportRequest->jam);
-        $sampai = \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai);
+        $sampai = ($transportRequest->tanggal_sampai && $transportRequest->jam_sampai)
+            ? \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai)
+            : \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' 23:59');
         if ($sampai->lte($mulai)) $sampai->addDay();
 
         // Supir yang sedang bertugas pada rentang waktu ini
@@ -186,8 +214,10 @@ class TransportRequestController extends Controller
         $newStatus = $request->input('status');
         
         if ($currentStatus === 'diajukan' && $newStatus === 'diproses') {
-            // Cek ketersediaan unit sebelum menyetujui
-            if (!$this->isUnitAvailable($transportRequest)) {
+            $isPriorityUser = $transportRequest->user && $transportRequest->user->isPriority();
+
+            // Cek ketersediaan unit — skip untuk user prioritas
+            if (!$isPriorityUser && !$this->isUnitAvailable($transportRequest)) {
                 return redirect()->back()->withErrors(['status' => 'Tidak dapat menyetujui — semua unit kendaraan sudah penuh di waktu tersebut.']);
             }
 
@@ -198,6 +228,38 @@ class TransportRequestController extends Controller
             $data['signature_pengelola_1'] = \Illuminate\Support\Str::random(32);
             $data['signature_pengelola_1_at'] = now();
             $data['signature_pengelola_1_name'] = auth()->user()->full_name;
+
+            // Jika user prioritas dan unit penuh, batalkan pengajuan user biasa terbaru yang overlap
+            if ($isPriorityUser && !$this->isUnitAvailable($transportRequest)) {
+                $mulai = \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' '.$transportRequest->jam);
+                $sampai = ($transportRequest->tanggal_sampai && $transportRequest->jam_sampai)
+                    ? \Carbon\Carbon::parse($transportRequest->tanggal_sampai->format('Y-m-d').' '.$transportRequest->jam_sampai)
+                    : \Carbon\Carbon::parse($transportRequest->tanggal->format('Y-m-d').' 23:59');
+                if ($sampai->lte($mulai)) $sampai->addDay();
+
+                $overlapping = TransportRequest::where('jenis', $transportRequest->jenis)
+                    ->where('status', 'diproses')
+                    ->where('id', '!=', $transportRequest->id)
+                    ->whereHas('user', fn($q) => $q->where('priority_level', 0))
+                    ->get()
+                    ->filter(function ($r) use ($mulai, $sampai) {
+                        $rMulai = \Carbon\Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                        $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
+                            ? \Carbon\Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
+                            : \Carbon\Carbon::parse($r->tanggal->format('Y-m-d').' 23:59');
+                        if ($rSampai->lte($rMulai)) $rSampai->addDay();
+                        return $mulai->lt($rSampai) && $rMulai->lt($sampai);
+                    })
+                    ->sortByDesc('created_at');
+
+                $toBump = $overlapping->first();
+                if ($toBump) {
+                    $toBump->update([
+                        'status' => 'tidak_disetujui',
+                        'rejection_reason' => 'Dialihkan karena pengajuan dari pengguna prioritas.',
+                    ]);
+                }
+            }
 
         } elseif ($currentStatus === 'digunakan' && $newStatus === 'digunakan' && $request->input('_edit_digunakan')) {
             // Edit data saat status digunakan

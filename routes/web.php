@@ -83,6 +83,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/transport/{transportRequest}', [AdminTransportController::class, 'show'])->name('transport.show');
     Route::put('/transport/{transportRequest}', [AdminTransportController::class, 'update'])->name('transport.update');
     Route::get('/transport/{transportRequest}/print', [AdminTransportController::class, 'print'])->name('transport.print');
+
+    Route::get('/laporan', [AdminTransportController::class, 'laporan'])->name('laporan');
+    Route::get('/laporan/{transportRequest}', [AdminTransportController::class, 'laporanDetail'])->name('laporan.detail');
     
     // Master Data
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);

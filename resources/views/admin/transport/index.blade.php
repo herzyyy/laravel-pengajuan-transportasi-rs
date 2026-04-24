@@ -54,6 +54,7 @@
                                 <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Pemohon</th>
                                 <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Jenis</th>
                                 <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Tanggal & Waktu</th>
+                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Dibuat</th>
                                 <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Kendaraan</th>
                                 <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Tujuan</th>
                                 <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Status</th>
@@ -79,8 +80,13 @@
                                     </td>
                                     <td class="px-3 py-2">
                                         <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</div>
-                                        <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ substr($item->jam, 0, 5) }} - {{ substr($item->jam_sampai, 0, 5) }}</div>
-                                        <div class="text-[9px] text-slate-400 mt-0.5 whitespace-nowrap">Dibuat: {{ $item->created_at->format('d/m/Y, H:i') }}</div>
+                                        <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ substr($item->jam, 0, 5) }}
+                                            @if($item->jam_sampai) - {{ substr($item->jam_sampai, 0, 5) }} @else - selesai @endif
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-2">
+                                        <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->created_at->format('d/m/Y') }}</div>
+                                        <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ $item->created_at->format('H:i') }}</div>
                                     </td>
                                     <td class="px-3 py-2">
                                         @if($item->unit_mobil)
@@ -141,7 +147,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-3 py-8 text-center">
+                                    <td colspan="8" class="px-3 py-8 text-center">
                                         <svg class="w-10 h-10 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>

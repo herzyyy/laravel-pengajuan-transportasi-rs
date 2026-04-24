@@ -76,8 +76,9 @@
                     <thead class="bg-slate-50 border-b border-slate-200">
                         <tr class="text-left text-[10px] font-semibold uppercase tracking-wide text-slate-600">
                             <th class="w-16 px-2 py-2">ID</th>
-                            <th class="w-1/3 px-2 py-2">Jenis & Keperluan</th>
-                            <th class="w-1/3 px-2 py-2">Jadwal</th>
+                            <th class="w-1/4 px-2 py-2">Jenis & Keperluan</th>
+                            <th class="w-1/4 px-2 py-2">Jadwal</th>
+                            <th class="w-28 px-2 py-2">Dibuat</th>
                             <th class="w-20 px-2 py-2">Status</th>
                             <th class="w-16 px-2 py-2 text-center">Aksi</th>
                         </tr>
@@ -142,10 +143,16 @@
 
                                         @if ($item->tanggal_sampai && $item->jam_sampai)
                                             <div class="text-[9px] text-slate-500 truncate">s/d {{ $item->tanggal_sampai?->format('d M Y') }} | {{ substr($item->jam_sampai, 0, 5) }}</div>
+                                        @else
+                                            <div class="text-[9px] text-slate-500">s/d selesai</div>
                                         @endif
-
-                                        <div class="text-[9px] text-slate-400 mt-0.5">Dibuat: {{ $item->created_at->format('d M Y, H:i') }}</div>
                                     </div>
+                                </td>
+
+                                <!-- Jam Pengajuan -->
+                                <td class="px-2 py-2">
+                                    <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->created_at->format('d M Y') }}</div>
+                                    <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ $item->created_at->format('H:i') }}</div>
                                 </td>
 
                                 <!-- Status -->
@@ -222,7 +229,7 @@
 
                         @empty
                             <tr>
-                                <td colspan="5" class="px-4 py-12 text-center">
+                                <td colspan="6" class="px-4 py-12 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="bg-slate-100 rounded-full p-4">
                                             <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -17,13 +17,12 @@
             <form action="{{ route('admin.users.update', $user) }}" method="POST" class="space-y-2.5">
                 @csrf
                 @method('PUT')
-                <input type="hidden" name="nama_lengkap" value="{{ $user->full_name }}">
-
                 {{-- Baris 1: Nama + NIP --}}
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">Nama Lengkap</label>
-                        <div class="w-full rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs text-slate-600">{{ $user->full_name }}</div>
+                        <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap', $user->full_name) }}" required
+                               class="w-full rounded-md border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500">
                     </div>
                     <div>
                         <label class="block text-[11px] font-semibold text-slate-600 mb-0.5">NIP</label>

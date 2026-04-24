@@ -42,24 +42,33 @@ class TransportRequestController extends Controller
 
     public function storeUmum(Request $request)
     {
+        $sampaiSelesai = $request->boolean('sampai_selesai');
+
         $data = $request->validate([
             'tanggal' => ['required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
-            'tanggal_sampai' => ['required', 'date'],
-            'jam_sampai' => ['required', 'date_format:H:i'],
+            'tanggal_sampai' => $sampaiSelesai ? ['nullable', 'date'] : ['required', 'date'],
+            'jam_sampai' => $sampaiSelesai ? ['nullable'] : ['required', 'date_format:H:i'],
             'prioritas' => ['required', 'in:segera,biasa'],
             'alamat_tujuan' => ['required', 'string', 'max:2000'],
             'keperluan' => ['required', 'string', 'max:255'],
             'keterangan' => ['nullable', 'string', 'max:2000'],
         ]);
 
+        if ($sampaiSelesai) {
+            $data['tanggal_sampai'] = null;
+            $data['jam_sampai'] = null;
+        }
+
         $data['kontak'] = $request->user()->phone ?? '';
 
-        $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
-        $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
-        if ($sampai->lte($mulai)) {
-            $sampai->addDay();
-            $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
+        if (!$sampaiSelesai) {
+            $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
+            $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
+            if ($sampai->lte($mulai)) {
+                $sampai->addDay();
+                $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
+            }
         }
 
         $transportRequest = TransportRequest::create([
@@ -69,7 +78,7 @@ class TransportRequestController extends Controller
             'unit_mobil' => null,
             'keperluan' => $data['keperluan'],
             'prioritas' => $data['prioritas'],
-            'pemohon_nama' => $request->user()->name,
+            'pemohon_nama' => $request->user()->full_name,
             'pemohon_unit' => $request->user()->unit_kerja,
             'jumlah_penumpang' => null,
             // Auto-sign pemohon
@@ -91,6 +100,23 @@ class TransportRequestController extends Controller
             'jam_sampai' => ['required', 'date_format:H:i'],
         ]);
 
+        // User prioritas tinggi selalu tersedia
+        if (auth()->user()->isPriority()) {
+            $totalUnits = \App\Models\Vehicle::where('type', 'umum')->where('is_active', true)->count();
+            return response()->json([
+                'available' => true,
+                'total_units' => $totalUnits,
+                'used_units' => 0,
+                'available_units' => $totalUnits,
+            ]);
+        }
+
+        // Jika sampai_selesai, gunakan akhir hari
+        if (empty($data['tanggal_sampai']) || empty($data['jam_sampai'])) {
+            $data['tanggal_sampai'] = $data['tanggal'];
+            $data['jam_sampai'] = '23:59';
+        }
+
         $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
         if ($sampai->lte($mulai)) $sampai->addDay();
@@ -103,9 +129,10 @@ class TransportRequestController extends Controller
             ->get()
             ->filter(function ($r) use ($mulai, $sampai) {
                 $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                // null = sampai selesai (seharian penuh hingga 23:59)
                 $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
                     ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
-                    : $rMulai->copy()->addHour();
+                    : Carbon::parse($r->tanggal->format('Y-m-d').' 23:59');
                 if ($rSampai->lte($rMulai)) $rSampai->addDay();
                 return $mulai->lt($rSampai) && $rMulai->lt($sampai);
             });
@@ -133,6 +160,8 @@ class TransportRequestController extends Controller
 
     public function storeAmbulance(Request $request)
     {
+        $sampaiSelesai = $request->boolean('sampai_selesai');
+
         $data = $request->validate([
             'purpose' => ['required', 'in:antar,jemput'],
             'pasien_nama' => ['required', 'string', 'max:255'],
@@ -140,12 +169,17 @@ class TransportRequestController extends Controller
             'alamat_pasien' => ['required', 'string', 'max:2000'],
             'tanggal' => ['required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
-            'tanggal_sampai' => ['required', 'date'],
-            'jam_sampai' => ['required', 'date_format:H:i'],
+            'tanggal_sampai' => $sampaiSelesai ? ['nullable', 'date'] : ['required', 'date'],
+            'jam_sampai' => $sampaiSelesai ? ['nullable'] : ['required', 'date_format:H:i'],
             'prioritas' => ['required', 'in:segera,biasa'],
             'alamat_tujuan' => ['nullable', 'string', 'max:2000'],
             'alamat_asal' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        if ($sampaiSelesai) {
+            $data['tanggal_sampai'] = null;
+            $data['jam_sampai'] = null;
+        }
 
         $purpose = $data['purpose'];
         if ($purpose === 'antar' && empty($data['alamat_tujuan'])) {
@@ -157,11 +191,13 @@ class TransportRequestController extends Controller
 
         $data['kontak'] = '';
 
-        $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
-        $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
-        if ($sampai->lte($mulai)) {
-            $sampai->addDay();
-            $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
+        if (!$sampaiSelesai) {
+            $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
+            $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
+            if ($sampai->lte($mulai)) {
+                $sampai->addDay();
+                $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
+            }
         }
 
         $alamatAsal = $purpose === 'antar' ? 'RS' : ($data['alamat_asal'] ?? 'RS');
@@ -198,6 +234,23 @@ class TransportRequestController extends Controller
             'jam_sampai' => ['required', 'date_format:H:i'],
         ]);
 
+        // User prioritas tinggi selalu tersedia
+        if (auth()->user()->isPriority()) {
+            $totalUnits = \App\Models\Vehicle::where('type', 'ambulance')->where('is_active', true)->count();
+            return response()->json([
+                'available' => true,
+                'total_units' => $totalUnits,
+                'used_units' => 0,
+                'available_units' => $totalUnits,
+            ]);
+        }
+
+        // Jika sampai_selesai, gunakan akhir hari
+        if (empty($data['tanggal_sampai']) || empty($data['jam_sampai'])) {
+            $data['tanggal_sampai'] = $data['tanggal'];
+            $data['jam_sampai'] = '23:59';
+        }
+
         $mulai = Carbon::parse($data['tanggal'].' '.$data['jam']);
         $sampai = Carbon::parse($data['tanggal_sampai'].' '.$data['jam_sampai']);
         if ($sampai->lte($mulai)) $sampai->addDay();
@@ -210,9 +263,10 @@ class TransportRequestController extends Controller
             ->get()
             ->filter(function ($r) use ($mulai, $sampai) {
                 $rMulai = Carbon::parse($r->tanggal->format('Y-m-d').' '.$r->jam);
+                // null = sampai selesai (seharian penuh hingga 23:59)
                 $rSampai = ($r->tanggal_sampai && $r->jam_sampai)
                     ? Carbon::parse($r->tanggal_sampai->format('Y-m-d').' '.$r->jam_sampai)
-                    : $rMulai->copy()->addHour();
+                    : Carbon::parse($r->tanggal->format('Y-m-d').' 23:59');
                 if ($rSampai->lte($rMulai)) $rSampai->addDay();
                 return $mulai->lt($rSampai) && $rMulai->lt($sampai);
             });

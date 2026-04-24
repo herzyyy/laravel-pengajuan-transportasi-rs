@@ -254,17 +254,24 @@ body, * {
 
 /* Header Button Hover */
 .header-btn {
-    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.header-btn:hover {
     background-color: #007774 !important;
     color: white !important;
     border-color: #007774 !important;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.header-btn svg {
+    color: white !important;
+}
+
+.header-btn:hover {
+    background-color: rgba(0,119,116,0.08) !important;
+    color: #007774 !important;
+    border-color: rgba(0,119,116,0.3) !important;
 }
 
 .header-btn:hover svg {
-    color: white !important;
+    color: #007774 !important;
 }
 
 /* Clean Sidebar Link */
@@ -274,13 +281,13 @@ body, * {
 }
 
 .sidebar-link:hover {
-    background-color: #f0fafa;
-    color: #007774;
+    background-color: #007774;
+    color: white;
 }
 
 .sidebar-link:hover .sidebar-icon {
-    background-color: rgba(0, 119, 116, 0.1);
-    color: #007774;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
 }
 
 .sidebar-link .sidebar-icon {
@@ -289,13 +296,13 @@ body, * {
 }
 
 .sidebar-link-active {
-    background-color: rgba(0, 119, 116, 0.08) !important;
-    color: #007774 !important;
+    background-color: #007774 !important;
+    color: white !important;
 }
 
 .sidebar-link-active .sidebar-icon {
-    background-color: rgba(0, 119, 116, 0.15) !important;
-    color: #007774 !important;
+    background-color: rgba(255, 255, 255, 0.2) !important;
+    color: white !important;
 }
 
 /* Form Elements */

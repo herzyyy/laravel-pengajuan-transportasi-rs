@@ -88,12 +88,12 @@ class TransportRequest extends Model
 
         $last = DB::table('transport_requests')
             ->where('nomor_pengajuan', 'like', $dateKey . '%')
-            ->orderByDesc('nomor_pengajuan')
+            ->orderByRaw('LENGTH(nomor_pengajuan) DESC, nomor_pengajuan DESC')
             ->value('nomor_pengajuan');
 
         $seq = $last ? ((int) substr($last, 6)) + 1 : 1;
 
-        return $dateKey . $seq;
+        return $dateKey . str_pad($seq, 2, '0', STR_PAD_LEFT);
     }
 }
 

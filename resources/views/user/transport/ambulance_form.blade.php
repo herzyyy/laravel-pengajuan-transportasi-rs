@@ -76,9 +76,18 @@
                 </div>
 
                 <!-- Waktu Penggunaan (4 kolom dalam 1 baris) -->
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2">
-                    <div class="text-xs font-semibold text-slate-900 mb-1.5">Waktu Penggunaan</div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2" x-data="{ sampaiSelesai: {{ old('sampai_selesai') ? 'true' : 'false' }} }">
+                    <div class="flex items-center justify-between mb-1.5">
+                        <div class="text-xs font-semibold text-slate-900">Waktu Penggunaan</div>
+                        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                            <input type="checkbox" name="sampai_selesai" value="1" x-model="sampaiSelesai"
+                                class="w-3.5 h-3.5 rounded text-teal-600 cursor-pointer"
+                                {{ old('sampai_selesai') ? 'checked' : '' }}>
+                            <span class="text-[10px] font-semibold text-slate-700">Sampai Selesai</span>
+                            <span class="text-[9px] text-slate-500">(seharian penuh)</span>
+                        </label>
+                    </div>
+                    <div class="grid gap-2" :class="sampaiSelesai ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'">
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Dari <span class="text-red-500">*</span></label>
                             <input type="text" id="tanggal_display" placeholder="dd/mm/yyyy" autocomplete="off"
@@ -91,18 +100,26 @@
                                 pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
-                        <div>
+                        <div x-show="!sampaiSelesai">
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Sampai <span class="text-red-500">*</span></label>
                             <input type="text" id="tanggal_sampai_display" placeholder="dd/mm/yyyy" autocomplete="off"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300 cursor-pointer">
-                            <input type="hidden" name="tanggal_sampai" id="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}" required>
+                            <input type="hidden" name="tanggal_sampai" id="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}">
                         </div>
-                        <div>
+                        <div x-show="!sampaiSelesai">
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Sampai <span class="text-red-500">*</span></label>
-                            <input type="text" name="jam_sampai" placeholder="00:00" required
+                            <input type="text" name="jam_sampai" placeholder="00:00"
                                 pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
+                    </div>
+
+                    <!-- Info sampai selesai -->
+                    <div x-show="sampaiSelesai" class="mt-2 flex items-center gap-1.5 text-[10px] text-teal-700 bg-teal-50 border border-teal-200 rounded-lg px-2 py-1.5">
+                        <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Waktu selesai akan dicatat otomatis saat kendaraan kembali
                     </div>
 
                     <!-- Tombol cek ketersediaan -->
@@ -250,6 +267,11 @@
 
             if (!btn) return;
 
+            function isSampaiSelesai() {
+                const cb = document.querySelector('input[name="sampai_selesai"]');
+                return cb && cb.checked;
+            }
+
             function resetCheck() {
                 submitBtn.disabled = true;
                 statusEl.textContent = 'Cek ketersediaan diperlukan';
@@ -261,12 +283,17 @@
                 const el = form.querySelector(`[name="${name}"]`);
                 if (el) { el.addEventListener('change', resetCheck); el.addEventListener('input', resetCheck); }
             });
+            const cbSampaiSelesai = form.querySelector('input[name="sampai_selesai"]');
+            if (cbSampaiSelesai) cbSampaiSelesai.addEventListener('change', resetCheck);
 
             btn.addEventListener('click', async function() {
                 const tanggal = form.querySelector('input[name="tanggal"]').value;
                 const jam = form.querySelector('input[name="jam"]').value;
-                const tanggal_sampai = form.querySelector('input[name="tanggal_sampai"]').value;
-                const jam_sampai = form.querySelector('input[name="jam_sampai"]').value;
+
+                // Jika sampai selesai: gunakan tanggal yang sama dengan jam 23:59
+                const sampaiSelesai = isSampaiSelesai();
+                const tanggal_sampai = sampaiSelesai ? tanggal : form.querySelector('input[name="tanggal_sampai"]').value;
+                const jam_sampai = sampaiSelesai ? '23:59' : form.querySelector('input[name="jam_sampai"]').value;
 
                 if (!tanggal || !jam || !tanggal_sampai || !jam_sampai) {
                     statusEl.textContent = 'Lengkapi tanggal dan jam terlebih dahulu';

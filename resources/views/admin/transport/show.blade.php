@@ -81,7 +81,12 @@
                         <div class="flex">
                             <dt class="w-24 text-slate-500">Tanggal</dt>
                             <dd class="flex-1 text-slate-800 font-medium">
-                                {{ $transportRequest->tanggal->format('d/m/Y') }} {{ substr($transportRequest->jam, 0, 5) }} - {{ $transportRequest->tanggal_sampai->format('d/m/Y') }} {{ substr($transportRequest->jam_sampai, 0, 5) }}
+                                {{ $transportRequest->tanggal->format('d/m/Y') }} {{ substr($transportRequest->jam, 0, 5) }}
+                                @if($transportRequest->tanggal_sampai && $transportRequest->jam_sampai)
+                                    - {{ $transportRequest->tanggal_sampai->format('d/m/Y') }} {{ substr($transportRequest->jam_sampai, 0, 5) }}
+                                @else
+                                    - Sampai Selesai
+                                @endif
                             </dd>
                         </div>
 
@@ -261,7 +266,7 @@
                                 class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
                             @if($transportRequest->status === 'diajukan')
                                 <option value="diajukan" selected>Diajukan (Menunggu)</option>
-                                @if($unitAvailable)
+                                @if($unitAvailable || ($transportRequest->user && $transportRequest->user->isPriority()))
                                 <option value="diproses">Disetujui</option>
                                 @endif
                                 <option value="tidak_disetujui">Tidak Disetujui</option>
@@ -284,7 +289,7 @@
                             <span x-show="currentStatus === 'selesai'">Status sudah selesai</span>
                             <span x-show="currentStatus === 'tidak_disetujui'">Pengajuan tidak disetujui</span>
                         </p>
-                        @if($transportRequest->status === 'diajukan' && !$unitAvailable)
+                        @if($transportRequest->status === 'diajukan' && !$unitAvailable && !($transportRequest->user && $transportRequest->user->isPriority()))
                         <div class="mt-1.5 flex items-start gap-1.5 rounded-lg bg-red-50 border border-red-200 px-2.5 py-2">
                             <svg class="w-3.5 h-3.5 text-red-500 shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
@@ -379,7 +384,7 @@
                                 Jam Kedatangan <span class="text-red-500">*</span>
                             </label>
                             <input type="text" name="jam_kedatangan" id="jam_kedatangan"
-                                   value="{{ old('jam_kedatangan', $transportRequest->jam_kedatangan) }}"
+                                   value="{{ old('jam_kedatangan', $transportRequest->jam_kedatangan ?? now()->format('H:i')) }}"
                                    class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
                                    placeholder="00:00"
                                    pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"

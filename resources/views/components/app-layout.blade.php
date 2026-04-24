@@ -442,6 +442,18 @@
                             <span class="font-medium">Daftar Pengajuan</span>
                         </a>
 
+                        <a href="{{ route('admin.laporan') }}"
+                           @click="sidebarOpen = false"
+                           class="sidebar-link group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.laporan') ? 'sidebar-link-active' : '' }}">
+                            <span class="sidebar-icon inline-flex w-7 h-7 items-center justify-center rounded-md transition-all duration-150">
+                                <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                    <path d="M9 17v-2m3 2v-4m3 4v-6M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" class="fill-none stroke-current" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="font-medium">Laporan</span>
+                        </a>
+
                         <div class="px-3 py-2">
                             <div style="border-top: 1px solid #f0f4f4;"></div>
                             <div class="text-[10px] uppercase tracking-widest font-semibold mt-2 mb-1" style="color: #007774;">
@@ -516,7 +528,7 @@
                         <a href="{{ route('dashboard') }}"
                            @click="sidebarOpen = false"
                            class="sidebar-link group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
-                                  {{ request()->routeIs('dashboard') ? 'sidebar-link-active' : '' }}">
+                                  {{ request()->routeIs('dashboard') || request()->routeIs('pengajuan.choose') || request()->routeIs('pengajuan.umum*') || request()->routeIs('pengajuan.ambulance*') ? 'sidebar-link-active' : '' }}">
                             <span class="sidebar-icon inline-flex w-7 h-7 items-center justify-center rounded-md transition-all duration-150">
                                 <svg viewBox="0 0 24 24" class="w-4 h-4">
                                     <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z" class="fill-none stroke-current" stroke-width="2" stroke-linejoin="round"/>
@@ -528,7 +540,7 @@
                         <a href="{{ route('pengajuan.index') }}"
                            @click="sidebarOpen = false"
                            class="sidebar-link group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
-                                  {{ request()->routeIs('pengajuan.*') ? 'sidebar-link-active' : '' }}">
+                                  {{ request()->routeIs('pengajuan.index') || request()->routeIs('pengajuan.show') || request()->routeIs('pengajuan.success') ? 'sidebar-link-active' : '' }}">
                             <span class="sidebar-icon inline-flex w-7 h-7 items-center justify-center rounded-md transition-all duration-150">
                                 <svg viewBox="0 0 24 24" class="w-4 h-4">
                                     <path d="M6 7h12M6 12h12M6 17h8" class="fill-none stroke-current" stroke-width="2" stroke-linecap="round"/>
@@ -637,12 +649,12 @@
                 {{-- Pengajuan --}}
                 <a href="{{ route('dashboard') }}"
                    class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative"
-                   style="{{ request()->routeIs('dashboard') ? 'color: #007774;' : 'color: #94a3b8;' }}">
+                   style="{{ request()->routeIs('dashboard') || request()->routeIs('pengajuan.choose') || request()->routeIs('pengajuan.umum*') || request()->routeIs('pengajuan.ambulance*') ? 'color: #007774;' : 'color: #94a3b8;' }}">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
                         <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"/>
                     </svg>
                     <span class="text-[10px] font-semibold">Pengajuan</span>
-                    @if(request()->routeIs('dashboard'))
+                    @if(request()->routeIs('dashboard') || request()->routeIs('pengajuan.choose') || request()->routeIs('pengajuan.umum*') || request()->routeIs('pengajuan.ambulance*'))
                         <span class="absolute bottom-0 w-8 h-0.5 rounded-t-full" style="background-color: #007774;"></span>
                     @endif
                 </a>
@@ -650,12 +662,12 @@
                 {{-- Riwayat --}}
                 <a href="{{ route('pengajuan.index') }}"
                    class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative"
-                   style="{{ request()->routeIs('pengajuan.*') ? 'color: #007774;' : 'color: #94a3b8;' }}">
+                   style="{{ request()->routeIs('pengajuan.index') || request()->routeIs('pengajuan.show') || request()->routeIs('pengajuan.success') ? 'color: #007774;' : 'color: #94a3b8;' }}">
                     <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
                         <path d="M6 7h12M6 12h12M6 17h8"/>
                     </svg>
                     <span class="text-[10px] font-semibold">Riwayat</span>
-                    @if(request()->routeIs('pengajuan.*'))
+                    @if(request()->routeIs('pengajuan.index') || request()->routeIs('pengajuan.show') || request()->routeIs('pengajuan.success'))
                         <span class="absolute bottom-0 w-8 h-0.5 rounded-t-full" style="background-color: #007774;"></span>
                     @endif
                 </a>

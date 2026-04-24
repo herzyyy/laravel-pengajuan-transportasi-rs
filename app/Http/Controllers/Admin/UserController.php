@@ -19,8 +19,8 @@ class UserController extends Controller
      */
     private function parseNama(string $namaLengkap): array
     {
-        // Potong gelar setelah koma, misal "Helmi, S.Kom." → "Helmi"
-        $namaLengkap = trim(explode(',', $namaLengkap)[0]);
+        // Simpan nama lengkap asli (termasuk koma dan gelar) untuk first_name/last_name
+        $namaLengkap = trim($namaLengkap);
 
         $parts = preg_split('/\s+/', $namaLengkap);
 
@@ -29,12 +29,12 @@ class UserController extends Controller
             ? implode(' ', array_slice($parts, 1))
             : '';
 
-        // Username: ambil kata ke-1 dan ke-2 (jika ada), lowercase, strip non-alphanumeric
-        $w1 = strtolower($parts[0] ?? '');
-        $w1 = preg_replace('/[^a-z0-9]/', '', $w1);
+        // Username: gunakan nama tanpa gelar (potong di koma), ambil kata ke-1 dan ke-2
+        $namaUntukUsername = trim(explode(',', $namaLengkap)[0]);
+        $partsUsername = preg_split('/\s+/', $namaUntukUsername);
 
-        $w2 = isset($parts[1]) ? strtolower($parts[1]) : null;
-        $w2 = $w2 !== null ? preg_replace('/[^a-z0-9]/', '', $w2) : null;
+        $w1 = preg_replace('/[^a-z0-9]/', '', strtolower($partsUsername[0] ?? ''));
+        $w2 = isset($partsUsername[1]) ? preg_replace('/[^a-z0-9]/', '', strtolower($partsUsername[1])) : null;
 
         $username = ($w2 !== null && $w2 !== '')
             ? $w1 . '.' . $w2
@@ -88,10 +88,10 @@ class UserController extends Controller
 
         $parsed = $this->parseNama($data['nama_lengkap']);
 
-        // Pastikan username unik, tambah angka jika perlu
+        // Pastikan username unik, tambah angka mulai dari 2 jika ada duplikat
         $baseUsername = $parsed['username'];
         $username = $baseUsername;
-        $i = 1;
+        $i = 2;
         while (User::where('username', $username)->exists()) {
             $username = $baseUsername . $i++;
         }
@@ -151,7 +151,7 @@ class UserController extends Controller
         // Pastikan username unik, kecuali milik user ini sendiri
         $baseUsername = $parsed['username'];
         $username = $baseUsername;
-        $i = 1;
+        $i = 2;
         while (User::where('username', $username)->where('id', '!=', $user->id)->exists()) {
             $username = $baseUsername . $i++;
         }

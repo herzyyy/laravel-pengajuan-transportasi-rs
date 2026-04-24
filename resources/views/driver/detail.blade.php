@@ -58,7 +58,11 @@
                     <dd class="font-medium text-slate-800">
                         {{ $transportRequest->tanggal->format('d/m/Y') }} {{ substr($transportRequest->jam, 0, 5) }}
                         <span class="text-slate-400">–</span>
-                        {{ $transportRequest->tanggal_sampai->format('d/m/Y') }} {{ substr($transportRequest->jam_sampai, 0, 5) }}
+                        @if($transportRequest->tanggal_sampai && $transportRequest->jam_sampai)
+                            {{ $transportRequest->tanggal_sampai->format('d/m/Y') }} {{ substr($transportRequest->jam_sampai, 0, 5) }}
+                        @else
+                            Sampai Selesai
+                        @endif
                     </dd>
                 </div>
                 <div class="flex gap-2">

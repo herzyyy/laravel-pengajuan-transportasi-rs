@@ -528,7 +528,7 @@
                             <tr>
                                 <td>Tanggal Kembali</td>
                                 <td>:</td>
-                                <td class="value-highlight">{{ $transportRequest->tanggal_sampai->format('d F Y') }}</td>
+                                <td class="value-highlight">{{ $transportRequest->tanggal_sampai ? $transportRequest->tanggal_sampai->format('d F Y') : '-' }}</td>
                             </tr>
                             <tr>
                                 <td>Jam Kembali</td>

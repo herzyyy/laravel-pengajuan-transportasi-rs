@@ -56,6 +56,7 @@
                                 <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
                                     <th class="px-2 sm:px-3 py-2 text-left">No</th>
                                     <th class="px-2 sm:px-3 py-2 text-left">Tanggal & Jam</th>
+                                    <th class="px-2 sm:px-3 py-2 text-left">Dibuat</th>
                                     <th class="px-2 sm:px-3 py-2 text-left hidden sm:table-cell">Pemohon</th>
                                     <th class="px-2 sm:px-3 py-2 text-left">Jenis</th>
                                     <th class="px-2 sm:px-3 py-2 text-left">Status</th>
@@ -73,7 +74,10 @@
                                         <td class="px-2 sm:px-3 py-2 text-slate-700 font-medium whitespace-nowrap">
                                             <div>{{ $item->tanggal->format('d/m/Y') }}</div>
                                             <div class="text-[10px] text-slate-500">{{ substr($item->jam, 0, 5) }}</div>
-                                            <div class="text-[9px] text-slate-400 mt-0.5">Dibuat: {{ $item->created_at->format('d/m/Y, H:i') }}</div>
+                                        </td>
+                                        <td class="px-2 sm:px-3 py-2 whitespace-nowrap">
+                                            <div class="text-xs text-slate-700 font-medium">{{ $item->created_at->format('d/m/Y') }}</div>
+                                            <div class="text-[10px] text-slate-500">{{ $item->created_at->format('H:i') }}</div>
                                         </td>
                                         <td class="px-2 sm:px-3 py-2 hidden sm:table-cell">
                                             <div class="font-medium text-slate-900 text-xs">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
@@ -105,7 +109,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="5" class="px-2 sm:px-3 py-6 sm:py-8 text-center">
+                                        <td colspan="6" class="px-2 sm:px-3 py-6 sm:py-8 text-center">
                                             <div class="flex flex-col items-center gap-2">
                                                 <svg class="w-8 sm:w-10 h-8 sm:h-10 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -154,7 +158,11 @@
                                         <div class="text-[10px] text-slate-500 mt-0.5">
                                             {{ $v->tanggal->format('d/m/Y') }} {{ substr($v->jam, 0, 5) }}
                                             <span class="text-slate-400">–</span>
-                                            {{ $v->tanggal_sampai->format('d/m/Y') }} {{ substr($v->jam_sampai, 0, 5) }}
+                                            @if($v->tanggal_sampai && $v->jam_sampai)
+                                                {{ $v->tanggal_sampai->format('d/m/Y') }} {{ substr($v->jam_sampai, 0, 5) }}
+                                            @else
+                                                Sampai Selesai
+                                            @endif
                                         </div>
                                         <div class="text-[10px] text-slate-400 truncate mt-0.5">
                                             {{ $v->user->full_name ?? $v->pemohon_nama }}

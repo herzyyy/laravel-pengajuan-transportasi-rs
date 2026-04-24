@@ -131,6 +131,7 @@
                                 <div>
                                     <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">Jam Tiba <span class="text-red-500">*</span></label>
                                     <input type="text" name="jam_kedatangan" placeholder="00:00"
+                                           value="{{ now()->format('H:i') }}"
                                            maxlength="5" inputmode="numeric"
                                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500">
                                 </div>
