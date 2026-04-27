@@ -35,7 +35,7 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('pengajuan.ambulance.store') }}" class="mt-3 space-y-3">
+    <form method="POST" action="{{ route('pengajuan.ambulance.store') }}" class="mt-3 space-y-3" id="ambulanceForm">
         @csrf
 
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
@@ -193,7 +193,7 @@
                             <label class="block text-[10px] font-semibold text-slate-700 mb-1">No. Rekam Medis</label>
                             <input name="pasien_no_rm"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
-                                placeholder="No. RM (Opsional)"
+                                placeholder="No. RM"
                                 value="{{ old('pasien_no_rm') }}">
                         </div>
                         <div>
@@ -233,7 +233,7 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>
-                    Kirim Pengajuan
+                    <span id="submitAmbulanceBtnText">Kirim Pengajuan</span>
                 </button>
             </div>
         </div>
@@ -366,6 +366,18 @@
                 }
             });
         }
+
+        // Anti double-submit
+        document.getElementById('ambulanceForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('submitAmbulanceBtn');
+            if (btn.dataset.submitted === '1') {
+                e.preventDefault();
+                return;
+            }
+            btn.dataset.submitted = '1';
+            btn.disabled = true;
+            document.getElementById('submitAmbulanceBtnText').textContent = 'Mengirim…';
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             initFlatpickr();

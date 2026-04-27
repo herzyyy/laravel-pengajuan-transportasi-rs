@@ -35,7 +35,7 @@
             $done     = auth()->user()->transportRequests()->where('status', 'selesai')->count();
             $rejected = auth()->user()->transportRequests()->where('status', 'tidak_disetujui')->count();
         @endphp
-        <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
+        <div class="grid grid-cols-2 sm:grid-cols-6 gap-2 sm:gap-3">
             @foreach([
                 ['label'=>'Total',     'value'=>$total,    'color'=>'slate',   'icon'=>'M9 2a1 1 0 000 2h2a1 1 0 100-2H9zM4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z'],
                 ['label'=>'Menunggu',  'value'=>$pending,  'color'=>'amber',   'icon'=>'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'],
@@ -44,15 +44,15 @@
                 ['label'=>'Selesai',   'value'=>$done,     'color'=>'emerald', 'icon'=>'M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z'],
                 ['label'=>'Ditolak',   'value'=>$rejected, 'color'=>'red',     'icon'=>'M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z'],
             ] as $stat)
-            <div class="bg-white border border-{{ $stat['color'] }}-200 rounded-lg px-4 py-4 flex items-center gap-3 shadow-sm hover:shadow-md transition">
-                <div class="shrink-0 rounded-lg p-2.5 bg-{{ $stat['color'] }}-100">
-                    <svg class="w-6 h-6 text-{{ $stat['color'] }}-600" fill="currentColor" viewBox="0 0 20 20">
+            <div class="bg-white border border-{{ $stat['color'] }}-200 rounded-lg px-3 py-4 flex items-center gap-3 shadow-sm hover:shadow-md transition">
+                <div class="shrink-0 rounded-lg p-2 bg-{{ $stat['color'] }}-100">
+                    <svg class="w-4 h-4 text-{{ $stat['color'] }}-600" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="{{ $stat['icon'] }}" clip-rule="evenodd"/>
                     </svg>
                 </div>
                 <div>
-                    <p class="text-[10px] font-medium text-slate-500">{{ $stat['label'] }}</p>
-                    <p class="text-2xl font-bold text-slate-900 leading-none mt-0.5">{{ $stat['value'] }}</p>
+                    <p class="text-[9px] font-semibold text-{{ $stat['color'] }}-600 uppercase tracking-wide">{{ $stat['label'] }}</p>
+                    <p class="text-2xl font-bold text-slate-900 leading-none mt-1">{{ $stat['value'] }}</p>
                 </div>
             </div>
             @endforeach

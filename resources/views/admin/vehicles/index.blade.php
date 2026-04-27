@@ -89,6 +89,7 @@
                             <th class="py-2 px-3 text-left">Jenis</th>
                             <th class="py-2 px-3 text-left">Plat Nomor</th>
                             <th class="py-2 px-3 text-left">Merk/Model</th>
+                            <th class="py-2 px-3 text-left">KM Terkini</th>
                             <th class="py-2 px-3 text-left">Status</th>
                             <th class="py-2 px-3 text-right">Aksi</th>
                         </tr>
@@ -110,6 +111,14 @@
                                 <td class="py-2 px-3 text-slate-700">
                                     {{ $vehicle->brand ?? '-' }}
                                     @if($vehicle->model)<span class="text-slate-500">/ {{ $vehicle->model }}</span>@endif
+                                </td>
+                                <td class="py-2 px-3">
+                                    @if($vehicle->last_km !== null)
+                                        <span class="font-semibold text-slate-800">{{ number_format($vehicle->last_km, 0, ',', '.') }}</span>
+                                        <span class="text-slate-400 text-[10px]"> km</span>
+                                    @else
+                                        <span class="text-slate-400">-</span>
+                                    @endif
                                 </td>
                                 <td class="py-2 px-3">
                                     @if($vehicle->is_active)
@@ -138,7 +147,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="6" class="py-6 text-center text-slate-500 text-xs">Tidak ada data kendaraan</td>
+                                <td colspan="7" class="py-6 text-center text-slate-500 text-xs">Tidak ada data kendaraan</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -169,6 +178,11 @@
                                 @if($vehicle->model) / {{ $vehicle->model }}@endif
                                 @if($vehicle->year) ({{ $vehicle->year }})@endif
                             </p>
+                            @if($vehicle->last_km !== null)
+                                <p class="text-xs text-slate-700 mt-1 font-medium">
+                                    KM Terkini: <span class="font-semibold">{{ number_format($vehicle->last_km, 0, ',', '.') }} km</span>
+                                </p>
+                            @endif
                         </div>
                         @if($vehicle->is_active)
                             <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>

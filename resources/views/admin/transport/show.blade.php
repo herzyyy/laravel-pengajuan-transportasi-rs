@@ -240,7 +240,8 @@
             </div>
 
             {{-- Card 2: Form Eksekusi Admin --}}
-            <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200">
+            <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200"
+                 x-data="{ currentStatus: '{{ $transportRequest->status }}', savedStatus: '{{ $transportRequest->status }}', editOpen: false }">
                 <div class="border-b border-slate-200 px-3 py-2">
                     <h2 class="text-xs font-semibold text-slate-800">
                         Form Eksekusi Admin
@@ -254,7 +255,7 @@
                 <form method="POST"
                       action="{{ route('admin.transport.update', $transportRequest) }}"
                       class="px-3 py-2.5 space-y-2.5 text-xs"
-                      x-data="{ currentStatus: '{{ $transportRequest->status }}', savedStatus: '{{ $transportRequest->status }}', editOpen: false }">
+                      id="mainFormWrapper">
                     @csrf
                     @method('PUT')
 
@@ -326,8 +327,9 @@
                                 @foreach($vehicles as $vehicle)
                                     <option value="{{ $vehicle->name }}"
                                             data-plate="{{ $vehicle->plate_number }}"
+                                            data-last-km="{{ $vehicle->last_km ?? 0 }}"
                                             @selected(old('unit_mobil') == $vehicle->name)>
-                                        {{ $vehicle->name }} ({{ $vehicle->plate_number }})
+                                        {{ $vehicle->name }} ({{ $vehicle->plate_number }}){{ $vehicle->last_km ? ' — KM: ' . number_format($vehicle->last_km, 0, ',', '.') : '' }}
                                     </option>
                                 @endforeach
                             </select>
@@ -354,13 +356,14 @@
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 KM Keberangkatan <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="km_awal_display"
-                                   value="{{ old('km_awal', $transportRequest->km_awal) ? number_format(old('km_awal', $transportRequest->km_awal), 0, ',', '.') : '' }}"
+                            <input type="number" name="km_awal" id="km_awal"
+                                   value="{{ old('km_awal', $transportRequest->km_awal) }}"
                                    class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
                                    placeholder="Masukkan KM"
-                                   inputmode="numeric"
-                                   autocomplete="off">
-                            <input type="hidden" name="km_awal" id="km_awal" value="{{ old('km_awal', $transportRequest->km_awal) }}">
+                                   min="0"
+                                   step="1">
+                            <p id="km_awal_hint" class="text-[10px] text-amber-600 mt-0.5 hidden"></p>
+                            <p id="km_awal_error" class="text-[10px] text-red-600 mt-0.5 hidden"></p>
                         </div>
                     </div>
 
@@ -370,13 +373,12 @@
                             <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">
                                 KM Tiba <span class="text-red-500">*</span>
                             </label>
-                            <input type="text" id="km_akhir_display"
-                                   value="{{ old('km_akhir', $transportRequest->km_akhir) ? number_format(old('km_akhir', $transportRequest->km_akhir), 0, ',', '.') : '' }}"
+                            <input type="number" name="km_akhir" id="km_akhir"
+                                   value="{{ old('km_akhir', $transportRequest->km_akhir) }}"
                                    class="w-full rounded-lg border border-slate-300 px-2.5 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
                                    placeholder="Masukkan KM"
-                                   inputmode="numeric"
-                                   autocomplete="off">
-                            <input type="hidden" name="km_akhir" id="km_akhir" value="{{ old('km_akhir', $transportRequest->km_akhir) }}">
+                                   min="0"
+                                   step="1">
                         </div>
 
                         <div>
@@ -467,8 +469,8 @@
                 </form>
 
                 @if($transportRequest->status === 'digunakan')
-                <!-- Form Edit terpisah (di luar form utama) -->
-                <div x-data="{ editOpen: false }" id="editDigunakanWrapper" class="px-3 pb-3">
+                <!-- Form Edit terpisah — pakai editOpen dari parent x-data -->
+                <div id="editDigunakanWrapper" class="px-3 pb-3">
                     <div x-show="editOpen" x-transition class="mt-2 pt-2 border-t border-slate-200">
                         <form method="POST"
                               action="{{ route('admin.transport.update', $transportRequest) }}"
@@ -620,6 +622,13 @@
                 const hidden = document.getElementById(hiddenId);
                 if (!display || !hidden) return;
 
+                function formatDisplay() {
+                    const raw = display.value.replace(/\D/g, '');
+                    hidden.value = raw;
+                    display.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+                    if (hiddenId === 'km_akhir') validateKm();
+                }
+
                 display.addEventListener('input', function() {
                     const raw = this.value.replace(/\D/g, '');
                     const cursor = this.selectionStart;
@@ -631,15 +640,21 @@
                     if (hiddenId === 'km_akhir') validateKm();
                 });
 
+                display.addEventListener('blur', formatDisplay);
+                display.addEventListener('change', formatDisplay);
+
                 display.addEventListener('keypress', function(e) {
                     if (!/[0-9]/.test(e.key)) e.preventDefault();
                 });
+
+                // Sinkronisasi & format awal jika display sudah ada nilai
+                if (display.value) formatDisplay();
             }
 
             function validateKm() {
                 const kmAwal = parseInt(document.getElementById('km_awal')?.value) || 0;
                 const kmAkhir = parseInt(document.getElementById('km_akhir')?.value) || 0;
-                const display = document.getElementById('km_akhir_display');
+                const display = document.getElementById('km_akhir');
                 if (!display) return true;
 
                 let alertEl = document.getElementById('km_akhir_alert');
@@ -663,8 +678,67 @@
                 }
             }
 
-            setupKmInput('km_awal_display', 'km_awal');
-            setupKmInput('km_akhir_display', 'km_akhir');
+            const unitMobilSelect = document.getElementById('unit_mobil');
+            const kmAwalInput = document.getElementById('km_awal');
+            const kmAwalHint = document.getElementById('km_awal_hint');
+            const kmAwalError = document.getElementById('km_awal_error');
+            let currentMinKm = 0;
+
+            function updateKmAwalHint() {
+                if (!unitMobilSelect) return;
+                const selected = unitMobilSelect.options[unitMobilSelect.selectedIndex];
+                const lastKm = parseInt(selected?.dataset?.lastKm) || 0;
+                currentMinKm = lastKm;
+
+                if (kmAwalInput) {
+                    kmAwalInput.min = lastKm;
+                    kmAwalInput.placeholder = lastKm > 0 ? 'Min. ' + lastKm.toLocaleString('id-ID') + ' km' : 'Masukkan KM';
+                }
+                if (kmAwalHint) {
+                    if (lastKm > 0) {
+                        kmAwalHint.textContent = 'KM terakhir kendaraan ini: ' + lastKm.toLocaleString('id-ID') + ' km (boleh sama atau lebih)';
+                        kmAwalHint.classList.remove('hidden');
+                    } else {
+                        kmAwalHint.classList.add('hidden');
+                    }
+                }
+                // Re-validasi jika sudah ada nilai
+                if (kmAwalInput && kmAwalInput.value) validateKmAwal();
+            }
+
+            function validateKmAwal() {
+                if (!kmAwalInput || !kmAwalError) return true;
+                const val = parseInt(kmAwalInput.value) || 0;
+                if (currentMinKm > 0 && val < currentMinKm) {
+                    kmAwalInput.classList.add('border-red-400');
+                    kmAwalInput.classList.remove('border-slate-300');
+                    kmAwalError.textContent = 'KM berangkat tidak boleh kurang dari ' + currentMinKm.toLocaleString('id-ID') + ' km (KM terakhir kendaraan ini).';
+                    kmAwalError.classList.remove('hidden');
+                    return false;
+                } else {
+                    kmAwalInput.classList.remove('border-red-400');
+                    kmAwalInput.classList.add('border-slate-300');
+                    kmAwalError.classList.add('hidden');
+                    return true;
+                }
+            }
+
+            if (unitMobilSelect) {
+                unitMobilSelect.addEventListener('change', updateKmAwalHint);
+                updateKmAwalHint();
+            }
+
+            if (kmAwalInput) {
+                kmAwalInput.addEventListener('blur', validateKmAwal);
+                kmAwalInput.addEventListener('input', validateKmAwal);
+            }
+
+            // Validasi km_akhir real-time
+            const kmAkhirInput = document.getElementById('km_akhir');
+            if (kmAkhirInput) {
+                kmAkhirInput.addEventListener('input', validateKm);
+                kmAkhirInput.addEventListener('blur', validateKm);
+            }
 
             // Setup form edit digunakan
             setupKmInput('km_awal_edit_display', 'km_awal_edit');
@@ -678,27 +752,19 @@
                 });
             }
 
-            // Sync tombol edit di form utama (Alpine) dengan wrapper edit terpisah
-            document.addEventListener('alpine:init', () => {});
-            document.addEventListener('alpine:initialized', () => {
-                const mainForm = document.querySelector('[x-data*="editOpen"]');
-                const editWrapper = document.getElementById('editDigunakanWrapper');
-                if (mainForm && editWrapper) {
-                    const mainData = Alpine.$data(mainForm);
-                    const editData = Alpine.$data(editWrapper);
-                    // Watch editOpen di form utama, sync ke wrapper
-                    Alpine.effect(() => {
-                        editData.editOpen = mainData.editOpen;
-                    });
-                }
-            });
-
             // Blokir submit jika km_akhir <= km_awal
             document.querySelector('form').addEventListener('submit', function(e) {
-                const kmAkhirDisplay = document.getElementById('km_akhir_display');
-                if (kmAkhirDisplay && kmAkhirDisplay.value !== '' && !validateKm()) {
+                const kmAkhir = document.getElementById('km_akhir');
+                if (kmAkhir && kmAkhir.value !== '' && !validateKm()) {
                     e.preventDefault();
-                    kmAkhirDisplay.focus();
+                    kmAkhir.focus();
+                    return;
+                }
+
+                // Validasi km_awal vs last_km saat submit
+                if (kmAwalInput && kmAwalInput.closest('[x-show]') && !validateKmAwal()) {
+                    e.preventDefault();
+                    kmAwalInput.focus();
                 }
             });
         });

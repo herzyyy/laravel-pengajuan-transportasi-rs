@@ -55,6 +55,20 @@ class TransportRequestController extends Controller
             'keterangan' => ['nullable', 'string', 'max:2000'],
         ]);
 
+        // Cegah double submission: cek apakah ada pengajuan identik dalam 10 detik terakhir
+        $duplicate = TransportRequest::where('user_id', $request->user()->id)
+            ->where('jenis', 'umum')
+            ->where('tanggal', $data['tanggal'])
+            ->where('jam', $data['jam'])
+            ->where('keperluan', $data['keperluan'])
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->exists();
+
+        if ($duplicate) {
+            return redirect()->back()->withInput()
+                ->withErrors(['duplicate' => 'Pengajuan yang sama sudah dikirim. Silakan tunggu sebentar.']);
+        }
+
         if ($sampaiSelesai) {
             $data['tanggal_sampai'] = null;
             $data['jam_sampai'] = null;
@@ -175,6 +189,20 @@ class TransportRequestController extends Controller
             'alamat_tujuan' => ['nullable', 'string', 'max:2000'],
             'alamat_asal' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        // Cegah double submission: cek apakah ada pengajuan identik dalam 10 detik terakhir
+        $duplicate = TransportRequest::where('user_id', $request->user()->id)
+            ->where('jenis', 'ambulance')
+            ->where('tanggal', $data['tanggal'])
+            ->where('jam', $data['jam'])
+            ->where('pasien_nama', $data['pasien_nama'])
+            ->where('created_at', '>=', now()->subSeconds(10))
+            ->exists();
+
+        if ($duplicate) {
+            return redirect()->back()->withInput()
+                ->withErrors(['duplicate' => 'Pengajuan yang sama sudah dikirim. Silakan tunggu sebentar.']);
+        }
 
         if ($sampaiSelesai) {
             $data['tanggal_sampai'] = null;

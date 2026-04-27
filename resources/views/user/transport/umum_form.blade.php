@@ -35,7 +35,7 @@
         @endif
     </div>
 
-    <form method="POST" action="{{ route('pengajuan.umum.store') }}" class="mt-3 space-y-3">
+    <form method="POST" action="{{ route('pengajuan.umum.store') }}" class="mt-3 space-y-3" id="umumForm">
         @csrf
 
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
@@ -156,7 +156,18 @@
                         <input name="keperluan" list="keperluan_list" required
                             value="{{ old('keperluan') }}"
                             class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-slate-300"
-                            placeholder="Contoh: Ambil obat, Antar dokumen">
+                            placeholder="Pilih atau ketik keperluan...">
+                        <datalist id="keperluan_list">
+                            <option value="PEMBELIAN DAN PENGAMBILAN OBAT">
+                            <option value="PERMINTAAN DARAH">
+                            <option value="PENGANTARAN DAN PENGAMBILAN HASIL PA">
+                            <option value="PENGAMBILAN ALAT INSTRUMEN OK">
+                            <option value="BACA HASIL RONTGEN RADIOLOGI">
+                            <option value="PEMERIKSAAN KULTUR">
+                            <option value="PEMERIKSAAN ABSTRUB">
+                            <option value="CEK KMB">
+                            <option value="RS">
+                        </datalist>
                     </div>
 
                     <div>
@@ -181,7 +192,7 @@
                     <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"></path>
                     </svg>
-                    Kirim Pengajuan
+                    <span id="submitBtnText">Kirim Pengajuan</span>
                 </button>
             </div>
         </div>
@@ -298,6 +309,18 @@
                 }
             });
         }
+
+        // Anti double-submit
+        document.getElementById('umumForm').addEventListener('submit', function(e) {
+            const btn = document.getElementById('submitBtn');
+            if (btn.dataset.submitted === '1') {
+                e.preventDefault();
+                return;
+            }
+            btn.dataset.submitted = '1';
+            btn.disabled = true;
+            document.getElementById('submitBtnText').textContent = 'Mengirim…';
+        });
 
         document.addEventListener('DOMContentLoaded', function() {
             initFlatpickr();

@@ -317,8 +317,8 @@
                         {{-- Info User untuk Supir di Header — hanya desktop --}}
                         <div class="relative hidden lg:flex" x-data="{ open: false }">
                             <button @click="open = !open" class="flex items-center gap-2 focus:outline-none" style="color: #007774;">
-                                <div class="flex items-center justify-center w-8 h-8 rounded-full" style="background: rgba(0,119,116,0.1); border: 1px solid rgba(0,119,116,0.2);">
-                                    <svg class="w-4 h-4" style="color: #007774;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <div class="flex items-center justify-center w-8 h-8 rounded-full" style="background-color: #007774;">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                     </svg>
                                 </div>

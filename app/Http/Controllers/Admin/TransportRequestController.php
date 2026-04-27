@@ -94,8 +94,11 @@ class TransportRequestController extends Controller
             // Status tertentu dipilih
             $fifoStatuses = ['diajukan', 'diproses', 'digunakan']; // Status yang menggunakan FIFO berdasarkan waktu pengajuan
             if (in_array($selectedStatus, $fifoStatuses)) {
-                // Untuk status menunggu, disetujui, dan digunakan: urutkan dari waktu pengajuan terlebih dahulu (FIFO)
-                $query->orderByRaw("CONCAT(tanggal, ' ', jam) ASC");
+                // Untuk status menunggu, disetujui, dan digunakan: prioritas tinggi dulu, lalu FIFO
+                $query->leftJoin('users', 'transport_requests.user_id', '=', 'users.id')
+                      ->orderByRaw("COALESCE(users.priority_level, 0) DESC")
+                      ->orderByRaw("CONCAT(transport_requests.tanggal, ' ', transport_requests.jam) ASC")
+                      ->select('transport_requests.*');
             } else {
                 // Untuk status lain (selesai, tidak_disetujui, dll): urutkan dari yang terbaru dibuat
                 $query->orderBy('created_at', 'desc');
@@ -105,8 +108,12 @@ class TransportRequestController extends Controller
             // "Semua Status" dipilih: urutkan dari yang terbaru dibuat
             $query->orderBy('created_at', 'desc');
         } else {
-            // Tidak ada parameter status (first load): default ke 'diajukan' dengan FIFO berdasarkan waktu pengajuan
-            $query->where('status', 'diajukan')->orderByRaw("CONCAT(tanggal, ' ', jam) ASC");
+            // Tidak ada parameter status (first load): default ke 'diajukan' dengan prioritas tinggi dulu, lalu FIFO
+            $query->leftJoin('users', 'transport_requests.user_id', '=', 'users.id')
+                  ->where('transport_requests.status', 'diajukan')
+                  ->orderByRaw("COALESCE(users.priority_level, 0) DESC")
+                  ->orderByRaw("CONCAT(transport_requests.tanggal, ' ', transport_requests.jam) ASC")
+                  ->select('transport_requests.*');
         }
 
         if ($request->filled('jenis')) {
@@ -124,25 +131,225 @@ class TransportRequestController extends Controller
 
     public function laporan(Request $request)
     {
-        $query = TransportRequest::with(['user', 'driver'])->latest();
+        $query = TransportRequest::with(['user', 'driver.user'])->latest();
 
-        if ($request->filled('nomor'))      $query->where('nomor_pengajuan', 'like', '%'.$request->nomor.'%');
-        if ($request->filled('jenis'))      $query->where('jenis', $request->jenis);
-        if ($request->filled('status'))     $query->where('status', $request->status);
-        if ($request->filled('prioritas'))  $query->where('prioritas', $request->prioritas);
-        if ($request->filled('unit_kerja')) $query->whereHas('user', fn($q) => $q->where('unit_kerja', 'like', '%'.$request->unit_kerja.'%'));
-        if ($request->filled('unit_mobil')) $query->where('unit_mobil', 'like', '%'.$request->unit_mobil.'%');
+        if ($request->filled('nomor'))       $query->where('nomor_pengajuan', 'like', '%'.$request->nomor.'%');
+        if ($request->filled('jenis'))       $query->where('jenis', $request->jenis);
+        if ($request->filled('status'))      $query->where('status', $request->status);
+        if ($request->filled('prioritas'))   $query->where('prioritas', $request->prioritas);
+        if ($request->filled('nip_pemohon')) $query->whereHas('user', fn($q) => $q->where('nip', 'like', '%'.$request->nip_pemohon.'%'));
+        if ($request->filled('pemohon'))     $query->whereHas('user', fn($q) => $q->where('first_name', 'like', '%'.$request->pemohon.'%')->orWhere('last_name', 'like', '%'.$request->pemohon.'%'));
+        if ($request->filled('unit_kerja'))  $query->whereHas('user', fn($q) => $q->where('unit_kerja', 'like', '%'.$request->unit_kerja.'%'));
+        if ($request->filled('keperluan'))   $query->where('keperluan', 'like', '%'.$request->keperluan.'%');
+        if ($request->filled('tujuan'))      $query->where('alamat_tujuan', 'like', '%'.$request->tujuan.'%');
+        if ($request->filled('supir'))       $query->whereHas('driver', fn($q) => $q->where('name', 'like', '%'.$request->supir.'%'));
+        if ($request->filled('unit_mobil'))  $query->where('unit_mobil', 'like', '%'.$request->unit_mobil.'%');
+        if ($request->filled('plat_nomor'))  $query->where('plat_nomor', 'like', '%'.$request->plat_nomor.'%');
         if ($request->filled('tanggal_dari')) $query->whereDate('tanggal', '>=', $request->tanggal_dari);
         if ($request->filled('tanggal_sampai_filter')) $query->whereDate('tanggal', '<=', $request->tanggal_sampai_filter);
 
-        $items = $query->paginate(25)->withQueryString();
+        $items = $query->paginate(10)->withQueryString();
 
         return view('admin.laporan', compact('items'));
     }
 
+    public function laporanExport(Request $request)
+    {
+        $query = TransportRequest::with(['user', 'driver.user'])->latest();
+
+        if ($request->filled('nomor'))       $query->where('nomor_pengajuan', 'like', '%'.$request->nomor.'%');
+        if ($request->filled('jenis'))       $query->where('jenis', $request->jenis);
+        if ($request->filled('status'))      $query->where('status', $request->status);
+        if ($request->filled('prioritas'))   $query->where('prioritas', $request->prioritas);
+        if ($request->filled('nip_pemohon')) $query->whereHas('user', fn($q) => $q->where('nip', 'like', '%'.$request->nip_pemohon.'%'));
+        if ($request->filled('pemohon'))     $query->whereHas('user', fn($q) => $q->where('first_name', 'like', '%'.$request->pemohon.'%')->orWhere('last_name', 'like', '%'.$request->pemohon.'%'));
+        if ($request->filled('unit_kerja'))  $query->whereHas('user', fn($q) => $q->where('unit_kerja', 'like', '%'.$request->unit_kerja.'%'));
+        if ($request->filled('keperluan'))   $query->where('keperluan', 'like', '%'.$request->keperluan.'%');
+        if ($request->filled('tujuan'))      $query->where('alamat_tujuan', 'like', '%'.$request->tujuan.'%');
+        if ($request->filled('supir'))       $query->whereHas('driver', fn($q) => $q->where('name', 'like', '%'.$request->supir.'%'));
+        if ($request->filled('unit_mobil'))  $query->where('unit_mobil', 'like', '%'.$request->unit_mobil.'%');
+        if ($request->filled('plat_nomor'))  $query->where('plat_nomor', 'like', '%'.$request->plat_nomor.'%');
+        if ($request->filled('tanggal_dari')) $query->whereDate('tanggal', '>=', $request->tanggal_dari);
+        if ($request->filled('tanggal_sampai_filter')) $query->whereDate('tanggal', '<=', $request->tanggal_sampai_filter);
+
+        $items = $query->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Laporan Pengajuan');
+
+        // === JUDUL ===
+        $sheet->mergeCells('A1:X1');
+        $sheet->setCellValue('A1', 'LAPORAN PENGAJUAN TRANSPORTASI');
+        $sheet->getStyle('A1')->applyFromArray([
+            'font'      => ['bold' => true, 'size' => 13],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet->getRowDimension(1)->setRowHeight(22);
+
+        // Sub-judul filter info
+        $filterInfo = 'Diekspor: ' . now()->format('d/m/Y H:i');
+        if ($request->filled('tanggal_dari') || $request->filled('tanggal_sampai_filter')) {
+            $filterInfo .= '  |  Periode: ' . ($request->tanggal_dari ?? '...') . ' s/d ' . ($request->tanggal_sampai_filter ?? '...');
+        }
+        if ($request->filled('status')) {
+            $filterInfo .= '  |  Status: ' . ucfirst($request->status);
+        }
+        if ($request->filled('jenis')) {
+            $filterInfo .= '  |  Jenis: ' . ucfirst($request->jenis);
+        }
+        $sheet->mergeCells('A2:X2');
+        $sheet->setCellValue('A2', $filterInfo);
+        $sheet->getStyle('A2')->applyFromArray([
+            'font'      => ['italic' => true, 'size' => 9, 'color' => ['rgb' => '666666']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER],
+        ]);
+        $sheet->getRowDimension(2)->setRowHeight(14);
+
+        // Baris kosong
+        $sheet->getRowDimension(3)->setRowHeight(6);
+
+        // === HEADER ===
+        $headers = [
+            'A' => ['No. Pengajuan', 20],
+            'B' => ['Tgl Dibuat',    13],
+            'C' => ['Jam Dibuat',    10],
+            'D' => ['NIP Pemohon',   15],
+            'E' => ['Nama Pemohon',  22],
+            'F' => ['Jabatan',       18],
+            'G' => ['Profesi',       18],
+            'H' => ['Unit Kerja',    20],
+            'I' => ['Jenis',          9],
+            'J' => ['Prioritas',     12],
+            'K' => ['Keperluan',     25],
+            'L' => ['Tgl Berangkat', 14],
+            'M' => ['Jam Berangkat', 13],
+            'N' => ['Jam Sampai',    11],
+            'O' => ['Tujuan',        25],
+            'P' => ['Unit Kendaraan',16],
+            'Q' => ['Plat Nomor',    12],
+            'R' => ['NIP Supir',     15],
+            'S' => ['Nama Supir',    20],
+            'T' => ['KM Awal',       10],
+            'U' => ['KM Akhir',      10],
+            'V' => ['Jarak (km)',    11],
+            'W' => ['Tgl Kembali',   13],
+            'X' => ['Jam Tiba',      10],
+            'Y' => ['Status',        14],
+        ];
+
+        $headerRow = 4;
+        foreach ($headers as $col => [$label, $width]) {
+            $sheet->setCellValue($col . $headerRow, $label);
+            $sheet->getColumnDimension($col)->setWidth($width);
+        }
+
+        $headerRange = 'A' . $headerRow . ':Y' . $headerRow;
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font'      => ['bold' => true, 'color' => ['rgb' => 'FFFFFF'], 'size' => 10],
+            'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => '007774']],
+            'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER, 'vertical' => \PhpOffice\PhpSpreadsheet\Style\Alignment::VERTICAL_CENTER, 'wrapText' => true],
+            'borders'   => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'CCCCCC']]],
+        ]);
+        $sheet->getRowDimension($headerRow)->setRowHeight(28);
+
+        // Freeze header
+        $sheet->freezePane('A' . ($headerRow + 1));
+
+        // === DATA ===
+        $row = $headerRow + 1;
+        foreach ($items as $i => $item) {
+            $statusLabel = match($item->status) {
+                'diproses'        => 'Disetujui',
+                'tidak_disetujui' => 'Tidak Disetujui',
+                default           => ucfirst($item->status),
+            };
+            $nipSupir  = $item->driver && $item->driver->user ? $item->driver->user->nip : '';
+            $jarak     = ($item->km_awal && $item->km_akhir) ? ($item->km_akhir - $item->km_awal) : null;
+            $tglKembali = $item->tanggal_sampai
+                ? $item->tanggal_sampai->format('d/m/Y')
+                : ($item->status === 'selesai' ? $item->updated_at->format('d/m/Y') : '');
+
+            $rowBg = ($i % 2 === 0) ? 'FFFFFF' : 'F0FAFA';
+
+            $sheet->fromArray([
+                $item->nomor_pengajuan,
+                $item->created_at->format('d/m/Y'),
+                $item->created_at->format('H:i'),
+                $item->user->nip ?? '',
+                $item->user->full_name ?? $item->pemohon_nama ?? '',
+                $item->user->jabatan ?? '',
+                $item->user->profesi ?? '',
+                $item->user->unit_kerja ?? $item->pemohon_unit ?? '',
+                ucfirst($item->jenis),
+                $item->prioritas === 'segera' ? 'Segera / CITO' : 'Biasa',
+                $item->keperluan ?? '',
+                $item->tanggal->format('d/m/Y'),
+                substr($item->jam, 0, 5),
+                $item->jam_sampai ? substr($item->jam_sampai, 0, 5) : '',
+                $item->alamat_tujuan ?? '',
+                $item->unit_mobil ? ucwords(str_replace('_', ' ', $item->unit_mobil)) : '',
+                $item->plat_nomor ?? '',
+                $nipSupir,
+                $item->driver->name ?? '',
+                $item->km_awal ?? '',
+                $item->km_akhir ?? '',
+                $jarak,
+                $tglKembali,
+                $item->jam_kedatangan ?? '',
+                $statusLabel,
+            ], null, 'A' . $row);
+
+            // Zebra stripe
+            $sheet->getStyle('A'.$row.':Y'.$row)->applyFromArray([
+                'fill'    => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => $rowBg]],
+                'borders' => ['allBorders' => ['borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN, 'color' => ['rgb' => 'E2E8F0']]],
+                'font'    => ['size' => 9],
+            ]);
+
+            // Alignment per kolom
+            $sheet->getStyle('A'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER); // No. Pengajuan
+            $sheet->getStyle('B'.$row.':C'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('D'.$row)->getFont()->setName('Courier New');  // NIP mono
+            $sheet->getStyle('I'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('J'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('L'.$row.':N'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('Q'.$row)->getFont()->setName('Courier New');  // Plat mono
+            $sheet->getStyle('R'.$row)->getFont()->setName('Courier New');  // NIP supir mono
+            $sheet->getStyle('T'.$row.':V'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle('W'.$row.':X'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('Y'.$row)->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+
+            $row++;
+        }
+
+        // Baris total
+        if ($items->count() > 0) {
+            $sheet->mergeCells('A'.$row.':S'.$row);
+            $sheet->setCellValue('A'.$row, 'Total: ' . $items->count() . ' data');
+            $sheet->getStyle('A'.$row)->applyFromArray([
+                'font'      => ['bold' => true, 'size' => 9],
+                'alignment' => ['horizontal' => \PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_RIGHT],
+                'fill'      => ['fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E8F5F5']],
+            ]);
+        }
+
+        // Auto filter
+        $sheet->setAutoFilter('A'.$headerRow.':Y'.$headerRow);
+
+        $filename = 'laporan-pengajuan-' . now()->format('Ymd-His') . '.xlsx';
+        $writer   = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
     public function laporanDetail(TransportRequest $transportRequest)
     {
-        $transportRequest->load(['user', 'driver']);
+        $transportRequest->load(['user', 'driver.user']);
         return view('admin.laporan-detail', compact('transportRequest'));
     }
 
@@ -291,8 +498,15 @@ class TransportRequestController extends Controller
                 'km_awal' => ['required', 'integer', 'min:0'],
             ]);
 
+            // Validasi km_awal tidak boleh kurang dari last_km kendaraan
+            $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
+            if ($vehicle && $vehicle->last_km !== null && $data['km_awal'] < $vehicle->last_km) {
+                throw ValidationException::withMessages([
+                    'km_awal' => 'KM berangkat tidak boleh kurang dari ' . number_format($vehicle->last_km) . ' km (KM terakhir kendaraan ini).',
+                ]);
+            }
+
             if (empty($data['plat_nomor']) && !empty($data['unit_mobil'])) {
-                $vehicle = \App\Models\Vehicle::where('name', $data['unit_mobil'])->first();
                 if ($vehicle) {
                     $data['plat_nomor'] = $vehicle->plate_number;
                 }
@@ -326,6 +540,12 @@ class TransportRequestController extends Controller
         }
 
         $transportRequest->update($data);
+
+        // Jika selesai, update last_km di tabel kendaraan
+        if ($newStatus === 'selesai' && $transportRequest->unit_mobil) {
+            \App\Models\Vehicle::where('name', $transportRequest->unit_mobil)
+                ->update(['last_km' => $data['km_akhir']]);
+        }
 
         return redirect()->route('admin.transport.show', $transportRequest)
             ->with('success', 'Status pengajuan berhasil diperbarui.');

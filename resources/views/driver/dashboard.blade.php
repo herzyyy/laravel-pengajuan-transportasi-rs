@@ -170,6 +170,13 @@
         document.addEventListener('DOMContentLoaded', function() {
             document.querySelectorAll('[id^="km_akhir_display_"]').forEach(function(display) {
                 const hidden = document.getElementById('km_akhir_' + display.id.replace('km_akhir_display_', ''));
+
+                function formatAndSync() {
+                    const raw = display.value.replace(/\D/g, '');
+                    display.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+                    if (hidden) hidden.value = raw;
+                }
+
                 display.addEventListener('input', function() {
                     const raw = this.value.replace(/\D/g, '');
                     const cursor = this.selectionStart;
@@ -178,6 +185,8 @@
                     if (hidden) hidden.value = raw;
                     this.setSelectionRange(cursor + (this.value.length - prevLen), cursor + (this.value.length - prevLen));
                 });
+                display.addEventListener('blur', formatAndSync);
+                display.addEventListener('change', formatAndSync);
                 display.addEventListener('keypress', e => { if (!/[0-9]/.test(e.key)) e.preventDefault(); });
             });
 

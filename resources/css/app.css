@@ -19,4 +19,8 @@
     --color-azra-teal-light: #1a918d;
 }
 
+html {
+    font-size: 90%;
+}
+
 [x-cloak] { display: none !important; }

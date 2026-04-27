@@ -17,6 +17,7 @@ class Vehicle extends Model
         'model',
         'year',
         'capacity',
+        'last_km',
         'is_active',
         'notes',
     ];
@@ -25,5 +26,6 @@ class Vehicle extends Model
         'is_active' => 'boolean',
         'year' => 'integer',
         'capacity' => 'integer',
+        'last_km' => 'integer',
     ];
 }

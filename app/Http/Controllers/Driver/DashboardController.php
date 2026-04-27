@@ -101,6 +101,12 @@ class DashboardController extends Controller
             'signature_pengelola_2_name' => $transportRequest->signature_pengelola_1_name,
         ]));
 
+        // Simpan km_akhir ke last_km kendaraan
+        if ($transportRequest->unit_mobil) {
+            \App\Models\Vehicle::where('name', $transportRequest->unit_mobil)
+                ->update(['last_km' => $data['km_akhir']]);
+        }
+
         return redirect()->route('driver.dashboard')
             ->with('success', 'Pengajuan berhasil diselesaikan.');
     }

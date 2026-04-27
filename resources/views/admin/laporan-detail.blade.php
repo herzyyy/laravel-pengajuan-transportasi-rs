@@ -187,16 +187,16 @@
                 <dl class="px-3 py-2.5 text-xs space-y-2">
                     <div class="flex gap-2">
                         <dt class="w-28 text-slate-500 shrink-0">KM Awal</dt>
-                        <dd class="text-slate-700">{{ $transportRequest->km_awal ? number_format($transportRequest->km_awal) . ' km' : '-' }}</dd>
+                        <dd class="text-slate-700">{{ $transportRequest->km_awal ? number_format($transportRequest->km_awal, 0, ',', '.') . ' km' : '-' }}</dd>
                     </div>
                     <div class="flex gap-2">
                         <dt class="w-28 text-slate-500 shrink-0">KM Akhir</dt>
-                        <dd class="text-slate-700">{{ $transportRequest->km_akhir ? number_format($transportRequest->km_akhir) . ' km' : '-' }}</dd>
+                        <dd class="text-slate-700">{{ $transportRequest->km_akhir ? number_format($transportRequest->km_akhir, 0, ',', '.') . ' km' : '-' }}</dd>
                     </div>
                     @if($transportRequest->km_awal && $transportRequest->km_akhir)
                     <div class="flex gap-2">
                         <dt class="w-28 text-slate-500 shrink-0">Jarak Tempuh</dt>
-                        <dd class="font-semibold text-emerald-700">{{ number_format($transportRequest->km_akhir - $transportRequest->km_awal) }} km</dd>
+                        <dd class="font-semibold text-emerald-700">{{ number_format($transportRequest->km_akhir - $transportRequest->km_awal, 0, ',', '.') }} km</dd>
                     </div>
                     @endif
                     <div class="flex gap-2">
