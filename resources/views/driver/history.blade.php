@@ -21,7 +21,7 @@
         </div>
 
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-            @if($historyRequests->isEmpty())
+            @if($historyRequests->isEmpty() && !request()->hasAny(['status','tanggal','jenis']))
                 <div class="p-10 text-center">
                     <svg class="w-10 h-10 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -29,6 +29,22 @@
                     <p class="text-xs text-slate-500 font-medium">Belum ada riwayat perjalanan</p>
                 </div>
             @else
+                <!-- Filter -->
+                <form method="GET" action="{{ route('driver.history') }}" id="driver-history-filter" class="flex flex-wrap gap-2 px-3 py-2 border-b border-slate-200 bg-slate-50">
+                    <select name="status" class="rounded border border-slate-300 px-2 py-1 text-xs focus:ring-1 focus:ring-teal-400">
+                        <option value="">Semua Status</option>
+                        <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
+                        <option value="tidak_disetujui" @selected(request('status') === 'tidak_disetujui')>Ditolak</option>
+                    </select>
+                    <select name="jenis" class="rounded border border-slate-300 px-2 py-1 text-xs focus:ring-1 focus:ring-teal-400">
+                        <option value="">Semua Jenis</option>
+                        <option value="umum" @selected(request('jenis') === 'umum')>Umum</option>
+                        <option value="ambulance" @selected(request('jenis') === 'ambulance')>Ambulance</option>
+                    </select>
+                    <input type="date" name="tanggal" value="{{ request('tanggal') }}"
+                           class="rounded border border-slate-300 px-2 py-1 text-xs focus:ring-1 focus:ring-teal-400">
+                </form>
+
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
                         <thead class="bg-slate-50 border-b border-slate-200">
@@ -95,6 +111,23 @@
                 @endif
             @endif
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('driver-history-filter');
+                if (!form) return;
+                let timer;
+                function submitClean(delay) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        form.querySelectorAll('input, select').forEach(el => { if (el.value === '') el.disabled = true; });
+                        form.submit();
+                    }, delay);
+                }
+                form.querySelectorAll('input[type="date"]').forEach(el => el.addEventListener('input', () => submitClean(300)));
+                form.querySelectorAll('select').forEach(el => el.addEventListener('change', () => submitClean(0)));
+            });
+        </script>
 
     </div>
 </x-app-layout>

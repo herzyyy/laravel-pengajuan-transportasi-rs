@@ -338,17 +338,21 @@
         <div class="sig-box">
             <p class="sig-title">Pengemudi</p>
             <div class="sig-space">
-                @if($nipDriver !== '-')
+                @if(request()->get('from') !== 'driver_active' && $nipDriver !== '-')
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($nipDriver) }}" alt="QR">
                 @endif
             </div>
             <div class="sig-bottom">
-                <p class="sig-name">{{ $transportRequest->driver->name ?? '——————' }}</p>
-                @if($transportRequest->driver?->user?->unit_kerja)
-                    <p class="sig-detail">{{ $transportRequest->driver->user->unit_kerja }}</p>
-                @endif
-                @if($transportRequest->signature_driver_at)
-                    <p class="sig-detail">{{ is_string($transportRequest->signature_driver_at) ? $transportRequest->signature_driver_at : $transportRequest->signature_driver_at->format('d/m/Y H:i') }}</p>
+                @if(request()->get('from') === 'driver_active')
+                    <p class="sig-name" style="color:#d1d5db;">——————————</p>
+                @else
+                    <p class="sig-name">{{ $transportRequest->driver->name ?? '——————' }}</p>
+                    @if($transportRequest->driver?->user?->unit_kerja)
+                        <p class="sig-detail">{{ $transportRequest->driver->user->unit_kerja }}</p>
+                    @endif
+                    @if($transportRequest->signature_driver_at)
+                        <p class="sig-detail">{{ is_string($transportRequest->signature_driver_at) ? $transportRequest->signature_driver_at : $transportRequest->signature_driver_at->format('d/m/Y H:i') }}</p>
+                    @endif
                 @endif
             </div>
         </div>
@@ -356,12 +360,15 @@
         <div class="sig-box">
             <p class="sig-title">Pengelola Transportasi</p>
             <div class="sig-space">
-                @if($transportRequest->status === 'selesai' && $nipPengelola2 !== '-')
+                @if(request()->get('from') !== 'driver' && $transportRequest->status === 'selesai' && $nipPengelola2 !== '-')
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=80x80&data={{ urlencode($nipPengelola2) }}" alt="QR">
                 @endif
             </div>
             <div class="sig-bottom">
-                @if($transportRequest->status === 'selesai')
+                @if(request()->get('from') === 'driver')
+                    <p class="sig-name" style="color:#d1d5db;">——————————</p>
+                    <p class="sig-sub">Mengetahui</p>
+                @elseif($transportRequest->status === 'selesai')
                     <p class="sig-name">{{ $pengelola2Name ?: '——————' }}</p>
                     <p class="sig-sub">Mengetahui</p>
                     @if($transportRequest->signature_pengelola_2_at)

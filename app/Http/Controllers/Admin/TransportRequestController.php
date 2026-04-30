@@ -129,49 +129,46 @@ class TransportRequestController extends Controller
         return view('admin.transport.index', compact('items'));
     }
 
-    public function laporan(Request $request)
+    private function applyLaporanFilters($query, Request $request): void
     {
-        $query = TransportRequest::with(['user', 'driver.user'])->latest();
+        $like = fn($val) => '%' . strtolower($val) . '%';
 
-        if ($request->filled('nomor'))       $query->where('nomor_pengajuan', 'like', '%'.$request->nomor.'%');
+        if ($request->filled('nomor'))       $query->whereRaw('LOWER(nomor_pengajuan) LIKE ?', [$like($request->nomor)]);
         if ($request->filled('jenis'))       $query->where('jenis', $request->jenis);
         if ($request->filled('status'))      $query->where('status', $request->status);
         if ($request->filled('prioritas'))   $query->where('prioritas', $request->prioritas);
-        if ($request->filled('nip_pemohon')) $query->whereHas('user', fn($q) => $q->where('nip', 'like', '%'.$request->nip_pemohon.'%'));
-        if ($request->filled('pemohon'))     $query->whereHas('user', fn($q) => $q->where('first_name', 'like', '%'.$request->pemohon.'%')->orWhere('last_name', 'like', '%'.$request->pemohon.'%'));
-        if ($request->filled('unit_kerja'))  $query->whereHas('user', fn($q) => $q->where('unit_kerja', 'like', '%'.$request->unit_kerja.'%'));
-        if ($request->filled('keperluan'))   $query->where('keperluan', 'like', '%'.$request->keperluan.'%');
-        if ($request->filled('tujuan'))      $query->where('alamat_tujuan', 'like', '%'.$request->tujuan.'%');
-        if ($request->filled('supir'))       $query->whereHas('driver', fn($q) => $q->where('name', 'like', '%'.$request->supir.'%'));
-        if ($request->filled('unit_mobil'))  $query->where('unit_mobil', 'like', '%'.$request->unit_mobil.'%');
-        if ($request->filled('plat_nomor'))  $query->where('plat_nomor', 'like', '%'.$request->plat_nomor.'%');
+        if ($request->filled('nip_pemohon')) $query->whereHas('user', fn($q) => $q->whereRaw('LOWER(nip) LIKE ?', [$like($request->nip_pemohon)]));
+        if ($request->filled('pemohon'))     $query->whereHas('user', fn($q) => $q->whereRaw('LOWER(first_name) LIKE ?', [$like($request->pemohon)])->orWhereRaw('LOWER(last_name) LIKE ?', [$like($request->pemohon)]));
+        if ($request->filled('unit_kerja'))  $query->whereHas('user', fn($q) => $q->whereRaw('LOWER(unit_kerja) LIKE ?', [$like($request->unit_kerja)]));
+        if ($request->filled('keperluan'))   $query->whereRaw('LOWER(keperluan) LIKE ?', [$like($request->keperluan)]);
+        if ($request->filled('tujuan'))      $query->whereRaw('LOWER(alamat_tujuan) LIKE ?', [$like($request->tujuan)]);
+        if ($request->filled('supir'))       $query->whereHas('driver', fn($q) => $q->whereRaw('LOWER(name) LIKE ?', [$like($request->supir)]));
+        if ($request->filled('unit_mobil'))  $query->whereRaw('LOWER(unit_mobil) LIKE ?', [$like($request->unit_mobil)]);
+        if ($request->filled('plat_nomor'))  $query->whereRaw('LOWER(plat_nomor) LIKE ?', [$like($request->plat_nomor)]);
         if ($request->filled('tanggal_dari')) $query->whereDate('tanggal', '>=', $request->tanggal_dari);
         if ($request->filled('tanggal_sampai_filter')) $query->whereDate('tanggal', '<=', $request->tanggal_sampai_filter);
+    }
 
+    public function laporan(Request $request)
+    {
+        $query = TransportRequest::with(['user', 'driver.user'])->latest();
+        $this->applyLaporanFilters($query, $request);
         $items = $query->paginate(10)->withQueryString();
-
         return view('admin.laporan', compact('items'));
+    }
+
+    public function laporanPrint(Request $request)
+    {
+        $query = TransportRequest::with(['user', 'driver.user'])->latest();
+        $this->applyLaporanFilters($query, $request);
+        $items = $query->get();
+        return view('admin.laporan-print', compact('items'));
     }
 
     public function laporanExport(Request $request)
     {
         $query = TransportRequest::with(['user', 'driver.user'])->latest();
-
-        if ($request->filled('nomor'))       $query->where('nomor_pengajuan', 'like', '%'.$request->nomor.'%');
-        if ($request->filled('jenis'))       $query->where('jenis', $request->jenis);
-        if ($request->filled('status'))      $query->where('status', $request->status);
-        if ($request->filled('prioritas'))   $query->where('prioritas', $request->prioritas);
-        if ($request->filled('nip_pemohon')) $query->whereHas('user', fn($q) => $q->where('nip', 'like', '%'.$request->nip_pemohon.'%'));
-        if ($request->filled('pemohon'))     $query->whereHas('user', fn($q) => $q->where('first_name', 'like', '%'.$request->pemohon.'%')->orWhere('last_name', 'like', '%'.$request->pemohon.'%'));
-        if ($request->filled('unit_kerja'))  $query->whereHas('user', fn($q) => $q->where('unit_kerja', 'like', '%'.$request->unit_kerja.'%'));
-        if ($request->filled('keperluan'))   $query->where('keperluan', 'like', '%'.$request->keperluan.'%');
-        if ($request->filled('tujuan'))      $query->where('alamat_tujuan', 'like', '%'.$request->tujuan.'%');
-        if ($request->filled('supir'))       $query->whereHas('driver', fn($q) => $q->where('name', 'like', '%'.$request->supir.'%'));
-        if ($request->filled('unit_mobil'))  $query->where('unit_mobil', 'like', '%'.$request->unit_mobil.'%');
-        if ($request->filled('plat_nomor'))  $query->where('plat_nomor', 'like', '%'.$request->plat_nomor.'%');
-        if ($request->filled('tanggal_dari')) $query->whereDate('tanggal', '>=', $request->tanggal_dari);
-        if ($request->filled('tanggal_sampai_filter')) $query->whereDate('tanggal', '<=', $request->tanggal_sampai_filter);
-
+        $this->applyLaporanFilters($query, $request);
         $items = $query->get();
 
         $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();

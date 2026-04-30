@@ -12,26 +12,17 @@ class VehicleController extends Controller
     public function index(Request $request)
     {
         $query = Vehicle::query()->latest();
+        $like  = fn($val) => '%' . strtolower($val) . '%';
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('plate_number', 'like', "%{$search}%")
-                  ->orWhere('brand', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('type')) {
-            $query->where('type', $request->type);
-        }
-
-        if ($request->has('is_active') && $request->input('is_active') !== '') {
+        if ($request->filled('nama'))         $query->whereRaw('LOWER(name) LIKE ?', [$like($request->nama)]);
+        if ($request->filled('plat'))         $query->whereRaw('LOWER(plate_number) LIKE ?', [$like($request->plat)]);
+        if ($request->filled('merk'))         $query->whereRaw('LOWER(CONCAT(COALESCE(brand,\'\'), \' \', COALESCE(model,\'\'))) LIKE ?', [$like($request->merk)]);
+        if ($request->filled('type'))         $query->where('type', $request->type);
+        if ($request->input('is_active') !== '' && $request->has('is_active')) {
             $query->where('is_active', (int) $request->input('is_active'));
         }
 
         $vehicles = $query->paginate(15)->withQueryString();
-
         return view('admin.vehicles.index', compact('vehicles'));
     }
 

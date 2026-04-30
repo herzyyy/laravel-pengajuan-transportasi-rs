@@ -18,7 +18,7 @@
                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold {{ $statusCfg[0] }} {{ $statusCfg[1] }}">
                     {{ $statusCfg[2] }}
                 </span>
-                <a href="{{ route('driver.print', $transportRequest) }}" target="_blank"
+                <a href="{{ route('driver.print', $transportRequest) }}?from=driver" target="_blank"
                    class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-semibold"
                    style="background-color: #00685E; color: white !important;">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

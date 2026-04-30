@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('model')->nullable(); // model/tipe
             $table->year('year')->nullable(); // tahun pembuatan
             $table->integer('capacity')->nullable(); // kapasitas penumpang
+            $table->integer('last_km')->nullable();
             $table->boolean('is_active')->default(true);
             $table->text('notes')->nullable();
             $table->timestamps();

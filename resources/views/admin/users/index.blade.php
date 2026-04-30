@@ -52,40 +52,53 @@
             </div>
         @endif
 
-        <!-- Filter -->
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-2.5 mb-3">
-            <form action="{{ route('admin.users.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
-                <div class="flex-1">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Cari nama, NIP, username, atau unit kerja..."
-                           class="w-full rounded-lg border-slate-300 px-2.5 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
-                </div>
-                <div class="w-full sm:w-40">
-                    <select name="role" class="w-full rounded-lg border-slate-300 px-2.5 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
-                        <option value="">Semua Role</option>
-                        <option value="user" {{ request('role') == 'user' ? 'selected' : '' }}>User</option>
-                        <option value="admin" {{ request('role') == 'admin' ? 'selected' : '' }}>Admin</option>
-                        <option value="driver" {{ request('role') == 'driver' ? 'selected' : '' }}>Supir</option>
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-slate-900 transition">
-                        Filter
-                    </button>
-                    @if(request()->hasAny(['search', 'role']))
-                        <a href="{{ route('admin.users.index') }}" class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-slate-200 transition border border-slate-200">
-                            Reset
-                        </a>
-                    @endif
-                </div>
-            </form>
-        </div>
-
         <!-- Desktop Table -->
+        <form method="GET" action="{{ route('admin.users.index') }}" id="users-filter-form">
         <div class="hidden md:block bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200">
+                        {{-- Baris 1: Filter --}}
+                        <tr class="bg-white border-b border-slate-100">
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="nama" value="{{ request('nama') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="username" value="{{ request('username') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="nip" value="{{ request('nip') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="unit_kerja" value="{{ request('unit_kerja') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="posisi" value="{{ request('posisi') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="profesi" value="{{ request('profesi') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="jabatan" value="{{ request('jabatan') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <select name="role" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                    <option value="">Semua</option>
+                                    <option value="user" @selected(request('role') === 'user')>User</option>
+                                    <option value="admin" @selected(request('role') === 'admin')>Admin</option>
+                                    <option value="driver" @selected(request('role') === 'driver')>Supir</option>
+                                </select>
+                            </th>
+                            <th class="py-1.5 px-2"></th>
+                        </tr>
+                        {{-- Baris 2: Header --}}
                         <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
                             <th class="py-2 px-3 text-left">Nama Lengkap</th>
                             <th class="py-2 px-3 text-left">Username</th>
@@ -149,6 +162,7 @@
                 {{ $users->links() }}
             </div>
         </div>
+        </form>
 
         <!-- Mobile Cards -->
         <div class="md:hidden space-y-2">
@@ -397,5 +411,36 @@
                 }
             }
         }
+
+        // Realtime filter
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('users-filter-form');
+            if (!form) return;
+            let timer;
+
+            function submitClean() {
+                clearTimeout(timer);
+                timer = setTimeout(() => {
+                    // Hapus param kosong dari URL
+                    form.querySelectorAll('input, select').forEach(el => {
+                        if (el.value === '') el.disabled = true;
+                    });
+                    form.submit();
+                }, 400);
+            }
+
+            form.querySelectorAll('input[type="text"]').forEach(el => {
+                el.addEventListener('input', submitClean);
+            });
+            form.querySelectorAll('select').forEach(el => {
+                el.addEventListener('change', () => {
+                    clearTimeout(timer);
+                    form.querySelectorAll('input, select').forEach(e => {
+                        if (e.value === '') e.disabled = true;
+                    });
+                    form.submit();
+                });
+            });
+        });
     </script>
 </x-app-layout>

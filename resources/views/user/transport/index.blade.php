@@ -19,7 +19,7 @@
 
         <!-- Filter Form -->
         <div class="bg-white rounded-lg border border-slate-200 p-3 shadow-sm overflow-hidden">
-            <form action="{{ route('pengajuan.index') }}" method="GET" class="grid grid-cols-2 sm:grid-cols-4 gap-2 items-end">
+            <form action="{{ route('pengajuan.index') }}" method="GET" id="user-filter-form" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <div class="w-full min-w-0">
                     <label for="jenis" class="block text-[10px] font-semibold text-slate-600 mb-1">Jenis</label>
                     <select name="jenis" id="jenis" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
@@ -46,19 +46,25 @@
                     <input type="date" name="tanggal" id="tanggal" value="{{ request('tanggal') }}"
                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
                 </div>
-
-                <div class="flex gap-2 w-full">
-                    <button type="submit" class="flex-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition" style="background:#007774;">
-                        Filter
-                    </button>
-                    @if(request()->hasAny(['jenis', 'status', 'tanggal']) && (request('jenis') != '' || request('status') != '' || request('tanggal') != ''))
-                        <a href="{{ route('pengajuan.index') }}" class="flex-1 text-center rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
-                            Reset
-                        </a>
-                    @endif
-                </div>
             </form>
         </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('user-filter-form');
+                if (!form) return;
+                let timer;
+                function submitClean(delay) {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        form.querySelectorAll('input, select').forEach(el => { if (el.value === '') el.disabled = true; });
+                        form.submit();
+                    }, delay);
+                }
+                form.querySelectorAll('input[type="date"]').forEach(el => el.addEventListener('input', () => submitClean(300)));
+                form.querySelectorAll('select').forEach(el => el.addEventListener('change', () => submitClean(0)));
+            });
+        </script>
 
         <!-- Table Card (Desktop) / Card List (Mobile) -->
         <div class="bg-white rounded-lg border border-slate-200 shadow-sm">

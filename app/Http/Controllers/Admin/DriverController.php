@@ -11,23 +11,17 @@ class DriverController extends Controller
     public function index(Request $request)
     {
         $query = Driver::query()->latest();
+        $like  = fn($val) => '%' . strtolower($val) . '%';
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%")
-                  ->orWhere('license_number', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->has('is_active') && $request->input('is_active') !== '') {
+        if ($request->filled('nama'))    $query->whereRaw('LOWER(name) LIKE ?', [$like($request->nama)]);
+        if ($request->filled('telepon')) $query->whereRaw('LOWER(phone) LIKE ?', [$like($request->telepon)]);
+        if ($request->filled('sim'))     $query->whereRaw('LOWER(license_number) LIKE ?', [$like($request->sim)]);
+        if ($request->input('is_active') !== '' && $request->has('is_active')) {
             $query->where('is_active', (int) $request->input('is_active'));
         }
 
         $drivers = $query->paginate(15)->withQueryString();
         $driverUsers = \App\Models\User::where('role', 'driver')->orderBy('first_name')->get();
-
         return view('admin.drivers.index', compact('drivers', 'driverUsers'));
     }
 

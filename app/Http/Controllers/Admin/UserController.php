@@ -46,21 +46,16 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query()->latest();
+        $like  = fn($val) => '%' . strtolower($val) . '%';
 
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                  ->orWhere('last_name', 'like', "%{$search}%")
-                  ->orWhere('unit_kerja', 'like', "%{$search}%")
-                  ->orWhere('nip', 'like', "%{$search}%")
-                  ->orWhere('username', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('role')) {
-            $query->where('role', $request->role);
-        }
+        if ($request->filled('nama'))       $query->whereRaw('LOWER(CONCAT(first_name, \' \', last_name)) LIKE ?', [$like($request->nama)]);
+        if ($request->filled('username'))   $query->whereRaw('LOWER(username) LIKE ?', [$like($request->username)]);
+        if ($request->filled('nip'))        $query->whereRaw('LOWER(nip) LIKE ?', [$like($request->nip)]);
+        if ($request->filled('unit_kerja')) $query->whereRaw('LOWER(unit_kerja) LIKE ?', [$like($request->unit_kerja)]);
+        if ($request->filled('posisi'))     $query->whereRaw('LOWER(posisi_pekerjaan) LIKE ?', [$like($request->posisi)]);
+        if ($request->filled('profesi'))    $query->whereRaw('LOWER(profesi) LIKE ?', [$like($request->profesi)]);
+        if ($request->filled('jabatan'))    $query->whereRaw('LOWER(jabatan) LIKE ?', [$like($request->jabatan)]);
+        if ($request->filled('role'))       $query->where('role', $request->role);
 
         $users = $query->paginate(10)->withQueryString();
 

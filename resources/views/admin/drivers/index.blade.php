@@ -40,39 +40,36 @@
             </div>
         @endif
 
-        <!-- Filter -->
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm p-2.5 mb-3">
-            <form action="{{ route('admin.drivers.index') }}" method="GET" class="flex flex-col sm:flex-row gap-2">
-                <div class="flex-1">
-                    <input type="text" name="search" value="{{ request('search') }}"
-                           placeholder="Cari nama, telepon, atau nomor SIM..."
-                           class="w-full rounded-lg border-slate-300 px-2.5 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
-                </div>
-                <div class="w-full sm:w-32">
-                    <select name="is_active" class="w-full rounded-lg border-slate-300 px-2.5 py-1.5 text-xs focus:border-emerald-500 focus:ring-emerald-500">
-                        <option value="">Semua Status</option>
-                        <option value="1" {{ request('is_active') === '1' ? 'selected' : '' }}>Aktif</option>
-                        <option value="0" {{ request('is_active') === '0' ? 'selected' : '' }}>Nonaktif</option>
-                    </select>
-                </div>
-                <div class="flex gap-2">
-                    <button type="submit" class="bg-slate-800 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-slate-900 transition">
-                        Filter
-                    </button>
-                    @if(request()->hasAny(['search', 'is_active']))
-                        <a href="{{ route('admin.drivers.index') }}" class="bg-slate-100 text-slate-600 px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-slate-200 transition border border-slate-200">
-                            Reset
-                        </a>
-                    @endif
-                </div>
-            </form>
-        </div>
-
         <!-- Desktop Table -->
+        <form method="GET" action="{{ route('admin.drivers.index') }}" id="drivers-filter-form">
         <div class="hidden md:block bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-50 border-b border-slate-200">
+                        {{-- Filter row --}}
+                        <tr class="bg-white border-b border-slate-100">
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="nama" value="{{ request('nama') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="telepon" value="{{ request('telepon') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <input type="text" name="sim" value="{{ request('sim') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            <th class="py-1.5 px-2">
+                                <select name="is_active" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                    <option value="">Semua</option>
+                                    <option value="1" @selected(request('is_active') === '1')>Aktif</option>
+                                    <option value="0" @selected(request('is_active') === '0')>Nonaktif</option>
+                                </select>
+                            </th>
+                            <th class="py-1.5 px-2"></th>
+                        </tr>
+                        {{-- Header row --}}
                         <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
                             <th class="py-2 px-3 text-left">Nama</th>
                             <th class="py-2 px-3 text-left">Telepon</th>
@@ -126,6 +123,38 @@
                 {{ $drivers->links() }}
             </div>
         </div>
+        </form>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const form = document.getElementById('drivers-filter-form');
+                if (!form) return;
+                let timer;
+
+                function submitClean() {
+                    clearTimeout(timer);
+                    timer = setTimeout(() => {
+                        form.querySelectorAll('input, select').forEach(el => {
+                            if (el.value === '') el.disabled = true;
+                        });
+                        form.submit();
+                    }, 400);
+                }
+
+                form.querySelectorAll('input[type="text"]').forEach(el => {
+                    el.addEventListener('input', submitClean);
+                });
+                form.querySelectorAll('select').forEach(el => {
+                    el.addEventListener('change', () => {
+                        clearTimeout(timer);
+                        form.querySelectorAll('input, select').forEach(e => {
+                            if (e.value === '') e.disabled = true;
+                        });
+                        form.submit();
+                    });
+                });
+            });
+        </script>
 
         <!-- Mobile Cards -->
         <div class="md:hidden space-y-2">

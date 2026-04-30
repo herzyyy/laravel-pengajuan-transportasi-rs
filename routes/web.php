@@ -86,6 +86,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/laporan', [AdminTransportController::class, 'laporan'])->name('laporan');
     Route::get('/laporan-export', [AdminTransportController::class, 'laporanExport'])->name('laporan.export');
+    Route::get('/laporan-print', [AdminTransportController::class, 'laporanPrint'])->name('laporan.print');
     Route::get('/laporan/{transportRequest}', [AdminTransportController::class, 'laporanDetail'])->name('laporan.detail');
     
     // Master Data

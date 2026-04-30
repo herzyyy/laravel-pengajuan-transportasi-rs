@@ -5,145 +5,129 @@
                 <h1 class="text-lg font-bold text-slate-900">Laporan Pengajuan</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Data lengkap seluruh pengajuan transportasi</p>
             </div>
-            <a href="{{ route('admin.laporan.export', request()->query()) }}"
-               class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition"
-               style="background:#007774; color:white;">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
-                </svg>
-                Export Excel
-            </a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.laporan.print', request()->query()) }}"
+                   target="_blank"
+                   class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition"
+                   style="background:#007774; color:white;">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+                    </svg>
+                    Print PDF
+                </a>
+                <a href="{{ route('admin.laporan.export', request()->query()) }}"
+                   class="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition"
+                   style="background:#007774; color:white;">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                              d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                    </svg>
+                    Export Excel
+                </a>
+            </div>
         </div>
 
-        {{-- Filter --}}
-        <form method="GET" action="{{ route('admin.laporan') }}"
-              class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 p-3 mb-3">
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2">
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">No. Pengajuan</label>
-                    <input type="text" name="nomor" value="{{ request('nomor') }}" placeholder="Cari nomor..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jenis</label>
-                    <select name="jenis" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                        <option value="">Semua</option>
-                        <option value="umum" @selected(request('jenis') === 'umum')>Umum</option>
-                        <option value="ambulance" @selected(request('jenis') === 'ambulance')>Ambulance</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Status</label>
-                    <select name="status" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                        <option value="">Semua</option>
-                        <option value="diajukan" @selected(request('status') === 'diajukan')>Diajukan</option>
-                        <option value="diproses" @selected(request('status') === 'diproses')>Disetujui</option>
-                        <option value="digunakan" @selected(request('status') === 'digunakan')>Digunakan</option>
-                        <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
-                        <option value="tidak_disetujui" @selected(request('status') === 'tidak_disetujui')>Tidak Disetujui</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Prioritas</label>
-                    <select name="prioritas" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                        <option value="">Semua</option>
-                        <option value="biasa" @selected(request('prioritas') === 'biasa')>Biasa</option>
-                        <option value="segera" @selected(request('prioritas') === 'segera')>Segera / CITO</option>
-                    </select>
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">NIP Pemohon</label>
-                    <input type="text" name="nip_pemohon" value="{{ request('nip_pemohon') }}" placeholder="Cari NIP..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Nama Pemohon</label>
-                    <input type="text" name="pemohon" value="{{ request('pemohon') }}" placeholder="Cari nama..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Unit Kerja</label>
-                    <input type="text" name="unit_kerja" value="{{ request('unit_kerja') }}" placeholder="Cari unit..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Keperluan</label>
-                    <input type="text" name="keperluan" value="{{ request('keperluan') }}" placeholder="Cari keperluan..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tujuan</label>
-                    <input type="text" name="tujuan" value="{{ request('tujuan') }}" placeholder="Cari tujuan..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Supir</label>
-                    <input type="text" name="supir" value="{{ request('supir') }}" placeholder="Cari supir..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Unit Kendaraan</label>
-                    <input type="text" name="unit_mobil" value="{{ request('unit_mobil') }}" placeholder="Cari kendaraan..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Plat Nomor</label>
-                    <input type="text" name="plat_nomor" value="{{ request('plat_nomor') }}" placeholder="Cari plat..."
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Dari</label>
-                    <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div>
-                    <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Sampai</label>
-                    <input type="date" name="tanggal_sampai_filter" value="{{ request('tanggal_sampai_filter') }}"
-                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs">
-                </div>
-
-                <div class="flex items-end gap-2">
-                    <button type="submit"
-                            class="flex-1 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition"
-                            style="background:#007774;">
-                        Filter
-                    </button>
-                    @if(request()->hasAny(['nomor','jenis','status','prioritas','nip_pemohon','pemohon','unit_kerja','keperluan','tujuan','supir','unit_mobil','plat_nomor','tanggal_dari','tanggal_sampai_filter']))
-                        <a href="{{ route('admin.laporan') }}"
-                           class="flex-1 text-center rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
-                            Reset
-                        </a>
-                    @endif
-                </div>
-            </div>
-        </form>
-
-        {{-- Tabel --}}
+        {{-- Tabel dengan filter inline di thead --}}
+        <form method="GET" action="{{ route('admin.laporan') }}" id="laporan-filter-form">
         <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs" style="min-width:1800px;">
                     <thead class="bg-slate-50 border-b border-slate-200">
+                        {{-- Baris 1: Filter inputs --}}
+                        <tr class="bg-white border-b border-slate-200">
+                            {{-- No. Pengajuan --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="nomor" value="{{ request('nomor') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- Dibuat: tanggal dari - sampai --}}
+                            <th class="px-2 py-1.5">
+                                <div class="flex flex-col gap-0.5">
+                                    <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
+                                           class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                    <input type="date" name="tanggal_sampai_filter" value="{{ request('tanggal_sampai_filter') }}"
+                                           class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                </div>
+                            </th>
+                            {{-- Nama Pemohon --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="pemohon" value="{{ request('pemohon') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- Unit Kerja --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="unit_kerja" value="{{ request('unit_kerja') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- Jenis --}}
+                            <th class="px-2 py-1.5">
+                                <select name="jenis" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                    <option value="">Semua</option>
+                                    <option value="umum" @selected(request('jenis') === 'umum')>Umum</option>
+                                    <option value="ambulance" @selected(request('jenis') === 'ambulance')>Ambulance</option>
+                                </select>
+                            </th>
+                            {{-- Keperluan --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="keperluan" value="{{ request('keperluan') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- Tgl Berangkat --}}
+                            <th class="px-2 py-1.5"></th>
+                            {{-- Jam --}}
+                            <th class="px-2 py-1.5"></th>
+                            {{-- Tujuan --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="tujuan" value="{{ request('tujuan') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- Unit Kendaraan --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="unit_mobil" value="{{ request('unit_mobil') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- Plat Nomor --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="plat_nomor" value="{{ request('plat_nomor') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- NIP Supir --}}
+                            <th class="px-2 py-1.5"></th>
+                            {{-- Nama Supir --}}
+                            <th class="px-2 py-1.5">
+                                <input type="text" name="supir" value="{{ request('supir') }}" placeholder="Cari..."
+                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            </th>
+                            {{-- KM Awal, KM Akhir, Jarak, Tgl Kembali, Jam Tiba --}}
+                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-1.5"></th>
+                            {{-- Status --}}
+                            <th class="px-2 py-1.5">
+                                <div class="flex flex-col gap-0.5">
+                                    <select name="status" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                        <option value="">Semua</option>
+                                        <option value="diajukan" @selected(request('status') === 'diajukan')>Diajukan</option>
+                                        <option value="diproses" @selected(request('status') === 'diproses')>Disetujui</option>
+                                        <option value="digunakan" @selected(request('status') === 'digunakan')>Digunakan</option>
+                                        <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
+                                        <option value="tidak_disetujui" @selected(request('status') === 'tidak_disetujui')>Tdk Disetujui</option>
+                                    </select>
+                                    <select name="prioritas" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                        <option value="">Semua Prioritas</option>
+                                        <option value="biasa" @selected(request('prioritas') === 'biasa')>Biasa</option>
+                                        <option value="segera" @selected(request('prioritas') === 'segera')>CITO</option>
+                                    </select>
+                                </div>
+                            </th>
+                        </tr>
+                        {{-- Baris 2: Label kolom --}}
                         <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
                             <th class="px-3 py-2 text-left whitespace-nowrap">No. Pengajuan</th>
                             <th class="px-3 py-2 text-left whitespace-nowrap">Dibuat</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">NIP Pemohon</th>
                             <th class="px-3 py-2 text-left whitespace-nowrap">Nama Pemohon</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Jabatan / Profesi</th>
                             <th class="px-3 py-2 text-left whitespace-nowrap">Unit Kerja</th>
                             <th class="px-3 py-2 text-left whitespace-nowrap">Jenis</th>
                             <th class="px-3 py-2 text-left whitespace-nowrap">Keperluan</th>
@@ -187,23 +171,10 @@
                                     <div>{{ $item->created_at->format('d/m/Y') }}</div>
                                     <div class="text-[10px] text-slate-400">{{ $item->created_at->format('H:i') }}</div>
                                 </td>
-                                <td class="px-3 py-2 whitespace-nowrap font-mono text-slate-600">
-                                    {{ $item->user->nip ?? '-' }}
-                                </td>
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <div class="font-medium text-slate-900">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
                                     @if($item->user && $item->user->isPriority())
                                         <span class="text-[9px] font-bold text-purple-600 bg-purple-50 px-1 rounded">PRIORITAS</span>
-                                    @endif
-                                </td>
-                                <td class="px-3 py-2 whitespace-nowrap text-slate-600">
-                                    @if($item->user)
-                                        <div>{{ $item->user->jabatan ?? '-' }}</div>
-                                        @if($item->user->profesi)
-                                            <div class="text-[10px] text-slate-400">{{ $item->user->profesi }}</div>
-                                        @endif
-                                    @else
-                                        <span class="text-slate-400">-</span>
                                     @endif
                                 </td>
                                 <td class="px-3 py-2 text-slate-600 whitespace-nowrap">
@@ -281,7 +252,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="21" class="px-3 py-10 text-center">
+                                <td colspan="19" class="px-3 py-10 text-center">
                                     <svg class="w-10 h-10 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                     </svg>
@@ -299,9 +270,39 @@
                 </div>
             @endif
         </div>
+        </form>
 
         <div class="mt-2 text-[10px] text-slate-400">
             Menampilkan {{ $items->firstItem() ?? 0 }}–{{ $items->lastItem() ?? 0 }} dari {{ $items->total() }} data
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('laporan-filter-form');
+            if (!form) return;
+
+            let debounceTimer;
+
+            function submitClean(delay) {
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function () {
+                    form.querySelectorAll('input, select').forEach(el => {
+                        if (el.value === '') el.disabled = true;
+                    });
+                    form.submit();
+                }, delay ?? 500);
+            }
+
+            // Text inputs: submit setelah berhenti mengetik 500ms
+            form.querySelectorAll('input[type="text"], input[type="date"]').forEach(function (input) {
+                input.addEventListener('input', () => submitClean(500));
+            });
+
+            // Select: submit langsung saat berubah
+            form.querySelectorAll('select').forEach(function (select) {
+                select.addEventListener('change', () => submitClean(0));
+            });
+        });
+    </script>
 </x-app-layout>

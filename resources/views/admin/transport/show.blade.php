@@ -329,7 +329,7 @@
                                             data-plate="{{ $vehicle->plate_number }}"
                                             data-last-km="{{ $vehicle->last_km ?? 0 }}"
                                             @selected(old('unit_mobil') == $vehicle->name)>
-                                        {{ $vehicle->name }} ({{ $vehicle->plate_number }}){{ $vehicle->last_km ? ' — KM: ' . number_format($vehicle->last_km, 0, ',', '.') : '' }}
+                                        {{ $vehicle->name }} ({{ $vehicle->plate_number }})
                                     </option>
                                 @endforeach
                             </select>

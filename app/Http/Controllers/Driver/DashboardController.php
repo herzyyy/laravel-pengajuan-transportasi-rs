@@ -9,7 +9,7 @@ use Illuminate\Validation\ValidationException;
 
 class DashboardController extends Controller
 {
-    public function history()
+    public function history(Request $request)
     {
         $driver = auth()->user()->driver;
 
@@ -17,11 +17,16 @@ class DashboardController extends Controller
             return view('driver.no_driver');
         }
 
-        $historyRequests = TransportRequest::where('driver_id', $driver->id)
+        $query = TransportRequest::where('driver_id', $driver->id)
             ->whereIn('status', ['selesai', 'tidak_disetujui'])
             ->with('user')
-            ->latest()
-            ->paginate(5);
+            ->latest();
+
+        if ($request->filled('status'))  $query->where('status', $request->status);
+        if ($request->filled('jenis'))   $query->where('jenis', $request->jenis);
+        if ($request->filled('tanggal')) $query->whereDate('tanggal', $request->tanggal);
+
+        $historyRequests = $query->paginate(10)->withQueryString();
 
         return view('driver.history', compact('driver', 'historyRequests'));
     }
@@ -85,6 +90,7 @@ class DashboardController extends Controller
         $data = $request->validate([
             'km_akhir' => ['required', 'integer', 'min:0'],
             'jam_kedatangan' => ['required', 'string', 'max:10', 'regex:/^([01][0-9]|2[0-3]):[0-5][0-9]$/'],
+            'biaya_tol' => ['nullable', 'integer', 'min:0'],
         ]);
 
         if ($data['km_akhir'] <= $transportRequest->km_awal) {

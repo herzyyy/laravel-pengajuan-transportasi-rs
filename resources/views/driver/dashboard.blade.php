@@ -74,7 +74,7 @@
                         <span class="text-[10px] text-slate-500">{{ ucfirst($item->jenis) }}</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <a href="{{ route('driver.print', $item) }}" target="_blank"
+                        <a href="{{ route('driver.print', $item) }}?from=driver_active" target="_blank"
                            class="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded"
                            style="background-color: #00685E; color: white !important;">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -136,6 +136,13 @@
                                            class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500">
                                 </div>
                             </div>
+                            <div>
+                                <label class="block text-[10px] font-semibold text-slate-700 mb-0.5">Biaya E-Tol</label>
+                                <input type="text" id="biaya_tol_display_{{ $item->id }}" placeholder="0 (kosongkan jika tidak ada)"
+                                       inputmode="numeric" autocomplete="off"
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-xs focus:ring-2 focus:ring-emerald-500">
+                                <input type="hidden" name="biaya_tol" id="biaya_tol_{{ $item->id }}">
+                            </div>
                             <button type="submit"
                                     class="w-full rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-xs font-semibold transition">
                                 Simpan & Selesai
@@ -183,6 +190,28 @@
                     const prevLen = this.value.length;
                     this.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
                     if (hidden) hidden.value = raw;
+                    this.setSelectionRange(cursor + (this.value.length - prevLen), cursor + (this.value.length - prevLen));
+                });
+                display.addEventListener('blur', formatAndSync);
+                display.addEventListener('change', formatAndSync);
+                display.addEventListener('keypress', e => { if (!/[0-9]/.test(e.key)) e.preventDefault(); });
+            });
+
+            document.querySelectorAll('[id^="biaya_tol_display_"]').forEach(function(display) {
+                const hidden = document.getElementById('biaya_tol_' + display.id.replace('biaya_tol_display_', ''));
+
+                function formatAndSync() {
+                    const raw = display.value.replace(/\D/g, '');
+                    display.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+                    if (hidden) hidden.value = raw || '';
+                }
+
+                display.addEventListener('input', function() {
+                    const raw = this.value.replace(/\D/g, '');
+                    const cursor = this.selectionStart;
+                    const prevLen = this.value.length;
+                    this.value = raw ? parseInt(raw).toLocaleString('id-ID') : '';
+                    if (hidden) hidden.value = raw || '';
                     this.setSelectionRange(cursor + (this.value.length - prevLen), cursor + (this.value.length - prevLen));
                 });
                 display.addEventListener('blur', formatAndSync);
