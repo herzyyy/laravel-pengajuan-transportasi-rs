@@ -7,14 +7,22 @@
                 <h1 class="text-lg sm:text-xl font-bold text-slate-900">Riwayat Pengajuan</h1>
                 <p class="text-xs text-slate-500 mt-0.5">Daftar pengajuan transportasi yang telah Anda buat</p>
             </div>
-
-            <a href="{{ route('dashboard') }}"
-               class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold hover:shadow-md transition self-start sm:self-auto" style="color:white;">
-                <svg class="w-3.5 h-3.5" fill="white" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
-                </svg>
-                Pengajuan Baru
-            </a>
+            <div class="flex items-center justify-end gap-2">
+                <a href="{{ route('dashboard') }}"
+                   class="inline-flex items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-xs font-semibold hover:shadow-md transition self-start sm:self-auto" style="color:white;">
+                    <svg class="w-3.5 h-3.5" fill="white" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
+                    </svg>
+                    Pengajuan Baru
+                </a>
+                <a href="{{ route('dashboard') }}"
+                   class="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition self-start sm:self-auto">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    Kembali
+                </a>
+            </div>
         </div>
 
         <!-- Filter Form -->
@@ -332,7 +340,7 @@
                         </div>
 
                         <!-- Action Button -->
-                        <a href="{{ route('pengajuan.success', $item) }}" class="block w-full max-w-full text-center rounded-lg bg-emerald-600 border border-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition">
+                        <a href="{{ route('pengajuan.success', $item) }}" class="block w-full max-w-full text-center rounded-lg bg-emerald-600 border border-emerald-600 px-4 py-2 text-xs font-semibold text-white hover:bg-emerald-700 transition" style="color: white !important;">
                             Lihat Detail
                         </a>
                     </div>

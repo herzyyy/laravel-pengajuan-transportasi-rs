@@ -15,27 +15,26 @@
     <div class="min-h-screen flex flex-col">
 
         {{-- Header --}}
-        <header class="sticky top-0 z-40 bg-white shadow-sm {{ auth()->user()->isAdmin() ? 'lg:pl-64' : (auth()->user()->isDriver() ? '' : 'lg:pl-64') }}" style="border-bottom: 2px solid #007774;">
-            <div class="px-4 sm:px-6 py-3 flex items-center justify-between">
+        <header class="sticky top-0 z-40 bg-white shadow-sm {{ auth()->user()->isAdmin() ? 'lg:pl-64' : '' }}" style="border-bottom: 2px solid #007774;">
+            <div class="px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
                 {{-- Mobile Menu Button (hanya untuk admin) --}}
-                @if(!auth()->user()->isDriver())
-                <button @click="sidebarOpen = !sidebarOpen" class="{{ auth()->user()->isAdmin() ? 'lg:hidden' : 'hidden' }} flex items-center justify-center w-9 h-9 rounded-lg transition" style="background: rgba(0,119,116,0.1); border: 1px solid rgba(0,119,116,0.2);">
+                @if(auth()->user()->isAdmin())
+                <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg transition shrink-0" style="background: rgba(0,119,116,0.1); border: 1px solid rgba(0,119,116,0.2);">
                     <svg class="w-5 h-5" style="color: #007774;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                     </svg>
                 </button>
-                @else
-                {{-- tidak ada spacer, logo langsung di kiri --}}
                 @endif
-                <div class="flex items-center gap-3 min-w-0 {{ auth()->user()->isDriver() ? '' : 'lg:hidden' }}">
+                {{-- Logo: admin=mobile only, user/driver=always --}}
+                <div class="flex items-center gap-2.5 min-w-0 {{ auth()->user()->isAdmin() ? 'lg:hidden' : '' }}">
                     <div class="rounded-lg p-1.5">
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-10 w-auto">
                     </div>
                     <div>
-                        <div class="text-xs font-semibold" style="color: #81BD41;">
-                            RS Azra
+                        <div class="text-base font-bold tracking-wide" style="color: #007774;">
+                            SIPETRANS
                         </div>
-                        <div class="font-semibold text-base tracking-tight" style="color: #007774;">
+                        <div class="text-[10px] font-medium" style="color: #81BD41;">
                             Sistem Pengajuan Transportasi
                         </div>
                     </div>
@@ -304,48 +303,57 @@
                     @endif
                     
                     @if(auth()->user()->isDriver())
-                        {{-- Tombol Riwayat untuk Supir — hanya tampil di desktop --}}
+                        {{-- Tombol Riwayat untuk Supir --}}
                         <a href="{{ route('driver.history') }}"
-                           class="header-btn hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg transition"
-                           style="color: #007774; background: rgba(0,119,116,0.08); border: 1px solid rgba(0,119,116,0.2);">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                           class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition"
+                           style="color: white; background: #007774; border: 1px solid #007774;"
+                           onmouseover="this.style.background='white'; this.style.color='#007774';"
+                           onmouseout="this.style.background='#007774'; this.style.color='white';">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
                                 <path d="M6 7h12M6 12h12M6 17h8"/>
                             </svg>
-                            <span>Riwayat</span>
+                            Riwayat
                         </a>
 
-                        {{-- Info User untuk Supir di Header — hanya desktop --}}
-                        <div class="relative hidden lg:flex" x-data="{ open: false }">
-                            <button @click="open = !open" class="flex items-center gap-2 focus:outline-none" style="color: #007774;">
-                                <div class="flex items-center justify-center w-8 h-8 rounded-full" style="background-color: #007774;">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                </div>
-                                <div class="hidden sm:block leading-tight text-left">
-                                    <div class="text-xs font-semibold text-slate-800">{{ auth()->user()->full_name }}</div>
-                                    <div class="text-[10px]" style="color: #007774;">Supir</div>
-                                </div>
-                                <svg class="sm:hidden w-3 h-3 text-slate-400 transition-transform duration-200" :class="open ? 'rotate-180' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                        {{-- Info User Supir --}}
+                        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background: rgba(0,119,116,0.05); border: 1px solid rgba(0,119,116,0.1);">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style="background-color: #007774;">
+                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
-                            </button>
+                            </div>
+                            <div class="leading-tight">
+                                <div class="text-xs font-semibold text-slate-800 truncate max-w-[120px]">{{ auth()->user()->full_name }}</div>
+                                <div class="text-[10px]" style="color: #007774;">Supir</div>
+                            </div>
+                        </div>
+                    @endif
 
-                            {{-- Dropdown hanya muncul di mobile (sm ke bawah) --}}
-                            <div x-show="open"
-                                 @click.away="open = false"
-                                 x-transition:enter="transition ease-out duration-150"
-                                 x-transition:enter-start="opacity-0 scale-95"
-                                 x-transition:enter-end="opacity-100 scale-100"
-                                 x-transition:leave="transition ease-in duration-100"
-                                 x-transition:leave-start="opacity-100 scale-100"
-                                 x-transition:leave-end="opacity-0 scale-95"
-                                 class="sm:hidden absolute right-0 mt-2 w-52 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 z-50 overflow-hidden"
-                                 style="display: none;">
-                                <div class="px-4 py-3 bg-emerald-50 border-b border-emerald-100">
-                                    <div class="text-[10px] uppercase tracking-wider text-emerald-600 font-semibold mb-1">Supir</div>
-                                    <div class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
-                                </div>
+                    @if(!auth()->user()->isAdmin() && !auth()->user()->isDriver())
+                        {{-- Tombol Riwayat untuk User biasa --}}
+                        <a href="{{ route('pengajuan.index') }}"
+                           class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition"
+                           style="color: white; background: #007774; border: 1px solid #007774;"
+                           onmouseover="this.style.background='white'; this.style.color='#007774';"
+                           onmouseout="this.style.background='#007774'; this.style.color='white';">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
+                                <path d="M6 7h12M6 12h12M6 17h8"/>
+                            </svg>
+                            Riwayat
+                        </a>
+
+                        {{-- Info User biasa --}}
+                        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background: rgba(0,119,116,0.05); border: 1px solid rgba(0,119,116,0.1);">
+                            <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style="background-color: #007774;">
+                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                </svg>
+                            </div>
+                            <div class="leading-tight">
+                                <div class="text-xs font-semibold text-slate-800 truncate max-w-[120px]">{{ auth()->user()->full_name }}</div>
+                                @if(auth()->user()->unit_kerja)
+                                    <div class="text-[10px] text-slate-400 truncate max-w-[120px]">{{ auth()->user()->unit_kerja }}</div>
+                                @endif
                             </div>
                         </div>
                     @endif
@@ -353,7 +361,7 @@
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                            class="{{ !auth()->user()->isAdmin() && !auth()->user()->isDriver() ? 'hidden lg:flex' : (auth()->user()->isDriver() ? 'hidden lg:flex' : 'flex') }} header-btn items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition"
+                            class="{{ !auth()->user()->isAdmin() && !auth()->user()->isDriver() ? 'hidden sm:flex' : (auth()->user()->isDriver() ? 'hidden sm:flex' : 'flex') }} header-btn items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition"
                             style="color: #007774; border: 1px solid rgba(0,119,116,0.3); background: rgba(0,119,116,0.06);">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
@@ -381,10 +389,10 @@
                  style="display: none;">
             </div>
 
-            {{-- Sidebar: selalu tampil di desktop, di mobile hanya untuk admin --}}
+            {{-- Sidebar: selalu tampil di desktop untuk admin, tersembunyi untuk user biasa --}}
             <aside :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'" 
                    class="fixed left-0 top-0 bottom-0 z-40 w-64 bg-white flex flex-col transition-transform duration-300 ease-in-out overflow-y-auto
-                          {{ auth()->user()->isAdmin() ? 'lg:translate-x-0' : 'lg:translate-x-0 hidden lg:flex' }}"
+                          {{ auth()->user()->isAdmin() ? 'lg:translate-x-0' : 'hidden' }}"
                    style="border-right: 1px solid #e2eded; box-shadow: 2px 0 8px rgba(0,0,0,0.04);">
                 @if(!auth()->user()->isDriver())
                 {{-- Branding --}}
@@ -554,7 +562,7 @@
             @endif
 
             {{-- Main Content --}}
-            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 {{ auth()->user()->isAdmin() ? 'lg:pl-64' : (!auth()->user()->isDriver() ? 'lg:pl-64' : '') }} {{ !auth()->user()->isAdmin() ? 'pb-20 lg:pb-6' : '' }}">
+            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 {{ auth()->user()->isAdmin() ? 'lg:pl-64' : '' }} {{ !auth()->user()->isAdmin() ? 'pb-20 lg:pb-6' : '' }}">
                 <div class="max-w-7xl mx-auto">
 
                     @if (session('status'))
