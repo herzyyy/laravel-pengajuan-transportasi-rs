@@ -32,82 +32,82 @@
         <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs" style="min-width:1800px;">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                    <thead>
                         {{-- Baris 1: Filter inputs --}}
-                        <tr class="bg-white border-b border-slate-200">
+                        <tr class="bg-slate-50/80 border-b border-slate-200">
                             {{-- No. Pengajuan --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="nomor" value="{{ request('nomor') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- Dibuat: tanggal dari - sampai --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <div class="flex flex-col gap-0.5">
                                     <input type="date" name="tanggal_dari" value="{{ request('tanggal_dari') }}"
-                                           class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                                     <input type="date" name="tanggal_sampai_filter" value="{{ request('tanggal_sampai_filter') }}"
-                                           class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                           class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                                 </div>
                             </th>
                             {{-- Nama Pemohon --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="pemohon" value="{{ request('pemohon') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- Unit Kerja --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="unit_kerja" value="{{ request('unit_kerja') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- Jenis --}}
-                            <th class="px-2 py-1.5">
-                                <select name="jenis" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            <th class="px-2 py-2">
+                                <select name="jenis" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                                     <option value="">Semua</option>
                                     <option value="umum" @selected(request('jenis') === 'umum')>Umum</option>
                                     <option value="ambulance" @selected(request('jenis') === 'ambulance')>Ambulance</option>
                                 </select>
                             </th>
                             {{-- Keperluan --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="keperluan" value="{{ request('keperluan') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- Tgl Berangkat --}}
-                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-2"></th>
                             {{-- Jam --}}
-                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-2"></th>
                             {{-- Tujuan --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="tujuan" value="{{ request('tujuan') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- Unit Kendaraan --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="unit_mobil" value="{{ request('unit_mobil') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- Plat Nomor --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="plat_nomor" value="{{ request('plat_nomor') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- NIP Supir --}}
-                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-2"></th>
                             {{-- Nama Supir --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <input type="text" name="supir" value="{{ request('supir') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
                             {{-- KM Awal, KM Akhir, Jarak, Tgl Kembali, Jam Tiba --}}
-                            <th class="px-2 py-1.5"></th>
-                            <th class="px-2 py-1.5"></th>
-                            <th class="px-2 py-1.5"></th>
-                            <th class="px-2 py-1.5"></th>
-                            <th class="px-2 py-1.5"></th>
+                            <th class="px-2 py-2"></th>
+                            <th class="px-2 py-2"></th>
+                            <th class="px-2 py-2"></th>
+                            <th class="px-2 py-2"></th>
+                            <th class="px-2 py-2"></th>
                             {{-- Status --}}
-                            <th class="px-2 py-1.5">
+                            <th class="px-2 py-2">
                                 <div class="flex flex-col gap-0.5">
-                                    <select name="status" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                    <select name="status" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                                         <option value="">Semua</option>
                                         <option value="diajukan" @selected(request('status') === 'diajukan')>Diajukan</option>
                                         <option value="diproses" @selected(request('status') === 'diproses')>Disetujui</option>
@@ -115,7 +115,7 @@
                                         <option value="selesai" @selected(request('status') === 'selesai')>Selesai</option>
                                         <option value="tidak_disetujui" @selected(request('status') === 'tidak_disetujui')>Tdk Disetujui</option>
                                     </select>
-                                    <select name="prioritas" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                                    <select name="prioritas" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                                         <option value="">Semua Prioritas</option>
                                         <option value="biasa" @selected(request('prioritas') === 'biasa')>Biasa</option>
                                         <option value="segera" @selected(request('prioritas') === 'segera')>CITO</option>
@@ -124,37 +124,37 @@
                             </th>
                         </tr>
                         {{-- Baris 2: Label kolom --}}
-                        <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
-                            <th class="px-3 py-2 text-left whitespace-nowrap">No. Pengajuan</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Dibuat</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Nama Pemohon</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Unit Kerja</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Jenis</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Keperluan</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Tgl Berangkat</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Jam</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Tujuan</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Unit Kendaraan</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Plat Nomor</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">NIP Supir</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Nama Supir</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">KM Awal</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">KM Akhir</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Jarak</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Tgl Kembali</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Jam Tiba</th>
-                            <th class="px-3 py-2 text-left whitespace-nowrap">Status</th>
+                        <tr class="text-left text-[10px] font-semibold text-white uppercase tracking-wider" style="background: linear-gradient(to right, #007774, #009e9a);">
+                            <th class="px-3 py-2.5 whitespace-nowrap">No. Pengajuan</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Dibuat</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Nama Pemohon</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Unit Kerja</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Jenis</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Keperluan</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Tgl Berangkat</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Jam</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Tujuan</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Unit Kendaraan</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Plat Nomor</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">NIP Supir</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Nama Supir</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">KM Awal</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">KM Akhir</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Jarak</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Tgl Kembali</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Jam Tiba</th>
+                            <th class="px-3 py-2.5 whitespace-nowrap">Status</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($items as $item)
                             @php
                                 $statusColors = [
-                                    'diajukan'       => 'bg-amber-100 text-amber-800',
-                                    'diproses'       => 'bg-blue-100 text-blue-800',
-                                    'digunakan'      => 'bg-cyan-100 text-cyan-800',
-                                    'selesai'        => 'bg-emerald-100 text-emerald-800',
-                                    'tidak_disetujui'=> 'bg-red-100 text-red-800',
+                                    'diajukan'       => 'bg-amber-100 text-amber-800 border border-amber-200',
+                                    'diproses'       => 'bg-blue-100 text-blue-800 border border-blue-200',
+                                    'digunakan'      => 'bg-cyan-100 text-cyan-800 border border-cyan-200',
+                                    'selesai'        => 'bg-emerald-100 text-emerald-800 border border-emerald-200',
+                                    'tidak_disetujui'=> 'bg-red-100 text-red-800 border border-red-200',
                                 ];
                                 $statusLabel = match($item->status) {
                                     'diproses'       => 'Disetujui',
@@ -163,7 +163,7 @@
                                 };
                                 $nipSupir = $item->driver && $item->driver->user ? $item->driver->user->nip : null;
                             @endphp
-                            <tr class="hover:bg-slate-50 transition">
+                            <tr class="hover:bg-teal-50/40 transition-colors">
                                 <td class="px-3 py-2 whitespace-nowrap">
                                     <span class="font-mono font-semibold text-slate-700">{{ $item->nomor_pengajuan }}</span>
                                 </td>

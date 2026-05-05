@@ -50,10 +50,10 @@ Tambahkan baris ini:
 
 ## Cara Kerja
 1. Command berjalan setiap jam (atau manual)
-2. Mencari semua pengajuan dengan status "diajukan"
-3. Membandingkan tanggal + jam pengajuan dengan waktu sekarang
-4. Jika sudah lewat, status diubah menjadi "tidak_disetujui"
-5. Log ditampilkan untuk setiap pengajuan yang diubah
+2. **Kasus 1 — Status `diajukan`**: jika sudah lebih dari 24 jam sejak `created_at` tanpa diproses admin, status diubah ke `tidak_disetujui` dengan alasan "tidak diproses dalam 24 jam".
+3. **Kasus 2 — Status `diproses`**: jika tanggal + jam transportasi sudah lewat lebih dari 24 jam tanpa dieksekusi (tidak berubah ke `digunakan`/`selesai`), status diubah ke `tidak_disetujui` dengan alasan "tidak dieksekusi dalam 24 jam setelah jadwal".
+4. `rejection_reason` diisi otomatis dengan keterangan yang sesuai.
+5. Log ditampilkan untuk setiap pengajuan yang diubah.
 
 ## Testing
 Untuk testing, jalankan command manual:

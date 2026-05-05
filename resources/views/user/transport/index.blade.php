@@ -80,30 +80,30 @@
             <div class="hidden md:block overflow-x-auto">
                 <table class="w-full min-w-[680px] table-fixed text-xs">
                     
-                    <thead class="bg-slate-50 border-b border-slate-200">
-                        <tr class="text-left text-[10px] font-semibold uppercase tracking-wide text-slate-600">
-                            <th class="w-16 px-2 py-2">ID</th>
-                            <th class="w-1/4 px-2 py-2">Jenis & Keperluan</th>
-                            <th class="w-1/4 px-2 py-2">Jadwal</th>
-                            <th class="w-28 px-2 py-2">Dibuat</th>
-                            <th class="w-20 px-2 py-2">Status</th>
-                            <th class="w-16 px-2 py-2 text-center">Aksi</th>
+                    <thead>
+                        <tr class="text-left text-[10px] font-semibold text-white uppercase tracking-wider" style="background: linear-gradient(to right, #007774, #009e9a);">
+                            <th class="w-16 px-2 py-3">ID</th>
+                            <th class="w-1/4 px-2 py-3">Jenis & Keperluan</th>
+                            <th class="w-1/4 px-2 py-3">Jadwal</th>
+                            <th class="w-28 px-2 py-3">Dibuat</th>
+                            <th class="w-20 px-2 py-3">Status</th>
+                            <th class="w-16 px-2 py-3 text-center">Aksi</th>
                         </tr>
                     </thead>
 
                     <tbody class="divide-y divide-slate-100">
                         @forelse ($items as $item)
-                            <tr class="hover:bg-slate-50 transition">
+                            <tr class="hover:bg-teal-50/40 transition-colors">
                                 
                                 <!-- ID -->
-                                <td class="px-2 py-2">
-                                    <span class="font-mono text-[11px] font-semibold text-slate-700 bg-slate-100 px-2 py-1 rounded">
+                                <td class="px-2 py-2.5">
+                                    <span class="font-mono text-[11px] font-semibold text-teal-700 bg-teal-50 border border-teal-100 px-2 py-1 rounded-md">
                                         {{ $item->nomor_pengajuan }}
                                     </span>
                                 </td>
 
                                 <!-- Jenis -->
-                                <td class="px-2 py-2">
+                                <td class="px-2 py-2.5">
                                     <div class="flex flex-col gap-1">
                                         <div class="flex items-center gap-2">
                                             @if($item->jenis === 'ambulance')
@@ -139,7 +139,7 @@
                                 </td>
 
                                 <!-- Jadwal -->
-                                <td class="px-2 py-2">
+                                <td class="px-2 py-2.5">
                                     <div class="flex flex-col gap-0.5">
                                         <div class="flex items-center gap-1 text-slate-900 font-medium">
                                             <svg class="w-3 h-3 text-slate-400 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -157,13 +157,13 @@
                                 </td>
 
                                 <!-- Jam Pengajuan -->
-                                <td class="px-2 py-2">
+                                <td class="px-2 py-2.5">
                                     <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->created_at->format('d M Y') }}</div>
                                     <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ $item->created_at->format('H:i') }}</div>
                                 </td>
 
                                 <!-- Status -->
-                                <td class="px-2 py-2">
+                                <td class="px-2 py-2.5">
                                     @php
                                         $statusConfig = match($item->status) {
                                             'diajukan' => [
@@ -222,7 +222,7 @@
                                 </td>
 
                                 <!-- Aksi -->
-                                <td class="px-2 py-2 text-center">
+                                <td class="px-2 py-2.5 text-center">
                                     <a href="{{ route('pengajuan.success', $item) }}"
                                        class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 
                                               hover:text-emerald-700 hover:underline transition">

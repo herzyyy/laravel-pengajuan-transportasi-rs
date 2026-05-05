@@ -45,58 +45,58 @@
         <div class="hidden md:block bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-xs">
-                    <thead class="bg-slate-50 border-b border-slate-200">
+                    <thead>
                         {{-- Filter row --}}
-                        <tr class="bg-white border-b border-slate-100">
-                            <th class="py-1.5 px-2">
-                                <input type="text" name="nama" value="{{ request('nama') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                        <tr class="bg-slate-50/80 border-b border-slate-200">
+                            <th class="py-2 px-3">
+                                <input type="text" name="nama" value="{{ request('nama') }}" placeholder="Cari nama..."
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
-                            <th class="py-1.5 px-2">
-                                <input type="text" name="telepon" value="{{ request('telepon') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            <th class="py-2 px-3">
+                                <input type="text" name="telepon" value="{{ request('telepon') }}" placeholder="Cari telepon..."
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
-                            <th class="py-1.5 px-2">
-                                <input type="text" name="sim" value="{{ request('sim') }}" placeholder="Cari..."
-                                       class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            <th class="py-2 px-3">
+                                <input type="text" name="sim" value="{{ request('sim') }}" placeholder="Cari SIM..."
+                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                             </th>
-                            <th class="py-1.5 px-2">
-                                <select name="is_active" class="w-full rounded border border-slate-300 px-1.5 py-1 text-[10px] font-normal focus:ring-1 focus:ring-teal-400">
+                            <th class="py-2 px-3">
+                                <select name="is_active" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
                                     <option value="">Semua</option>
                                     <option value="1" @selected(request('is_active') === '1')>Aktif</option>
                                     <option value="0" @selected(request('is_active') === '0')>Nonaktif</option>
                                 </select>
                             </th>
-                            <th class="py-1.5 px-2"></th>
+                            <th class="py-2 px-3"></th>
                         </tr>
                         {{-- Header row --}}
-                        <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">
-                            <th class="py-2 px-3 text-left">Nama</th>
-                            <th class="py-2 px-3 text-left">Telepon</th>
-                            <th class="py-2 px-3 text-left">Nomor SIM</th>
-                            <th class="py-2 px-3 text-left">Status</th>
-                            <th class="py-2 px-3 text-right">Aksi</th>
+                        <tr class="text-left text-[10px] font-semibold text-white uppercase tracking-wider" style="background: linear-gradient(to right, #007774, #009e9a);">
+                            <th class="py-2.5 px-3">Nama</th>
+                            <th class="py-2.5 px-3">Telepon</th>
+                            <th class="py-2.5 px-3">Nomor SIM</th>
+                            <th class="py-2.5 px-3">Status</th>
+                            <th class="py-2.5 px-3 text-right">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($drivers as $driver)
-                            <tr class="hover:bg-slate-50 transition">
-                                <td class="py-2 px-3">
-                                    <div class="font-medium text-slate-900">{{ $driver->name }}</div>
+                            <tr class="hover:bg-teal-50/40 transition-colors">
+                                <td class="py-2.5 px-3">
+                                    <div class="font-semibold text-slate-900">{{ $driver->name }}</div>
                                 </td>
-                                <td class="py-2 px-3 text-slate-700">{{ $driver->phone ?? '-' }}</td>
-                                <td class="py-2 px-3 text-slate-700">{{ $driver->license_number ?? '-' }}</td>
-                                <td class="py-2 px-3">
+                                <td class="py-2.5 px-3 text-slate-700">{{ $driver->phone ?? '-' }}</td>
+                                <td class="py-2.5 px-3 text-slate-700 font-mono">{{ $driver->license_number ?? '-' }}</td>
+                                <td class="py-2.5 px-3">
                                     @if($driver->is_active)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Aktif</span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">Nonaktif</span>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td class="py-2 px-3 text-right">
+                                <td class="py-2.5 px-3 text-right">
                                     <div class="flex items-center justify-end gap-1.5">
                                         <a href="{{ route('admin.drivers.edit', $driver) }}"
-                                            class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
+                                            class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700 transition bg-white">
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST"
@@ -104,7 +104,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-red-700 hover:bg-red-50 hover:border-red-500 transition">
+                                                    class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-red-600 hover:bg-red-50 hover:border-red-400 transition bg-white">
                                                 Hapus
                                             </button>
                                         </form>
@@ -113,13 +113,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-6 text-center text-slate-500 text-xs">Tidak ada data supir</td>
+                                <td colspan="5" class="py-8 text-center text-slate-500 text-xs">Tidak ada data supir</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="px-3 py-2 bg-slate-50 border-t border-slate-200">
+            <div class="px-3 py-2.5 bg-slate-50 border-t border-slate-200">
                 {{ $drivers->links() }}
             </div>
         </div>

@@ -101,57 +101,57 @@
                 <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-xs">
-                            <thead class="bg-slate-50 border-b border-slate-200">
-                                <tr class="text-[10px] font-semibold text-slate-600 uppercase tracking-wider">
-                                    <th class="px-2 sm:px-3 py-2 text-left">No</th>
-                                    <th class="px-2 sm:px-3 py-2 text-left">Tanggal & Jam</th>
-                                    <th class="px-2 sm:px-3 py-2 text-left">Dibuat</th>
-                                    <th class="px-2 sm:px-3 py-2 text-left hidden sm:table-cell">Pemohon</th>
-                                    <th class="px-2 sm:px-3 py-2 text-left">Jenis</th>
-                                    <th class="px-2 sm:px-3 py-2 text-left">Status</th>
+                            <thead>
+                                <tr class="text-left text-[10px] font-semibold text-white uppercase tracking-wider" style="background: linear-gradient(to right, #007774, #009e9a);">
+                                    <th class="px-2 sm:px-3 py-2.5">No</th>
+                                    <th class="px-2 sm:px-3 py-2.5">Tanggal & Jam</th>
+                                    <th class="px-2 sm:px-3 py-2.5">Dibuat</th>
+                                    <th class="px-2 sm:px-3 py-2.5 hidden sm:table-cell">Pemohon</th>
+                                    <th class="px-2 sm:px-3 py-2.5">Jenis</th>
+                                    <th class="px-2 sm:px-3 py-2.5">Status</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 @forelse($latest as $item)
-                                    <tr class="hover:bg-slate-50 transition">
-                                        <td class="px-2 sm:px-3 py-2">
+                                    <tr class="hover:bg-teal-50/40 transition-colors">
+                                        <td class="px-2 sm:px-3 py-2.5">
                                             <a href="{{ route('admin.transport.show', $item) }}"
-                                               class="font-mono text-[11px] font-semibold text-emerald-700 hover:underline">
+                                               class="font-mono text-[11px] font-semibold text-teal-700 hover:underline">
                                                 {{ $item->nomor_pengajuan }}
                                             </a>
                                         </td>
-                                        <td class="px-2 sm:px-3 py-2 text-slate-700 font-medium whitespace-nowrap">
+                                        <td class="px-2 sm:px-3 py-2.5 text-slate-700 font-medium whitespace-nowrap">
                                             <div>{{ $item->tanggal->format('d/m/Y') }}</div>
                                             <div class="text-[10px] text-slate-500">{{ substr($item->jam, 0, 5) }}</div>
                                         </td>
-                                        <td class="px-2 sm:px-3 py-2 whitespace-nowrap">
+                                        <td class="px-2 sm:px-3 py-2.5 whitespace-nowrap">
                                             <div class="text-xs text-slate-700 font-medium">{{ $item->created_at->format('d/m/Y') }}</div>
                                             <div class="text-[10px] text-slate-500">{{ $item->created_at->format('H:i') }}</div>
                                         </td>
-                                        <td class="px-2 sm:px-3 py-2 hidden sm:table-cell">
+                                        <td class="px-2 sm:px-3 py-2.5 hidden sm:table-cell">
                                             <div class="font-medium text-slate-900 text-xs">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
                                             <div class="text-[10px] text-slate-500">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
                                         </td>
-                                        <td class="px-2 sm:px-3 py-2">
+                                        <td class="px-2 sm:px-3 py-2.5">
                                             <div class="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-1.5">
-                                                <span class="text-slate-700 text-xs">{{ ucfirst($item->jenis) }}</span>
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-semibold {{ $item->jenis === 'ambulance' ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-blue-100 text-blue-700 border border-blue-200' }}">{{ ucfirst($item->jenis) }}</span>
                                                 @if($item->prioritas === 'segera')
-                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-700 self-start">CITO</span>
+                                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-red-100 text-red-700 border border-red-200 self-start">CITO</span>
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="px-2 sm:px-3 py-2">
+                                        <td class="px-2 sm:px-3 py-2.5">
                                             @php
                                                 $statusConfig = match($item->status) {
-                                                    'diajukan' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'label' => 'Diajukan'],
-                                                    'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'label' => 'Disetujui'],
-                                                    'digunakan' => ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-800', 'label' => 'Digunakan'],
-                                                    'selesai' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'label' => 'Selesai'],
-                                                    'tidak_disetujui' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'label' => 'Tidak Disetujui'],
-                                                    default => ['bg' => 'bg-slate-100', 'text' => 'text-slate-800', 'label' => ucfirst($item->status)]
+                                                    'diajukan' => ['bg' => 'bg-amber-100', 'text' => 'text-amber-800', 'border' => 'border-amber-200', 'label' => 'Diajukan'],
+                                                    'diproses' => ['bg' => 'bg-blue-100', 'text' => 'text-blue-800', 'border' => 'border-blue-200', 'label' => 'Disetujui'],
+                                                    'digunakan' => ['bg' => 'bg-cyan-100', 'text' => 'text-cyan-800', 'border' => 'border-cyan-200', 'label' => 'Digunakan'],
+                                                    'selesai' => ['bg' => 'bg-emerald-100', 'text' => 'text-emerald-800', 'border' => 'border-emerald-200', 'label' => 'Selesai'],
+                                                    'tidak_disetujui' => ['bg' => 'bg-red-100', 'text' => 'text-red-800', 'border' => 'border-red-200', 'label' => 'Tidak Disetujui'],
+                                                    default => ['bg' => 'bg-slate-100', 'text' => 'text-slate-800', 'border' => 'border-slate-200', 'label' => ucfirst($item->status)]
                                                 };
                                             @endphp
-                                            <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-bold {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }}">
+                                            <span class="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $statusConfig['bg'] }} {{ $statusConfig['text'] }} {{ $statusConfig['border'] }}">
                                                 {{ $statusConfig['label'] }}
                                             </span>
                                         </td>

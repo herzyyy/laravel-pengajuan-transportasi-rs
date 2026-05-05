@@ -49,46 +49,46 @@
                 <!-- Desktop Table View -->
                 <div class="hidden md:block overflow-x-auto">
                     <table class="w-full">
-                        <thead class="bg-slate-50 border-b border-slate-200">
-                            <tr>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Pemohon</th>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Jenis</th>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Tanggal & Waktu</th>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Dibuat</th>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Kendaraan</th>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Tujuan</th>
-                                <th class="px-3 py-2 text-left text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Status</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-slate-700 uppercase tracking-wider">Aksi</th>
+                        <thead>
+                            <tr class="text-left text-[10px] font-semibold text-white uppercase tracking-wider" style="background: linear-gradient(to right, #007774, #009e9a);">
+                                <th class="px-3 py-3">Pemohon</th>
+                                <th class="px-3 py-3">Jenis</th>
+                                <th class="px-3 py-3">Tanggal & Waktu</th>
+                                <th class="px-3 py-3">Dibuat</th>
+                                <th class="px-3 py-3">Kendaraan</th>
+                                <th class="px-3 py-3">Tujuan</th>
+                                <th class="px-3 py-3">Status</th>
+                                <th class="px-3 py-3 text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-slate-200">
+                        <tbody class="divide-y divide-slate-100">
                             @forelse($items as $item)
-                                <tr class="hover:bg-slate-50 transition">
-                                    <td class="px-3 py-2">
+                                <tr class="hover:bg-teal-50/40 transition-colors">
+                                    <td class="px-3 py-2.5">
                                         <div class="font-semibold text-xs text-slate-900">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
                                         <div class="text-[10px] text-slate-500">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
                                     </td>
-                                    <td class="px-3 py-2">
+                                    <td class="px-3 py-2.5">
                                         <div class="flex items-center gap-1">
-                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ $item->jenis === 'ambulance' ? 'bg-rose-100 text-rose-700' : 'bg-emerald-100 text-emerald-700' }}">
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-bold {{ $item->jenis === 'ambulance' ? 'bg-rose-100 text-rose-700 border border-rose-200' : 'bg-emerald-100 text-emerald-700 border border-emerald-200' }}">
                                                 {{ ucfirst($item->jenis) }}
                                             </span>
                                             @if($item->prioritas === 'segera')
-                                                <span class="inline-flex items-center px-1 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700">CITO</span>
+                                                <span class="inline-flex items-center px-1 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-700 border border-red-200">CITO</span>
                                             @endif
                                         </div>
                                     </td>
-                                    <td class="px-3 py-2">
+                                    <td class="px-3 py-2.5">
                                         <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</div>
                                         <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ substr($item->jam, 0, 5) }}
                                             @if($item->jam_sampai) - {{ substr($item->jam_sampai, 0, 5) }} @else - selesai @endif
                                         </div>
                                     </td>
-                                    <td class="px-3 py-2">
+                                    <td class="px-3 py-2.5">
                                         <div class="text-xs text-slate-700 font-medium whitespace-nowrap">{{ $item->created_at->format('d/m/Y') }}</div>
                                         <div class="text-[10px] text-slate-500 whitespace-nowrap">{{ $item->created_at->format('H:i') }}</div>
                                     </td>
-                                    <td class="px-3 py-2">
+                                    <td class="px-3 py-2.5">
                                         @if($item->unit_mobil)
                                             <div class="text-xs text-slate-700 font-medium capitalize">{{ str_replace('_', ' ', $item->unit_mobil) }}</div>
                                             @if($item->plat_nomor)
@@ -98,24 +98,24 @@
                                             <span class="text-[10px] text-slate-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-2">
+                                    <td class="px-3 py-2.5">
                                         @if($item->alamat_tujuan)
                                             <div class="text-xs text-slate-600 line-clamp-2 max-w-xs">{{ $item->alamat_tujuan }}</div>
                                         @else
                                             <span class="text-[10px] text-slate-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-2">
+                                    <td class="px-3 py-2.5">
                                         @php
-                                            $colors = ['diajukan' => 'bg-amber-100 text-amber-800', 'diproses' => 'bg-blue-100 text-blue-800', 'digunakan' => 'bg-cyan-100 text-cyan-800', 'selesai' => 'bg-emerald-100 text-emerald-800', 'tidak_disetujui' => 'bg-red-100 text-red-800'];
-                                            $color = $colors[$item->status] ?? 'bg-slate-100 text-slate-800';
+                                            $colors = ['diajukan' => 'bg-amber-100 text-amber-800 border-amber-200', 'diproses' => 'bg-blue-100 text-blue-800 border-blue-200', 'digunakan' => 'bg-cyan-100 text-cyan-800 border-cyan-200', 'selesai' => 'bg-emerald-100 text-emerald-800 border-emerald-200', 'tidak_disetujui' => 'bg-red-100 text-red-800 border-red-200'];
+                                            $color = $colors[$item->status] ?? 'bg-slate-100 text-slate-800 border-slate-200';
                                             $label = match($item->status) {
                                                 'diproses' => 'Disetujui',
                                                 'digunakan' => 'Digunakan',
                                                 default => ucfirst($item->status)
                                             };
                                         @endphp
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold {{ $color }} whitespace-nowrap">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold border {{ $color }} whitespace-nowrap">
                                             {{ $label }}
                                         </span>
                                         @if($item->status === 'diajukan' && !$item->signature_pemohon)
@@ -135,19 +135,19 @@
                                             </div>
                                         @endif
                                     </td>
-                                    <td class="px-3 py-2 text-center">
-                                        <a href="{{ route('admin.transport.show', $item) }}" class="inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-semibold text-white hover:bg-emerald-700 transition whitespace-nowrap">
+                                    <td class="px-3 py-2.5 text-center">
+                                        <a href="{{ route('admin.transport.show', $item) }}" class="inline-flex items-center gap-1 rounded-lg px-2.5 py-1 text-[10px] font-semibold text-white hover:opacity-90 transition whitespace-nowrap" style="background:#007774; color:white;">
                                             <svg class="w-3 h-3" fill="none" stroke="white" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
-                                            <span class="text-white font-semibold">Detail</span>
+                                            Detail
                                         </a>
                                     </td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="px-3 py-8 text-center">
+                                    <td colspan="8" class="px-3 py-10 text-center">
                                         <svg class="w-10 h-10 text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                                         </svg>

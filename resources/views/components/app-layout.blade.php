@@ -26,7 +26,12 @@
                 </button>
                 @endif
                 {{-- Logo: admin=mobile only, user/driver=always --}}
-                <div class="flex items-center gap-2.5 min-w-0 {{ auth()->user()->isAdmin() ? 'lg:hidden' : '' }}">
+                @php
+                    $logoHref = auth()->user()->isDriver()
+                        ? route('driver.dashboard')
+                        : (auth()->user()->isAdmin() ? route('admin.transport.index') : route('home'));
+                @endphp
+                <a href="{{ $logoHref }}" class="flex items-center gap-2.5 min-w-0 {{ auth()->user()->isAdmin() ? 'lg:hidden' : '' }} hover:opacity-80 transition-opacity">
                     <div class="rounded-lg p-1.5">
                         <img src="{{ asset('images/logo.png') }}" alt="RS Azra" class="h-10 w-auto">
                     </div>
@@ -38,7 +43,7 @@
                             Sistem Pengajuan Transportasi
                         </div>
                     </div>
-                </div>
+                </a>
 
                 <div class="flex items-center gap-4 ml-auto">
                     @if (auth()->user()->isAdmin())

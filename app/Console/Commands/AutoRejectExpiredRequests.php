@@ -8,49 +8,49 @@ use Carbon\Carbon;
 
 class AutoRejectExpiredRequests extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
     protected $signature = 'transport:auto-reject-expired';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'Otomatis mengubah status pengajuan menjadi tidak disetujui jika sudah melewati waktu transportasi';
+    protected $description = 'Otomatis menolak pengajuan yang tidak diproses/dieksekusi dalam 24 jam';
 
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
         $now = Carbon::now();
-        
-        // Cari pengajuan yang masih berstatus 'diajukan' dan sudah melewati waktu transportasi
-        $expiredRequests = TransportRequest::where('status', 'diajukan')
-            ->where(function($query) use ($now) {
-                // Gabungkan tanggal dan jam untuk perbandingan yang akurat
-                $query->whereRaw("CONCAT(tanggal, ' ', jam) < ?", [$now->format('Y-m-d H:i:s')]);
-            })
+        $deadline = $now->copy()->subHours(24);
+        $count = 0;
+
+        // 1. Status "diajukan" yang sudah lebih dari 24 jam sejak dibuat tanpa diproses admin
+        $pendingExpired = TransportRequest::where('status', 'diajukan')
+            ->where('created_at', '<=', $deadline)
             ->get();
 
-        $count = 0;
-        foreach ($expiredRequests as $request) {
-            $request->update(['status' => 'tidak_disetujui']);
+        foreach ($pendingExpired as $request) {
+            $request->update([
+                'status'           => 'tidak_disetujui',
+                'rejection_reason' => 'Pengajuan otomatis ditolak karena tidak diproses oleh admin dalam 24 jam sejak pengajuan dibuat.',
+            ]);
             $count++;
-            
-            $requestDateTime = $request->tanggal->format('d/m/Y') . ' ' . $request->jam;
-            $userName = $request->user ? $request->user->full_name : $request->pemohon_nama;
-            $this->info("Pengajuan #{$request->id} dari {$userName} ({$requestDateTime}) tidak disetujui karena melewati waktu");
+            $this->info("Ditolak (tidak diproses) #{$request->nomor_pengajuan} — {$request->user?->full_name ?? $request->pemohon_nama}");
+        }
+
+        // 2. Status "diproses" (disetujui) yang tanggal+jam transportasi sudah lewat 24 jam tanpa dieksekusi
+        $approvedExpired = TransportRequest::where('status', 'diproses')
+            ->whereRaw("CONCAT(tanggal, ' ', jam) <= ?", [$deadline->format('Y-m-d H:i:s')])
+            ->get();
+
+        foreach ($approvedExpired as $request) {
+            $jadwal = $request->tanggal->format('d/m/Y') . ' ' . $request->jam;
+            $request->update([
+                'status'           => 'tidak_disetujui',
+                'rejection_reason' => "Pengajuan otomatis ditolak karena transportasi yang dijadwalkan pada {$jadwal} tidak dieksekusi dalam 24 jam setelah waktu keberangkatan.",
+            ]);
+            $count++;
+            $this->info("Ditolak (tidak dieksekusi) #{$request->nomor_pengajuan} — {$request->user?->full_name ?? $request->pemohon_nama} (jadwal: {$jadwal})");
         }
 
         if ($count > 0) {
-            $this->info("✓ Total {$count} pengajuan telah berubah menjadi tidak disetujui karena melewati waktu.");
+            $this->info("✓ Total {$count} pengajuan otomatis ditolak.");
         } else {
-            $this->info("✓ Tidak ada pengajuan yang melewati waktu.");
+            $this->info("✓ Tidak ada pengajuan yang perlu ditolak.");
         }
 
         return Command::SUCCESS;

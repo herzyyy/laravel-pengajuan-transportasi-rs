@@ -12,7 +12,7 @@
 
     {{-- ── GREETING ── --}}
     <div>
-        <h1 class="text-base font-bold text-slate-800">Halo, {{ auth()->user()->first_name }} 👋</h1>
+        <h1 class="text-base font-bold text-slate-800">Halo, {{ auth()->user()->full_name }} 👋</h1>
         <p class="text-xs text-slate-500 mt-0.5">Pilih jenis transportasi yang Anda butuhkan.</p>
     </div>
 
