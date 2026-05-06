@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Daftar Pengajuan — SIPETRANS">
     <div class="max-w-7xl mx-auto px-3 sm:px-4 pt-4 sm:pt-6 pb-4">
         <h1 class="text-lg sm:text-xl font-bold text-slate-800">
             Daftar Pengajuan Transportasi

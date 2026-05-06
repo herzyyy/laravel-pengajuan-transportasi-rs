@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Edit Pengguna — SIPETRANS">
     <div class="max-w-3xl mx-auto px-3 sm:px-4 pt-3 pb-4"
          x-data="{ editRole: '{{ old('role', $user->role) }}', editPriorityLevel: '{{ old('priority_level', $user->priority_level ?? 0) }}' }">
 

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Tambah Supir — SIPETRANS">
     <div class="max-w-2xl mx-auto px-3 sm:px-4 pt-3 pb-4">
 
         <div class="flex items-center gap-2 mb-3">

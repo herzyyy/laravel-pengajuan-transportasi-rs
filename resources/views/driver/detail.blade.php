@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Detail Tugas — SIPETRANS">
     <div class="max-w-2xl mx-auto px-3 pt-3 pb-6 space-y-3">
 
         <!-- Header -->
@@ -126,7 +126,7 @@
         @endif
 
         <!-- Info Perjalanan -->
-        @if($transportRequest->km_awal || $transportRequest->km_akhir || $transportRequest->jam_kedatangan)
+        @if($transportRequest->km_awal || $transportRequest->km_akhir || $transportRequest->jam_kedatangan || $transportRequest->biaya_tol)
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
             <div class="px-3 py-2 border-b border-slate-100 bg-slate-50">
                 <p class="text-[10px] font-semibold text-slate-600 uppercase tracking-wide">Data Perjalanan</p>
@@ -154,6 +154,12 @@
                 <div class="flex gap-2">
                     <dt class="w-28 text-slate-500 shrink-0">Jam Tiba</dt>
                     <dd class="font-medium text-slate-800">{{ $transportRequest->jam_kedatangan }}</dd>
+                </div>
+                @endif
+                @if($transportRequest->biaya_tol)
+                <div class="flex gap-2">
+                    <dt class="w-28 text-slate-500 shrink-0">Biaya Tol</dt>
+                    <dd class="font-semibold text-slate-800">Rp {{ number_format($transportRequest->biaya_tol, 0, ',', '.') }}</dd>
                 </div>
                 @endif
             </dl>

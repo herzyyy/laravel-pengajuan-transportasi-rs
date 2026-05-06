@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Riwayat Pengajuan — SIPETRANS">
     <div class="max-w-7xl mx-auto px-2 sm:px-3 md:px-4 pt-2 sm:pt-3 pb-4 sm:pb-6 space-y-3">
 
         <!-- Header -->

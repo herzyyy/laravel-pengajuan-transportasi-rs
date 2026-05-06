@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Tanda Tangan Digital — SIPETRANS">
     <div class="max-w-3xl mx-auto px-3 py-2">
         <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-3">
             <div class="text-center mb-2">

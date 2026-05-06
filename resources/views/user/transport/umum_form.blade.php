@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Pengajuan Umum — SIPETRANS">
     <div class="space-y-2">
         <!-- Header -->
         <div class="flex items-start justify-between gap-4">

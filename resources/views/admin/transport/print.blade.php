@@ -284,6 +284,9 @@
                         @if($transportRequest->jam_kedatangan)
                         <tr><td>Jam Kedatangan</td><td>:</td><td class="val">{{ $transportRequest->jam_kedatangan }} WIB</td></tr>
                         @endif
+                        @if($transportRequest->biaya_tol)
+                        <tr><td>Biaya Tol</td><td>:</td><td class="val">Rp {{ number_format($transportRequest->biaya_tol, 0, ',', '.') }}</td></tr>
+                        @endif
                     </table>
                 </div>
             </div>

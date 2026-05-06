@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Riwayat Tugas — SIPETRANS">
     <div class="max-w-5xl mx-auto px-3 pt-3 pb-6 space-y-3">
 
         <div class="flex items-center justify-between">

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Status Pengajuan — SIPETRANS">
 @php
     $statusCfg = match($item->status) {
         'diajukan'        => ['bg'=>'bg-amber-100',   'text'=>'text-amber-800',   'border'=>'border-amber-300',   'dot'=>'bg-amber-400',   'label'=>'Diajukan'],

@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Konfirmasi Tanda Tangan — SIPETRANS">
     <div class="max-w-md mx-auto px-3 py-4">
         <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
 

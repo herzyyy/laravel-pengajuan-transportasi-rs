@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Dashboard — SIPETRANS">
 <div class="max-w-2xl mx-auto px-3 pt-3 pb-6 space-y-3">
 
     {{-- ── HEADER ── --}}

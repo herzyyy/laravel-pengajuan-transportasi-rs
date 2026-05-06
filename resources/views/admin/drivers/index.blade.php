@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Manajemen Supir — SIPETRANS">
     <div class="max-w-7xl mx-auto px-3 sm:px-4 pt-4 pb-6"
          x-data="{
             showCreate: {{ $errors->any() && !session('edit_id') ? 'true' : 'false' }},

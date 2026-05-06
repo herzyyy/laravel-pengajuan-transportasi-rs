@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Detail Pengajuan — SIPETRANS">
 @php
     $colors = [
         'diajukan'        => ['bg' => 'bg-amber-100',   'text' => 'text-amber-800',   'border' => 'border-amber-300',   'dot' => 'bg-amber-400'],

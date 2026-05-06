@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Laporan — SIPETRANS">
     <div class="max-w-full mx-auto px-3 sm:px-4 pt-4 pb-4">
         <div class="flex items-center justify-between mb-3">
             <div>

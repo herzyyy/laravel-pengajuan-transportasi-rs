@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Sudah Ditandatangani — SIPETRANS">
     <div class="max-w-md mx-auto px-3 py-4">
         <div class="bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
             <div class="bg-slate-600 px-4 py-4 text-center">

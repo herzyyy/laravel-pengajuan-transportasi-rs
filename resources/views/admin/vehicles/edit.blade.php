@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-app-layout title="Edit Kendaraan — SIPETRANS">
     <div class="max-w-2xl mx-auto px-3 sm:px-4 pt-3 pb-4"
          x-data="{ editType: '{{ old('type', $vehicle->type) }}' }">
 
