@@ -43,17 +43,75 @@ class TransportRequestController extends Controller
     public function storeUmum(Request $request)
     {
         $sampaiSelesai = $request->boolean('sampai_selesai');
+        $isRecurring = $request->boolean('is_recurring');
 
         $data = $request->validate([
-            'tanggal' => ['required', 'date'],
+            'tanggal' => [$isRecurring ? 'nullable' : 'required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
-            'tanggal_sampai' => $sampaiSelesai ? ['nullable', 'date'] : ['required', 'date'],
+            'tanggal_sampai' => ($sampaiSelesai || $isRecurring) ? ['nullable', 'date'] : ['required', 'date'],
             'jam_sampai' => $sampaiSelesai ? ['nullable'] : ['required', 'date_format:H:i'],
             'prioritas' => ['required', 'in:segera,biasa'],
             'alamat_tujuan' => ['required', 'string', 'max:2000'],
             'keperluan' => ['required', 'string', 'max:255'],
             'keterangan' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        if ($isRecurring) {
+            $recurringData = $request->validate([
+                'recurring_hari' => ['required', 'array', 'min:1'],
+                'recurring_hari.*' => ['integer', 'min:1', 'max:7'],
+            ]);
+
+            $template = \App\Models\RecurringTransportTemplate::create([
+                'user_id' => $request->user()->id,
+                'jenis' => 'umum',
+                'keperluan' => $data['keperluan'],
+                'prioritas' => $data['prioritas'],
+                'pemohon_nama' => $request->user()->full_name,
+                'pemohon_unit' => $request->user()->unit_kerja,
+                'jumlah_penumpang' => null,
+                'jam' => $data['jam'],
+                'jam_sampai' => $data['jam_sampai'] ?? null,
+                'hari' => $recurringData['recurring_hari'],
+                'start_date' => now()->format('Y-m-d'),
+                'end_date' => '2099-12-31',
+                'alamat_tujuan' => $data['alamat_tujuan'],
+                'keterangan' => $data['keterangan'] ?? null,
+                'is_active' => true,
+            ]);
+
+            $today = \Carbon\Carbon::today();
+            $dayOfWeek = (int) $today->format('N');
+            $currentTime = \Carbon\Carbon::now()->format('H:i');
+            
+            if (in_array($dayOfWeek, $recurringData['recurring_hari']) && substr($data['jam'], 0, 5) > $currentTime) {
+                \App\Models\TransportRequest::create([
+                    'user_id' => $template->user_id,
+                    'jenis' => $template->jenis,
+                    'nomor_pengajuan' => \App\Models\TransportRequest::generateNomor(),
+                    'tanggal' => $today->format('Y-m-d'),
+                    'jam' => substr($template->jam, 0, 5),
+                    'tanggal_sampai' => $today->format('Y-m-d'),
+                    'jam_sampai' => $template->jam_sampai ? substr($template->jam_sampai, 0, 5) : null,
+                    'keperluan' => $template->keperluan,
+                    'prioritas' => $template->prioritas,
+                    'pemohon_nama' => $template->pemohon_nama,
+                    'pemohon_unit' => $template->pemohon_unit,
+                    'jumlah_penumpang' => $template->jumlah_penumpang,
+                    'alamat_asal' => $template->alamat_asal,
+                    'alamat_tujuan' => $template->alamat_tujuan,
+                    'keterangan' => $template->keterangan,
+                    'pasien_nama' => $template->pasien_nama,
+                    'pasien_no_rm' => $template->pasien_no_rm,
+                    'kontak' => $request->user()->phone ?? '',
+                    'signature_pemohon' => \Illuminate\Support\Str::random(32),
+                    'signature_pemohon_at' => now(),
+                ]);
+            }
+
+            return redirect()->route('pengajuan.index')
+                ->with('recurring_success', 'Template pengajuan berulang berhasil dibuat dan akan dijalankan secara otomatis.');
+        }
 
         // Cegah double submission: cek apakah ada pengajuan identik dalam 10 detik terakhir
         $duplicate = TransportRequest::where('user_id', $request->user()->id)
@@ -175,20 +233,92 @@ class TransportRequestController extends Controller
     public function storeAmbulance(Request $request)
     {
         $sampaiSelesai = $request->boolean('sampai_selesai');
+        $isRecurring = $request->boolean('is_recurring');
 
         $data = $request->validate([
             'purpose' => ['required', 'in:antar,jemput'],
             'pasien_nama' => ['required', 'string', 'max:255'],
             'pasien_no_rm' => ['nullable', 'string', 'max:50'],
             'alamat_pasien' => ['required', 'string', 'max:2000'],
-            'tanggal' => ['required', 'date'],
+            'tanggal' => [$isRecurring ? 'nullable' : 'required', 'date'],
             'jam' => ['required', 'date_format:H:i'],
-            'tanggal_sampai' => $sampaiSelesai ? ['nullable', 'date'] : ['required', 'date'],
+            'tanggal_sampai' => ($sampaiSelesai || $isRecurring) ? ['nullable', 'date'] : ['required', 'date'],
             'jam_sampai' => $sampaiSelesai ? ['nullable'] : ['required', 'date_format:H:i'],
             'prioritas' => ['required', 'in:segera,biasa'],
             'alamat_tujuan' => ['nullable', 'string', 'max:2000'],
             'alamat_asal' => ['nullable', 'string', 'max:2000'],
         ]);
+
+        $purpose = $data['purpose'];
+        if ($purpose === 'antar' && empty($data['alamat_tujuan'])) {
+            throw ValidationException::withMessages(['alamat_tujuan' => 'Alamat tujuan harus diisi.']);
+        }
+        if ($purpose === 'jemput' && empty($data['alamat_asal'])) {
+            throw ValidationException::withMessages(['alamat_asal' => 'Alamat asal harus diisi.']);
+        }
+
+        $alamatAsal = $purpose === 'antar' ? 'RS' : ($data['alamat_asal'] ?? 'RS');
+        $alamatTujuan = $purpose === 'antar' ? ($data['alamat_tujuan'] ?? 'RS') : 'RS';
+
+        if ($isRecurring) {
+            $recurringData = $request->validate([
+                'recurring_hari' => ['required', 'array', 'min:1'],
+                'recurring_hari.*' => ['integer', 'min:1', 'max:7'],
+            ]);
+
+            $template = \App\Models\RecurringTransportTemplate::create([
+                'user_id' => $request->user()->id,
+                'jenis' => 'ambulance',
+                'keperluan' => $purpose,
+                'prioritas' => $data['prioritas'],
+                'pemohon_nama' => $request->user()->full_name,
+                'pemohon_unit' => $request->user()->unit_kerja,
+                'jumlah_penumpang' => null,
+                'jam' => $data['jam'],
+                'jam_sampai' => $data['jam_sampai'] ?? null,
+                'hari' => $recurringData['recurring_hari'],
+                'start_date' => now()->format('Y-m-d'),
+                'end_date' => '2099-12-31',
+                'alamat_asal' => $alamatAsal,
+                'alamat_tujuan' => $alamatTujuan,
+                'keterangan' => null,
+                'pasien_nama' => $data['pasien_nama'],
+                'pasien_no_rm' => $data['pasien_no_rm'] ?? null,
+                'is_active' => true,
+            ]);
+
+            $today = \Carbon\Carbon::today();
+            $dayOfWeek = (int) $today->format('N');
+            $currentTime = \Carbon\Carbon::now()->format('H:i');
+            
+            if (in_array($dayOfWeek, $recurringData['recurring_hari']) && substr($data['jam'], 0, 5) > $currentTime) {
+                \App\Models\TransportRequest::create([
+                    'user_id' => $template->user_id,
+                    'jenis' => $template->jenis,
+                    'nomor_pengajuan' => \App\Models\TransportRequest::generateNomor(),
+                    'tanggal' => $today->format('Y-m-d'),
+                    'jam' => substr($template->jam, 0, 5),
+                    'tanggal_sampai' => $today->format('Y-m-d'),
+                    'jam_sampai' => $template->jam_sampai ? substr($template->jam_sampai, 0, 5) : null,
+                    'keperluan' => $template->keperluan,
+                    'prioritas' => $template->prioritas,
+                    'pemohon_nama' => $template->pemohon_nama,
+                    'pemohon_unit' => $template->pemohon_unit,
+                    'jumlah_penumpang' => $template->jumlah_penumpang,
+                    'alamat_asal' => $template->alamat_asal,
+                    'alamat_tujuan' => $template->alamat_tujuan,
+                    'keterangan' => $template->keterangan,
+                    'pasien_nama' => $template->pasien_nama,
+                    'pasien_no_rm' => $template->pasien_no_rm,
+                    'kontak' => $request->user()->phone ?? '',
+                    'signature_pemohon' => \Illuminate\Support\Str::random(32),
+                    'signature_pemohon_at' => now(),
+                ]);
+            }
+
+            return redirect()->route('pengajuan.index')
+                ->with('recurring_success', 'Template pengajuan berulang berhasil dibuat dan akan dijalankan secara otomatis.');
+        }
 
         // Cegah double submission: cek apakah ada pengajuan identik dalam 10 detik terakhir
         $duplicate = TransportRequest::where('user_id', $request->user()->id)
@@ -209,14 +339,6 @@ class TransportRequestController extends Controller
             $data['jam_sampai'] = null;
         }
 
-        $purpose = $data['purpose'];
-        if ($purpose === 'antar' && empty($data['alamat_tujuan'])) {
-            throw ValidationException::withMessages(['alamat_tujuan' => 'Alamat tujuan harus diisi.']);
-        }
-        if ($purpose === 'jemput' && empty($data['alamat_asal'])) {
-            throw ValidationException::withMessages(['alamat_asal' => 'Alamat asal harus diisi.']);
-        }
-
         $data['kontak'] = '';
 
         if (!$sampaiSelesai) {
@@ -227,9 +349,6 @@ class TransportRequestController extends Controller
                 $data['tanggal_sampai'] = Carbon::parse($data['tanggal_sampai'])->addDay()->toDateString();
             }
         }
-
-        $alamatAsal = $purpose === 'antar' ? 'RS' : ($data['alamat_asal'] ?? 'RS');
-        $alamatTujuan = $purpose === 'antar' ? ($data['alamat_tujuan'] ?? 'RS') : 'RS';
 
         $transportRequest = TransportRequest::create([
             'user_id' => $request->user()->id,

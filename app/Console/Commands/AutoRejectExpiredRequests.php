@@ -29,7 +29,8 @@ class AutoRejectExpiredRequests extends Command
                 'rejection_reason' => 'Pengajuan otomatis ditolak karena tidak diproses oleh admin dalam 24 jam sejak pengajuan dibuat.',
             ]);
             $count++;
-            $this->info("Ditolak (tidak diproses) #{$request->nomor_pengajuan} — {$request->user?->full_name ?? $request->pemohon_nama}");
+            $nama = $request->user?->full_name ?? $request->pemohon_nama;
+            $this->info("Ditolak (tidak diproses) #{$request->nomor_pengajuan} — {$nama}");
         }
 
         // 2. Status "diproses" (disetujui) yang tanggal+jam transportasi sudah lewat 24 jam tanpa dieksekusi
@@ -44,7 +45,8 @@ class AutoRejectExpiredRequests extends Command
                 'rejection_reason' => "Pengajuan otomatis ditolak karena transportasi yang dijadwalkan pada {$jadwal} tidak dieksekusi dalam 24 jam setelah waktu keberangkatan.",
             ]);
             $count++;
-            $this->info("Ditolak (tidak dieksekusi) #{$request->nomor_pengajuan} — {$request->user?->full_name ?? $request->pemohon_nama} (jadwal: {$jadwal})");
+            $nama = $request->user?->full_name ?? $request->pemohon_nama;
+            $this->info("Ditolak (tidak dieksekusi) #{$request->nomor_pengajuan} — {$nama} (jadwal: {$jadwal})");
         }
 
         if ($count > 0) {

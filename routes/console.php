@@ -10,3 +10,6 @@ Artisan::command('inspire', function () {
 
 // Jadwalkan command untuk auto-reject expired requests setiap jam
 Schedule::command('transport:auto-reject-expired')->hourly();
+
+// Jadwalkan pembentukan pengajuan berulang setiap jam 12 malam
+Schedule::command('app:generate-recurring-requests')->daily();

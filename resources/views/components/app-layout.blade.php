@@ -511,6 +511,18 @@
                             </span>
                             <span class="font-medium">Supir</span>
                         </a>
+
+                        <a href="{{ route('admin.recurring-templates.index') }}"
+                           @click="sidebarOpen = false"
+                           class="sidebar-link group flex items-center gap-2.5 px-3 py-2 text-sm rounded-lg transition-all duration-150
+                                  {{ request()->routeIs('admin.recurring-templates.*') ? 'sidebar-link-active' : '' }}">
+                            <span class="sidebar-icon inline-flex w-7 h-7 items-center justify-center rounded-md transition-all duration-150">
+                                <svg viewBox="0 0 24 24" class="w-4 h-4">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" class="fill-none"/>
+                                </svg>
+                            </span>
+                            <span class="font-medium">Pengajuan Berulang</span>
+                        </a>
                     @elseif(auth()->user()->isDriver())
                         {{-- Sidebar untuk Supir --}}
                         <a href="{{ route('driver.dashboard') }}"

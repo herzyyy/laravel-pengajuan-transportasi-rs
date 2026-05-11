@@ -53,23 +53,33 @@
                 </div>
 
                 <!-- Waktu Penggunaan (4 kolom dalam 1 baris) -->
-                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2" x-data="{ sampaiSelesai: {{ old('sampai_selesai') ? 'true' : 'false' }} }">
-                    <div class="flex items-center justify-between mb-1.5">
-                        <div class="text-xs font-semibold text-slate-900">Waktu Penggunaan</div>
-                        <label class="flex items-center gap-1.5 cursor-pointer select-none">
-                            <input type="checkbox" name="sampai_selesai" value="1" x-model="sampaiSelesai"
-                                class="w-3.5 h-3.5 rounded text-teal-600 cursor-pointer"
-                                {{ old('sampai_selesai') ? 'checked' : '' }}>
-                            <span class="text-[10px] font-semibold text-slate-700">Sampai Selesai</span>
-                            <span class="text-[9px] text-slate-500">(seharian penuh)</span>
-                        </label>
+                <div class="bg-slate-50 border border-slate-200 rounded-lg p-2" x-data="{ sampaiSelesai: {{ old('sampai_selesai') ? 'true' : 'false' }}, isRecurring: {{ old('is_recurring') ? 'true' : 'false' }} }">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-1.5 gap-2">
+                        <div class="text-xs font-semibold text-slate-900">Waktu Penggunaan & Pengulangan</div>
+                        <div class="flex items-center gap-4">
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                                <input type="checkbox" name="is_recurring" value="1" x-model="isRecurring"
+                                    class="w-3.5 h-3.5 rounded text-indigo-600 cursor-pointer"
+                                    @change="if($event.target.checked && !confirm('Koordinasikan dengan pengelola transportasi jika ingin membuat pengajuan berulang. Lanjutkan?')) { isRecurring = false; setTimeout(() => $event.target.dispatchEvent(new Event('change')), 10); }"
+                                    {{ old('is_recurring') ? 'checked' : '' }}>
+                                <span class="text-[10px] font-semibold text-indigo-700">Pengajuan Berulang</span>
+                            </label>
+                            
+                            <label class="flex items-center gap-1.5 cursor-pointer select-none">
+                                <input type="checkbox" name="sampai_selesai" value="1" x-model="sampaiSelesai"
+                                    class="w-3.5 h-3.5 rounded text-teal-600 cursor-pointer"
+                                    {{ old('sampai_selesai') ? 'checked' : '' }}>
+                                <span class="text-[10px] font-semibold text-slate-700">Sampai Selesai</span>
+                                <span class="text-[9px] text-slate-500">(seharian penuh)</span>
+                            </label>
+                        </div>
                     </div>
-                    <div class="grid gap-2" :class="sampaiSelesai ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'">
-                        <div>
+                    <div class="grid gap-2 grid-cols-2" :class="sampaiSelesai ? 'sm:grid-cols-2' : (isRecurring ? 'sm:grid-cols-2' : 'sm:grid-cols-4')">
+                        <div x-show="!isRecurring">
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Dari <span class="text-red-500">*</span></label>
                             <input type="text" id="tanggal_display" placeholder="dd/mm/yyyy" autocomplete="off"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300 cursor-pointer">
-                            <input type="hidden" name="tanggal" id="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}" required>
+                            <input type="hidden" name="tanggal" id="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}">
                         </div>
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Jam Dari <span class="text-red-500">*</span></label>
@@ -77,7 +87,7 @@
                                 pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300">
                         </div>
-                        <div x-show="!sampaiSelesai">
+                        <div x-show="!sampaiSelesai && !isRecurring">
                             <label class="block text-[10px] font-semibold text-slate-600 mb-1">Tanggal Sampai <span class="text-red-500">*</span></label>
                             <input type="text" id="tanggal_sampai_display" placeholder="dd/mm/yyyy" autocomplete="off"
                                 class="w-full rounded-lg border border-slate-300 px-2 py-1 text-xs focus:ring-2 focus:ring-slate-300 cursor-pointer">
@@ -99,9 +109,45 @@
                         Waktu selesai akan dicatat otomatis saat kendaraan kembali
                     </div>
 
+                    <!-- Form Pengulangan -->
+                    <div x-show="isRecurring" class="mt-3 pt-3 border-t border-slate-200 space-y-3" style="display: none;">
+                        <h4 class="text-[10px] font-semibold text-indigo-800 flex items-center gap-1.5">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                            </svg>
+                            Pengaturan Pengajuan Berulang
+                        </h4>
+                        
+                        <div class="mb-3">
+                            <label class="block text-[10px] font-semibold text-slate-600 mb-1.5">Pilih Hari <span class="text-red-500">*</span></label>
+                            <div class="flex flex-wrap gap-2">
+                                @php
+                                    $days = [
+                                        1 => 'Senin',
+                                        2 => 'Selasa',
+                                        3 => 'Rabu',
+                                        4 => 'Kamis',
+                                        5 => 'Jumat',
+                                        6 => 'Sabtu',
+                                        7 => 'Minggu'
+                                    ];
+                                    $oldDays = old('recurring_hari', []);
+                                @endphp
+                                @foreach($days as $num => $day)
+                                    <label class="flex items-center gap-1.5 cursor-pointer bg-white border border-slate-200 px-2 py-1 rounded-md hover:bg-slate-50">
+                                        <input type="checkbox" name="recurring_hari[]" value="{{ $num }}" 
+                                            class="w-3 h-3 rounded text-indigo-600 cursor-pointer"
+                                            {{ in_array($num, $oldDays) ? 'checked' : '' }}>
+                                        <span class="text-[10px] text-slate-700 font-medium">{{ $day }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Tombol cek ketersediaan -->
                     <div class="mt-2 flex items-center gap-2">
-                        <button id="checkAvailabilityBtn" type="button"
+                        <button id="checkAvailabilityBtn" type="button" x-show="!isRecurring"
                             class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white px-3 py-1.5 text-[10px] font-semibold transition">
                             <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
@@ -215,9 +261,16 @@
             }
 
             function resetCheck() {
-                submitBtn.disabled = true;
-                statusEl.textContent = 'Cek ketersediaan diperlukan';
-                statusEl.className = 'text-[10px] font-semibold text-amber-600';
+                const cbRecurring = document.querySelector('input[name="is_recurring"]');
+                if (cbRecurring && cbRecurring.checked) {
+                    submitBtn.disabled = false;
+                    statusEl.textContent = 'Jadwal berulang tidak memerlukan cek ketersediaan';
+                    statusEl.className = 'text-[10px] font-semibold text-indigo-600';
+                } else {
+                    submitBtn.disabled = true;
+                    statusEl.textContent = 'Cek ketersediaan diperlukan';
+                    statusEl.className = 'text-[10px] font-semibold text-amber-600';
+                }
             }
 
             const form = btn.closest('form');
@@ -227,6 +280,9 @@
             });
             const cbSampaiSelesai = form.querySelector('input[name="sampai_selesai"]');
             if (cbSampaiSelesai) cbSampaiSelesai.addEventListener('change', resetCheck);
+            
+            const cbRecurring = form.querySelector('input[name="is_recurring"]');
+            if (cbRecurring) cbRecurring.addEventListener('change', resetCheck);
 
             btn.addEventListener('click', async function() {
                 const tanggal = form.querySelector('input[name="tanggal"]').value;
@@ -340,8 +396,11 @@
             function enforceMinJam(jamInput, tanggalHiddenId) {
                 const tanggalHidden = document.getElementById(tanggalHiddenId);
                 jamInput.addEventListener('blur', function() {
+                    const cbRecurring = document.querySelector('input[name="is_recurring"]');
+                    const isRec = cbRecurring && cbRecurring.checked;
+                    
                     const minJam = getMinJam(tanggalHidden ? tanggalHidden.value : '');
-                    if (minJam && jamInput.value && jamInput.value < minJam) {
+                    if (!isRec && minJam && jamInput.value && jamInput.value < minJam) {
                         showJamError(jamInput, 'Jam tidak boleh kurang dari jam sekarang');
                         return;
                     } else {
@@ -391,6 +450,12 @@
                 const hasError = document.querySelectorAll('.jam-error-msg').length > 0;
                 const checkBtn = document.getElementById('checkAvailabilityBtn');
                 if (checkBtn) checkBtn.disabled = hasError;
+                
+                const cbRecurring = document.querySelector('input[name="is_recurring"]');
+                if (cbRecurring && cbRecurring.checked) {
+                    const submitBtn = document.getElementById('submitBtn');
+                    if (submitBtn) submitBtn.disabled = hasError;
+                }
             }
 
             function setupTimeInput(el) {

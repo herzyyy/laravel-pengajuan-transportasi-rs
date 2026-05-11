@@ -377,4 +377,80 @@
         </div>
 
     </div>
+
+    {{-- ✅ Modal Popup Berhasil Buat Pengajuan Berulang --}}
+    @if(session('recurring_success'))
+    <div id="recurringSuccessModal"
+         class="fixed inset-0 z-[9999] flex items-center justify-center p-4"
+         style="background: rgba(0,0,0,0.45); backdrop-filter: blur(2px);">
+        <div id="recurringModalBox"
+             class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-auto overflow-hidden"
+             style="animation: modalPop 0.35s cubic-bezier(0.34,1.56,0.64,1) both;">
+
+            {{-- Top accent bar --}}
+            <div class="h-1.5 w-full" style="background: linear-gradient(to right, #007774, #81BD41);"></div>
+
+            <div class="px-6 py-7 text-center">
+                {{-- Ikon centang animasi --}}
+                <div class="mx-auto mb-4 flex items-center justify-center w-16 h-16 rounded-full"
+                     style="background: linear-gradient(135deg, #e6f7f6 0%, #f0fae8 100%); border: 3px solid #007774;">
+                    <svg class="w-9 h-9" viewBox="0 0 24 24" fill="none"
+                         stroke="#007774" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
+                         style="animation: checkDraw 0.5s 0.2s ease both;">
+                        <path d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                    </svg>
+                </div>
+
+                {{-- Judul --}}
+                <h2 class="text-base font-bold text-slate-900 mb-1">Pengajuan Berulang Dibuat!</h2>
+
+                {{-- Pesan --}}
+                <p class="text-xs text-slate-500 leading-relaxed mb-1">
+                    {{ session('recurring_success') }}
+                </p>
+                <p class="text-[10px] text-indigo-600 font-semibold bg-indigo-50 border border-indigo-100 rounded-lg px-3 py-2 mt-3">
+                    🔁 Pengajuan akan dibuat otomatis setiap hari yang dipilih
+                </p>
+            </div>
+
+            {{-- Tombol tutup --}}
+            <div class="px-6 pb-6">
+                <button onclick="closeRecurringModal()"
+                        class="w-full py-2.5 rounded-xl text-sm font-semibold text-white transition hover:opacity-90 active:scale-95"
+                        style="background: linear-gradient(to right, #007774, #009e9a);">
+                    Mengerti, Oke!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        @keyframes modalPop {
+            0%   { opacity: 0; transform: scale(0.7) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+
+    <script>
+        function closeRecurringModal() {
+            const modal = document.getElementById('recurringSuccessModal');
+            const box   = document.getElementById('recurringModalBox');
+            if (box) {
+                box.style.transition = 'opacity 0.2s, transform 0.2s';
+                box.style.opacity = '0';
+                box.style.transform = 'scale(0.85)';
+            }
+            setTimeout(() => { if (modal) modal.remove(); }, 220);
+        }
+
+        // Tutup jika klik di luar modal box
+        document.getElementById('recurringSuccessModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeRecurringModal();
+        });
+
+        // Tutup otomatis setelah 8 detik
+        setTimeout(closeRecurringModal, 8000);
+    </script>
+    @endif
+
 </x-app-layout>
