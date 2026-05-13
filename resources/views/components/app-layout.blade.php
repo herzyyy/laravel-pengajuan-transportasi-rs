@@ -308,73 +308,99 @@
                         </div>
                     @endif
                     
-                    @if(auth()->user()->isDriver())
-                        {{-- Tombol Riwayat untuk Supir --}}
-                        <a href="{{ route('driver.history') }}"
-                           class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition"
-                           style="color: white; background: #007774; border: 1px solid #007774;"
-                           onmouseover="this.style.background='white'; this.style.color='#007774';"
-                           onmouseout="this.style.background='#007774'; this.style.color='white';">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                                <path d="M6 7h12M6 12h12M6 17h8"/>
-                            </svg>
-                            Riwayat
-                        </a>
-
-                        {{-- Info User Supir --}}
-                        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background: rgba(0,119,116,0.05); border: 1px solid rgba(0,119,116,0.1);">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style="background-color: #007774;">
-                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    @if(!auth()->user()->isAdmin())
+                        {{-- User Dropdown (User & Supir) --}}
+                        <div class="relative" x-data="{ open: false }">
+                            <button @click="open = !open"
+                                    class="flex items-center justify-center w-9 h-9 rounded-full transition-all duration-200 hover:scale-105"
+                                    style="background: #007774; border: 2px solid #007774;"
+                                    onmouseover="this.style.background='white'; this.style.color='#007774'; this.querySelector('svg').style.color='#007774';"
+                                    onmouseout="this.style.background='#007774'; this.querySelector('svg').style.color='white';">
+                                <svg class="w-5 h-5" style="color: white;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
-                            </div>
-                            <div class="leading-tight">
-                                <div class="text-xs font-semibold text-slate-800 truncate max-w-[120px]">{{ auth()->user()->full_name }}</div>
-                                <div class="text-[10px]" style="color: #007774;">Supir</div>
+                            </button>
+
+                            <div x-show="open"
+                                 @click.away="open = false"
+                                 x-transition:enter="transition ease-out duration-200"
+                                 x-transition:enter-start="opacity-0 scale-95"
+                                 x-transition:enter-end="opacity-100 scale-100"
+                                 x-transition:leave="transition ease-in duration-150"
+                                 x-transition:leave-start="opacity-100 scale-100"
+                                 x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 z-50 overflow-hidden"
+                                 style="display: none;">
+
+                                {{-- Info User --}}
+                                <div class="px-4 py-3 border-b border-slate-100" style="background: rgba(0,119,116,0.04);">
+                                    <div class="flex items-center gap-2.5">
+                                        <div class="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style="background-color: #007774;">
+                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                            </svg>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <div class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
+                                            @if(auth()->user()->isDriver())
+                                                <div class="text-xs font-medium" style="color: #007774;">Supir</div>
+                                            @else
+                                                <div class="text-xs text-slate-500 truncate">{{ auth()->user()->unit_kerja ?? auth()->user()->email }}</div>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- Menu --}}
+                                <div class="p-2 space-y-0.5">
+                                    @if(auth()->user()->isDriver())
+                                        <a href="{{ route('driver.history') }}"
+                                           class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M6 12h12M6 17h8"/>
+                                            </svg>
+                                            Riwayat
+                                        </a>
+                                    @else
+                                        <a href="{{ route('pengajuan.index') }}"
+                                           class="flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 rounded-lg transition">
+                                            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M6 12h12M6 17h8"/>
+                                            </svg>
+                                            Riwayat
+                                        </a>
+                                    @endif
+
+                                    <div class="border-t border-slate-100 my-1"></div>
+
+                                    <form method="POST" action="{{ route('logout') }}">
+                                        @csrf
+                                        <button type="submit"
+                                            class="w-full flex items-center gap-2.5 px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                            </svg>
+                                            Keluar
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     @endif
 
-                    @if(!auth()->user()->isAdmin() && !auth()->user()->isDriver())
-                        {{-- Tombol Riwayat untuk User biasa --}}
-                        <a href="{{ route('pengajuan.index') }}"
-                           class="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-lg transition"
-                           style="color: white; background: #007774; border: 1px solid #007774;"
-                           onmouseover="this.style.background='white'; this.style.color='#007774';"
-                           onmouseout="this.style.background='#007774'; this.style.color='white';">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round">
-                                <path d="M6 7h12M6 12h12M6 17h8"/>
-                            </svg>
-                            Riwayat
-                        </a>
-
-                        {{-- Info User biasa --}}
-                        <div class="hidden sm:flex items-center gap-2 px-2.5 py-1.5 rounded-lg" style="background: rgba(0,119,116,0.05); border: 1px solid rgba(0,119,116,0.1);">
-                            <div class="w-6 h-6 rounded-full flex items-center justify-center shrink-0" style="background-color: #007774;">
-                                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                    @if(auth()->user()->isAdmin())
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit"
+                                class="flex header-btn items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition"
+                                style="color: #007774; border: 1px solid rgba(0,119,116,0.3); background: rgba(0,119,116,0.06);">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
                                 </svg>
-                            </div>
-                            <div class="leading-tight">
-                                <div class="text-xs font-semibold text-slate-800 truncate max-w-[120px]">{{ auth()->user()->full_name }}</div>
-                                @if(auth()->user()->unit_kerja)
-                                    <div class="text-[10px] text-slate-400 truncate max-w-[120px]">{{ auth()->user()->unit_kerja }}</div>
-                                @endif
-                            </div>
-                        </div>
+                                <span class="hidden sm:inline">Keluar</span>
+                            </button>
+                        </form>
                     @endif
-
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit"
-                            class="{{ !auth()->user()->isAdmin() && !auth()->user()->isDriver() ? 'hidden sm:flex' : (auth()->user()->isDriver() ? 'hidden sm:flex' : 'flex') }} header-btn items-center gap-2 px-3 py-1.5 text-xs font-medium rounded-lg transition"
-                            style="color: #007774; border: 1px solid rgba(0,119,116,0.3); background: rgba(0,119,116,0.06);">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
-                            </svg>
-                            <span class="hidden sm:inline">Keluar</span>
-                        </button>
-                    </form>
                 </div>
             </div>
         </header>
@@ -580,7 +606,7 @@
             @endif
 
             {{-- Main Content --}}
-            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 {{ auth()->user()->isAdmin() ? 'lg:pl-64' : '' }} {{ !auth()->user()->isAdmin() ? 'pb-20 lg:pb-6' : '' }}">
+            <main class="flex-1 min-w-0 px-3 sm:px-6 py-4 sm:py-6 bg-slate-50 {{ auth()->user()->isAdmin() ? 'lg:pl-64' : '' }}">
                 <div class="max-w-7xl mx-auto">
 
                     @if (session('status'))
@@ -600,149 +626,6 @@
 
         </div>
 
-    {{-- Bottom Navigation Bar — untuk user biasa & driver di mobile --}}
-    @if(!auth()->user()->isAdmin())
-    <nav class="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-white border-t border-slate-200 shadow-[0_-2px_10px_rgba(0,0,0,0.08)]">
-        <div class="flex items-stretch h-16">
-
-            @if(auth()->user()->isDriver())
-                {{-- Home --}}
-                <a href="{{ route('driver.dashboard') }}"
-                   class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative"
-                   style="{{ request()->routeIs('driver.dashboard') ? 'color: #007774;' : 'color: #94a3b8;' }}">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-                        <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"/>
-                    </svg>
-                    <span class="text-[10px] font-semibold">Home</span>
-                    @if(request()->routeIs('driver.dashboard'))
-                        <span class="absolute bottom-0 w-8 h-0.5 rounded-t-full" style="background-color: #007774;"></span>
-                    @endif
-                </a>
-
-                {{-- Riwayat --}}
-                <a href="{{ route('driver.history') }}"
-                   class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative"
-                   style="{{ request()->routeIs('driver.history') ? 'color: #007774;' : 'color: #94a3b8;' }}">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M6 7h12M6 12h12M6 17h8"/>
-                    </svg>
-                    <span class="text-[10px] font-semibold">Riwayat</span>
-                    @if(request()->routeIs('driver.history'))
-                        <span class="absolute bottom-0 w-8 h-0.5 rounded-t-full" style="background-color: #007774;"></span>
-                    @endif
-                </a>
-
-                {{-- Profil --}}
-                <div class="flex-1 flex flex-col items-center justify-center gap-0.5 relative"
-                     x-data="{ open: false }">
-                    <button @click="open = !open"
-                            class="flex flex-col items-center gap-0.5 w-full transition-colors"
-                            style="color: #94a3b8;">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="4"/>
-                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
-                        </svg>
-                        <span class="text-[10px] font-semibold">Profil</span>
-                    </button>
-                    <div x-show="open"
-                         @click.away="open = false"
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 translate-y-2"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 translate-y-2"
-                         class="absolute bottom-full mb-2 right-0 w-56 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 overflow-hidden"
-                         style="display: none;">
-                        <div class="px-4 py-3 border-b" style="background: rgba(0,119,116,0.05); border-color: rgba(0,119,116,0.1);">
-                            <div class="text-xs font-semibold text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
-                            <div class="text-[10px] mt-0.5" style="color: #007774;">Supir</div>
-                        </div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                    class="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                </svg>
-                                Keluar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-
-            @else
-                {{-- Pengajuan --}}
-                <a href="{{ route('dashboard') }}"
-                   class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative"
-                   style="{{ request()->routeIs('dashboard') || request()->routeIs('pengajuan.choose') || request()->routeIs('pengajuan.umum*') || request()->routeIs('pengajuan.ambulance*') ? 'color: #007774;' : 'color: #94a3b8;' }}">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round">
-                        <path d="M4 11.5 12 5l8 6.5V20H4v-8.5Z"/>
-                    </svg>
-                    <span class="text-[10px] font-semibold">Pengajuan</span>
-                    @if(request()->routeIs('dashboard') || request()->routeIs('pengajuan.choose') || request()->routeIs('pengajuan.umum*') || request()->routeIs('pengajuan.ambulance*'))
-                        <span class="absolute bottom-0 w-8 h-0.5 rounded-t-full" style="background-color: #007774;"></span>
-                    @endif
-                </a>
-
-                {{-- Riwayat --}}
-                <a href="{{ route('pengajuan.index') }}"
-                   class="flex-1 flex flex-col items-center justify-center gap-0.5 transition-colors relative"
-                   style="{{ request()->routeIs('pengajuan.index') || request()->routeIs('pengajuan.show') || request()->routeIs('pengajuan.success') ? 'color: #007774;' : 'color: #94a3b8;' }}">
-                    <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <path d="M6 7h12M6 12h12M6 17h8"/>
-                    </svg>
-                    <span class="text-[10px] font-semibold">Riwayat</span>
-                    @if(request()->routeIs('pengajuan.index') || request()->routeIs('pengajuan.show') || request()->routeIs('pengajuan.success'))
-                        <span class="absolute bottom-0 w-8 h-0.5 rounded-t-full" style="background-color: #007774;"></span>
-                    @endif
-                </a>
-
-                {{-- Profil --}}
-                <div class="flex-1 flex flex-col items-center justify-center gap-0.5 relative"
-                     x-data="{ open: false }">
-                    <button @click="open = !open"
-                            class="flex flex-col items-center gap-0.5 w-full transition-colors"
-                            style="{{ request()->routeIs('profile.*') ? 'color: #007774;' : 'color: #94a3b8;' }}">
-                        <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="12" cy="8" r="4"/>
-                            <path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
-                        </svg>
-                        <span class="text-[10px] font-semibold">Profil</span>
-                    </button>
-                    <div x-show="open"
-                         @click.away="open = false"
-                         x-transition:enter="transition ease-out duration-150"
-                         x-transition:enter-start="opacity-0 translate-y-2"
-                         x-transition:enter-end="opacity-100 translate-y-0"
-                         x-transition:leave="transition ease-in duration-100"
-                         x-transition:leave-start="opacity-100 translate-y-0"
-                         x-transition:leave-end="opacity-0 translate-y-2"
-                         class="absolute bottom-full mb-2 right-0 w-56 bg-white rounded-xl shadow-xl ring-1 ring-slate-200 overflow-hidden"
-                         style="display: none;">
-                        <div class="px-4 py-3 border-b" style="background: rgba(0,119,116,0.05); border-color: rgba(0,119,116,0.1);">
-                            <div class="text-xs font-semibold text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
-                            @if(auth()->user()->unit_kerja)
-                            <div class="text-[10px] text-slate-500 truncate mt-0.5">{{ auth()->user()->unit_kerja }}</div>
-                            @endif
-                        </div>
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <button type="submit"
-                                    class="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-600 hover:bg-red-50 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
-                                </svg>
-                                Keluar
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endif
-
-        </div>
-    </nav>
-    @endif
 
     </div>
 </body>

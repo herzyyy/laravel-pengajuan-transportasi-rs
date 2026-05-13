@@ -81,7 +81,12 @@ class TransportRequestController extends Controller
             ->orderByRaw("CONCAT(tanggal, ' ', jam) ASC")
             ->get();
 
-        return view('admin.dashboard', compact('summary', 'latest', 'activeVehicles'));
+        // Pengajuan disetujui (diproses) yang akan digunakan hari ini
+        $approvedToday = TransportRequest::where('status', 'diproses')
+            ->whereDate('tanggal', today())
+            ->count();
+
+        return view('admin.dashboard', compact('summary', 'latest', 'activeVehicles', 'approvedToday'));
     }
 
     public function index(Request $request)

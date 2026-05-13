@@ -39,15 +39,24 @@
                     </div>
                 </a>
             @elseif($stat['label'] === 'Disetujui')
+                @php $hasApprovedToday = ($approvedToday ?? 0) > 0; @endphp
                 <a href="{{ route('admin.transport.index', ['status' => 'diproses']) }}"
-                   class="bg-white border border-blue-200 rounded-lg px-3 py-4 flex items-center gap-3 shadow-sm hover:shadow-md transition">
-                    <div class="shrink-0 rounded-lg p-2 bg-blue-100">
+                   class="relative overflow-hidden bg-white border border-blue-200 rounded-lg px-3 py-4 flex items-center gap-3 shadow-sm hover:shadow-md transition {{ $hasApprovedToday ? 'card-disetujui-pulse' : '' }}">
+                    @if($hasApprovedToday)
+                        <span class="absolute inset-0 rounded-lg animate-ping-border-blue pointer-events-none"></span>
+                    @endif
+                    <div class="shrink-0 rounded-lg p-2 bg-blue-100 relative z-10">
                         <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="{{ $stat['path'] }}" clip-rule="evenodd"/>
                         </svg>
                     </div>
-                    <div class="min-w-0">
-                        <p class="text-[9px] font-semibold text-blue-600 uppercase tracking-wide truncate">{{ $stat['label'] }}</p>
+                    <div class="min-w-0 relative z-10">
+                        <p class="text-[9px] font-semibold text-blue-600 uppercase tracking-wide truncate flex items-center gap-1">
+                            {{ $stat['label'] }}
+                            @if($hasApprovedToday)
+                                <span class="inline-block w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                            @endif
+                        </p>
                         <p class="text-2xl font-bold text-slate-900 leading-none mt-1">{{ $stat['value'] }}</p>
                     </div>
                 </a>
@@ -67,7 +76,7 @@
             @endforeach
         </div>
 
-        @if($summary['diajukan'] > 0)
+        @if($summary['diajukan'] > 0 || ($approvedToday ?? 0) > 0)
         <style>
             .card-diajukan-pulse {
                 animation: diajukan-glow 2s ease-in-out infinite;
@@ -75,6 +84,13 @@
             @keyframes diajukan-glow {
                 0%, 100% { border-color: #f59e0b; border-width: 2px; box-shadow: 0 0 0 0 rgba(245, 158, 11, 0), 0 0 8px rgba(245, 158, 11, 0.3); background-color: #fffbeb; }
                 50%       { border-color: #d97706; border-width: 2px; box-shadow: 0 0 0 6px rgba(245, 158, 11, 0.25), 0 0 16px rgba(245, 158, 11, 0.5); background-color: #fef3c7; }
+            }
+            .card-disetujui-pulse {
+                animation: disetujui-glow 2s ease-in-out infinite;
+            }
+            @keyframes disetujui-glow {
+                0%, 100% { border-color: #93c5fd; border-width: 2px; box-shadow: 0 0 0 0 rgba(59, 130, 246, 0), 0 0 8px rgba(59, 130, 246, 0.3); background-color: #eff6ff; }
+                50%       { border-color: #3b82f6; border-width: 2px; box-shadow: 0 0 0 6px rgba(59, 130, 246, 0.25), 0 0 16px rgba(59, 130, 246, 0.5); background-color: #dbeafe; }
             }
         </style>
         @endif

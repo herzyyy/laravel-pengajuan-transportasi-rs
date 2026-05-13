@@ -27,13 +27,49 @@
                 <div class="space-y-1">
                     <div class="text-xs text-slate-500">Pemohon: <span class="font-semibold text-slate-700">{{ $recurring_template->pemohon_nama }}</span> ({{ $recurring_template->pemohon_unit }})</div>
                     <div class="text-xs text-slate-500">Jenis: <span class="font-semibold text-slate-700">{{ ucfirst($recurring_template->jenis) }}</span> — {{ $recurring_template->keperluan }}</div>
-                    <div class="text-xs text-slate-500">Waktu: <span class="font-semibold text-slate-700">{{ substr($recurring_template->jam, 0, 5) }} {{ $recurring_template->jam_sampai ? '- '.substr($recurring_template->jam_sampai, 0, 5) : '- Selesai' }}</span></div>
+                    <div class="text-xs text-slate-500">Waktu: <span class="font-semibold text-slate-700" id="preview-waktu">{{ substr($recurring_template->jam, 0, 5) }} {{ $recurring_template->jam_sampai ? '- '.substr($recurring_template->jam_sampai, 0, 5) : '- Selesai' }}</span></div>
                 </div>
             </div>
 
-            <form action="{{ route('admin.recurring-templates.update', $recurring_template) }}" method="POST" class="p-4 sm:p-6 space-y-5">
+            <form action="{{ route('admin.recurring-templates.update', $recurring_template) }}" method="POST" class="p-4 sm:p-6 space-y-5" x-data="{ sampaiSelesai: {{ $recurring_template->jam_sampai ? 'false' : 'true' }} }">
                 @csrf
                 @method('PUT')
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Berangkat <span class="text-red-500">*</span></label>
+                        <input type="text" name="jam" id="jam_input"
+                            value="{{ old('jam', substr($recurring_template->jam, 0, 5)) }}"
+                            placeholder="00:00" maxlength="5" inputmode="numeric"
+                            pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
+                            class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+                            required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">Jam Selesai</label>
+                        <div x-show="!sampaiSelesai">
+                            <input type="text" name="jam_sampai" id="jam_sampai_input"
+                                value="{{ old('jam_sampai', $recurring_template->jam_sampai ? substr($recurring_template->jam_sampai, 0, 5) : '') }}"
+                                placeholder="00:00" maxlength="5" inputmode="numeric"
+                                pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$"
+                                class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
+                        </div>
+                        <div x-show="sampaiSelesai" class="flex items-center h-[42px] px-3 rounded-lg border border-slate-200 bg-slate-50 text-xs text-slate-500">
+                            Dicatat saat kendaraan kembali
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="flex items-center gap-2 cursor-pointer select-none w-fit">
+                        <input type="checkbox" name="sampai_selesai" value="1" x-model="sampaiSelesai"
+                            class="w-4 h-4 rounded text-teal-600 focus:ring-teal-500 cursor-pointer"
+                            {{ old('sampai_selesai', !$recurring_template->jam_sampai) ? 'checked' : '' }}>
+                        <span class="text-sm font-semibold text-slate-700">Sampai Selesai</span>
+                        <span class="text-xs text-slate-500">(seharian penuh)</span>
+                    </label>
+                    <p class="text-[10px] text-slate-400 mt-1 ml-6">Centang jika waktu selesai tidak ditentukan</p>
+                </div>
 
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Hari Aktif</label>
@@ -83,4 +119,48 @@
             </form>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const jamInput      = document.getElementById('jam_input');
+            const jamSampaiInput = document.getElementById('jam_sampai_input');
+            const sampaiSelesaiCb = document.querySelector('input[name="sampai_selesai"]');
+            const previewWaktu  = document.getElementById('preview-waktu');
+
+            // Auto-format HH:MM saat mengetik
+            function setupTimeInput(el) {
+                el.addEventListener('input', function () {
+                    let v = el.value.replace(/[^0-9]/g, '');
+                    if (v.length > 2) v = v.slice(0, 2) + ':' + v.slice(2, 4);
+                    el.value = v;
+                });
+                el.addEventListener('blur', function () {
+                    let v = el.value;
+                    if (v.length === 4 && !v.includes(':')) v = v.slice(0, 2) + ':' + v.slice(2, 4);
+                    if (v.includes(':')) {
+                        let parts = v.split(':');
+                        let h = Math.min(parseInt(parts[0]) || 0, 23);
+                        let m = Math.min(parseInt(parts[1]) || 0, 59);
+                        el.value = (h < 10 ? '0' + h : h) + ':' + (m < 10 ? '0' + m : m);
+                    }
+                    updatePreview();
+                });
+                el.addEventListener('keypress', function (e) {
+                    if (!/[0-9]/.test(e.key)) e.preventDefault();
+                });
+                el.addEventListener('input', updatePreview);
+            }
+
+            function updatePreview() {
+                const jam = jamInput.value || '--:--';
+                const selesai = sampaiSelesaiCb && sampaiSelesaiCb.checked;
+                const jamSampai = selesai ? 'Selesai' : (jamSampaiInput && jamSampaiInput.value ? jamSampaiInput.value : 'Selesai');
+                previewWaktu.textContent = jam + ' - ' + jamSampai;
+            }
+
+            if (jamInput) setupTimeInput(jamInput);
+            if (jamSampaiInput) setupTimeInput(jamSampaiInput);
+            if (sampaiSelesaiCb) sampaiSelesaiCb.addEventListener('change', updatePreview);
+        });
+    </script>
 </x-app-layout>

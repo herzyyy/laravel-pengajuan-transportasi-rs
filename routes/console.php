@@ -12,4 +12,4 @@ Artisan::command('inspire', function () {
 Schedule::command('transport:auto-reject-expired')->hourly();
 
 // Jadwalkan pembentukan pengajuan berulang setiap jam 12 malam
-Schedule::command('app:generate-recurring-requests')->daily();
+Schedule::command('app:generate-recurring-requests')->dailyAt('00:05');

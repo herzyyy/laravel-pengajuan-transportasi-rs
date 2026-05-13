@@ -19,14 +19,14 @@
     {{-- ── STATS ── --}}
     <div class="grid grid-cols-3 sm:grid-cols-6 gap-2">
         @foreach([
-            ['label'=>'Total',     'value'=>$total,    'bg'=>'bg-slate-100',   'text'=>'text-slate-700'],
-            ['label'=>'Menunggu',  'value'=>$pending,  'bg'=>'bg-amber-50',    'text'=>'text-amber-700'],
-            ['label'=>'Disetujui', 'value'=>$approved, 'bg'=>'bg-blue-50',     'text'=>'text-blue-700'],
-            ['label'=>'Digunakan', 'value'=>$inuse,    'bg'=>'bg-cyan-50',     'text'=>'text-cyan-700'],
-            ['label'=>'Selesai',   'value'=>$done,     'bg'=>'bg-emerald-50',  'text'=>'text-emerald-700'],
-            ['label'=>'Ditolak',   'value'=>$rejected, 'bg'=>'bg-red-50',      'text'=>'text-red-700'],
+            ['label'=>'Total',     'value'=>$total,    'bg'=>'bg-slate-100',   'text'=>'text-slate-700',   'border'=>'border-slate-300'],
+            ['label'=>'Menunggu',  'value'=>$pending,  'bg'=>'bg-amber-50',    'text'=>'text-amber-700',   'border'=>'border-amber-200'],
+            ['label'=>'Disetujui', 'value'=>$approved, 'bg'=>'bg-blue-50',     'text'=>'text-blue-700',    'border'=>'border-blue-200'],
+            ['label'=>'Digunakan', 'value'=>$inuse,    'bg'=>'bg-cyan-50',     'text'=>'text-cyan-700',    'border'=>'border-cyan-200'],
+            ['label'=>'Selesai',   'value'=>$done,     'bg'=>'bg-emerald-50',  'text'=>'text-emerald-700', 'border'=>'border-emerald-200'],
+            ['label'=>'Ditolak',   'value'=>$rejected, 'bg'=>'bg-red-50',      'text'=>'text-red-700',     'border'=>'border-red-200'],
         ] as $stat)
-        <div class="{{ $stat['bg'] }} rounded-xl px-3 py-2.5 text-center border border-white shadow-sm">
+        <div class="{{ $stat['bg'] }} {{ $stat['border'] }} rounded-xl px-3 py-2.5 text-center border shadow-sm">
             <p class="text-xl font-bold {{ $stat['text'] }} leading-none">{{ $stat['value'] }}</p>
             <p class="text-[10px] font-medium text-slate-500 mt-0.5">{{ $stat['label'] }}</p>
         </div>

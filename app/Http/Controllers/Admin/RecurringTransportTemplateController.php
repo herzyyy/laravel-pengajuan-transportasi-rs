@@ -37,11 +37,15 @@ class RecurringTransportTemplateController extends Controller
             'is_active' => ['required', 'boolean'],
             'hari' => ['required', 'array', 'min:1'],
             'hari.*' => ['integer', 'min:1', 'max:7'],
+            'jam' => ['required', 'date_format:H:i'],
+            'jam_sampai' => ['nullable', 'date_format:H:i'],
         ]);
 
         $recurring_template->update([
             'is_active' => $request->boolean('is_active'),
             'hari' => $request->hari,
+            'jam' => $request->jam,
+            'jam_sampai' => $request->boolean('sampai_selesai') ? null : ($request->jam_sampai ?: null),
         ]);
 
         return redirect()->route('admin.recurring-templates.index')
