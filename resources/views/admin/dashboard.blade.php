@@ -86,7 +86,7 @@
                         <h2 class="text-sm fw-bold text-slate-900 mb-0">Pengajuan Terbaru</h2>
                         <p class="text-xs text-slate-500 mb-0">5 pengajuan terakhir</p>
                     </div>
-                    <a href="{{ route('admin.transport.index') }}"
+                    <a href="{{ route('admin.transport.index', ['status' => '']) }}"
                        class="d-inline-flex align-items-center gap-1 px-2 py-1 text-xs fw-500 text-emerald-700 rounded align-self-start align-self-sm-auto"
                        style="text-decoration:none;">
                         Lihat Semua

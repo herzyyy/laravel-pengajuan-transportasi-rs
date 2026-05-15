@@ -10,7 +10,21 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <style>[x-cloak]{display:none!important}</style>
+    <style>
+        [x-cloak]{display:none!important}
+        /* UI/UX Enhancements for Menus and Buttons */
+        .sp-sidebar-link { transition: all 0.2s ease; }
+        .sp-sidebar-link:hover { background-color: rgba(0, 119, 116, 0.06); color: #007774; transform: translateX(4px); }
+        .sp-user-btn { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .sp-user-btn:hover { transform: scale(1.05); }
+        .sp-nav-btn { transition: transform 0.2s ease, background-color 0.2s ease; border-radius: 50%; }
+        .sp-nav-btn:hover { transform: scale(1.05); background-color: rgba(0, 119, 116, 0.06); }
+        .sp-dropdown-item { transition: all 0.2s ease; display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem; color: #334155; text-decoration: none; }
+        .sp-dropdown-item:hover { background-color: rgba(0, 119, 116, 0.06); color: #0f172a; transform: translateX(4px); }
+        .sp-dropdown-item.text-danger:hover { background-color: rgba(239, 68, 68, 0.08); color: #dc2626 !important; }
+        .sp-btn-hover { transition: all 0.2s ease; }
+        .sp-btn-hover:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
+    </style>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased" x-data="{ sidebarOpen: false }">
 <div class="d-flex flex-column min-vh-100">
@@ -208,7 +222,7 @@
                 <div class="position-relative" x-data="{ open: false }">
                     <button @click="open = !open" type="button" class="sp-user-btn">
                         <svg style="width:1.25rem;height:1.25rem;color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
                     <div x-show="open" @click.away="open = false"

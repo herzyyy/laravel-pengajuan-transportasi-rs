@@ -9,7 +9,7 @@
         </div>
         <div class="d-flex align-items-center justify-content-end gap-2">
             <a href="{{ route('dashboard') }}"
-               class="d-inline-flex align-items-center justify-content-center gap-1 rounded text-xs fw-600 px-3 py-2 text-white"
+               class="sp-btn-hover d-inline-flex align-items-center justify-content-center gap-1 rounded text-xs fw-600 px-3 py-2 text-white"
                style="background-color:#059669;">
                 <svg width="14" height="14" fill="white" viewBox="0 0 20 20">
                     <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
@@ -17,7 +17,7 @@
                 Pengajuan Baru
             </a>
             <a href="{{ route('dashboard') }}"
-               class="d-inline-flex align-items-center gap-1 rounded border border-slate-300 bg-white px-3 py-2 text-xs fw-600 text-slate-600">
+               class="sp-btn-hover d-inline-flex align-items-center gap-1 rounded border border-slate-300 bg-white px-3 py-2 text-xs fw-600 text-slate-600">
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                 </svg>
@@ -180,7 +180,7 @@
                             <!-- Aksi -->
                             <td class="text-center">
                                 <a href="{{ route('pengajuan.success', $item) }}"
-                                   class="d-inline-flex align-items-center gap-1 text-xxs fw-600 text-emerald-600">
+                                   class="sp-btn-hover d-inline-flex align-items-center gap-1 text-xxs fw-600 text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
                                     Detail
                                     <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
@@ -202,7 +202,7 @@
                                         <p class="fw-600 text-slate-900 mb-1 text-xs">Belum ada pengajuan</p>
                                         <p class="text-xs text-slate-500 mb-0">Buat pengajuan transportasi untuk memulai</p>
                                     </div>
-                                    <a href="{{ route('dashboard') }}" class="d-inline-flex align-items-center gap-2 px-3 py-2 text-white text-xs fw-600 rounded" style="background-color:#059669;">
+                                    <a href="{{ route('dashboard') }}" class="sp-btn-hover d-inline-flex align-items-center gap-2 px-3 py-2 text-white text-xs fw-600 rounded" style="background-color:#059669;">
                                         <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                                             <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
                                         </svg>
@@ -290,7 +290,7 @@
                     </div>
 
                     <!-- Action Button -->
-                    <a href="{{ route('pengajuan.success', $item) }}" class="d-block w-100 text-center rounded text-xs fw-600 text-white px-4 py-2" style="background-color:#059669; color:white !important;">
+                    <a href="{{ route('pengajuan.success', $item) }}" class="sp-btn-hover d-block w-100 text-center rounded text-xs fw-600 text-white px-4 py-2" style="background-color:#059669; color:white !important;">
                         Lihat Detail
                     </a>
                 </div>
@@ -307,7 +307,7 @@
                             <p class="fw-600 text-slate-900 mb-1 text-xs">Belum ada pengajuan</p>
                             <p class="text-xs text-slate-500 mb-0">Buat pengajuan transportasi untuk memulai</p>
                         </div>
-                        <a href="{{ route('dashboard') }}" class="d-inline-flex align-items-center gap-2 px-3 py-2 text-white text-xs fw-600 rounded" style="background-color:#059669;">
+                        <a href="{{ route('dashboard') }}" class="sp-btn-hover d-inline-flex align-items-center gap-2 px-3 py-2 text-white text-xs fw-600 rounded" style="background-color:#059669;">
                             <svg width="16" height="16" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd"></path>
                             </svg>
