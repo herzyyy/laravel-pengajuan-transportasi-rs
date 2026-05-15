@@ -1,63 +1,40 @@
 <x-app-layout title="Manajemen Kendaraan — SIPETRANS">
-    <div class="max-w-7xl mx-auto px-3 sm:px-4 pt-4 pb-6"
-         x-data="{
-            showCreate: {{ $errors->any() && !session('edit_id') ? 'true' : 'false' }},
-            showEdit: {{ session('edit_id') ? 'true' : 'false' }},
-            editId: '{{ session('edit_id', '') }}',
-            editName: '{{ old('name', session('edit_name', '')) }}',
-            editType: '{{ old('type', session('edit_type', 'umum')) }}',
-            editPlateNumber: '{{ old('plate_number', session('edit_plate_number', '')) }}',
-            editBrand: '{{ old('brand', session('edit_brand', '')) }}',
-            editModel: '{{ old('model', session('edit_model', '')) }}',
-            editIsActive: '{{ old('is_active', session('edit_is_active', '1')) }}',
-            editNotes: '{{ old('notes', session('edit_notes', '')) }}',
-            openEdit(id, name, type, plateNumber, brand, model, isActive, notes) {
-                this.editId = id;
-                this.editName = name;
-                this.editType = type;
-                this.editPlateNumber = plateNumber;
-                this.editBrand = brand;
-                this.editModel = model;
-                this.editIsActive = isActive;
-                this.editNotes = notes;
-                this.showEdit = true;
-            }
-         }">
+    <div class="container-fluid px-3 pt-4 pb-6">
 
-        <div class="flex items-center justify-between mb-3">
+        <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <h1 class="text-lg font-bold text-slate-800">Master Kendaraan</h1>
-                <p class="text-slate-500 text-xs mt-0.5">Kelola data kendaraan transportasi</p>
+                <h1 class="fw-bold text-slate-800 mb-0" style="font-size:1.1rem;">Master Kendaraan</h1>
+                <p class="text-slate-500 text-xs mt-1 mb-0">Kelola data kendaraan transportasi</p>
             </div>
             <a href="{{ route('admin.vehicles.create') }}"
-               class="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 text-white px-3 py-2 text-xs font-medium hover:bg-emerald-700 transition">
+               class="btn btn-sp-primary d-inline-flex align-items-center gap-2 text-xs">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="white" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                 </svg>
-                <span class="text-white font-semibold">Tambah</span>
+                <span class="fw-600">Tambah</span>
             </a>
         </div>
 
         @if(session('success'))
-            <div class="mb-3 p-2.5 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-xs font-medium">
+            <div class="alert alert-sp-success border border-emerald-200 rounded px-3 py-2 mb-3 text-xs fw-500">
                 {{ session('success') }}
             </div>
         @endif
 
         <!-- Desktop Table -->
         <form method="GET" action="{{ route('admin.vehicles.index') }}" id="vehicles-filter-form">
-        <div class="hidden lg:block bg-white rounded-xl shadow-sm ring-1 ring-slate-200 overflow-hidden">
+        <div class="d-none d-lg-block sp-card overflow-hidden mb-3">
             <div class="overflow-x-auto">
-                <table class="w-full text-xs">
+                <table class="sp-table w-100 text-xs">
                     <thead>
                         {{-- Filter row --}}
-                        <tr class="bg-slate-50/80 border-b border-slate-200">
+                        <tr class="bg-slate-50 border-bottom border-slate-200">
                             <th class="py-2 px-3">
                                 <input type="text" name="nama" value="{{ request('nama') }}" placeholder="Cari nama..."
-                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
+                                       class="form-control form-control-sm text-xxs border-slate-300">
                             </th>
                             <th class="py-2 px-3">
-                                <select name="type" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
+                                <select name="type" class="form-select form-select-sm text-xxs border-slate-300">
                                     <option value="">Semua</option>
                                     <option value="umum" @selected(request('type') === 'umum')>Umum</option>
                                     <option value="ambulance" @selected(request('type') === 'ambulance')>Ambulance</option>
@@ -65,15 +42,15 @@
                             </th>
                             <th class="py-2 px-3">
                                 <input type="text" name="plat" value="{{ request('plat') }}" placeholder="Cari plat..."
-                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
+                                       class="form-control form-control-sm text-xxs border-slate-300">
                             </th>
                             <th class="py-2 px-3">
                                 <input type="text" name="merk" value="{{ request('merk') }}" placeholder="Cari merk..."
-                                       class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
+                                       class="form-control form-control-sm text-xxs border-slate-300">
                             </th>
                             <th class="py-2 px-3"></th>
                             <th class="py-2 px-3">
-                                <select name="is_active" class="w-full rounded-lg border border-slate-300 px-2 py-1.5 text-[10px] font-normal focus:ring-2 focus:ring-teal-400 focus:border-teal-400 bg-white">
+                                <select name="is_active" class="form-select form-select-sm text-xxs border-slate-300">
                                     <option value="">Semua</option>
                                     <option value="1" @selected(request('is_active') === '1')>Aktif</option>
                                     <option value="0" @selected(request('is_active') === '0')>Nonaktif</option>
@@ -82,53 +59,53 @@
                             <th class="py-2 px-3"></th>
                         </tr>
                         {{-- Header row --}}
-                        <tr class="text-left text-[10px] font-semibold text-white uppercase tracking-wider" style="background: linear-gradient(to right, #007774, #009e9a);">
-                            <th class="py-2.5 px-3">Nama Unit</th>
-                            <th class="py-2.5 px-3">Jenis</th>
-                            <th class="py-2.5 px-3">Plat Nomor</th>
-                            <th class="py-2.5 px-3">Merk/Model</th>
-                            <th class="py-2.5 px-3">KM Terkini</th>
-                            <th class="py-2.5 px-3">Status</th>
-                            <th class="py-2.5 px-3 text-right">Aksi</th>
+                        <tr class="text-start text-xxs fw-600 text-white text-uppercase" style="background: linear-gradient(to right, #007774, #009e9a);">
+                            <th class="py-2 px-3">Nama Unit</th>
+                            <th class="py-2 px-3">Jenis</th>
+                            <th class="py-2 px-3">Plat Nomor</th>
+                            <th class="py-2 px-3">Merk/Model</th>
+                            <th class="py-2 px-3">KM Terkini</th>
+                            <th class="py-2 px-3">Status</th>
+                            <th class="py-2 px-3 text-end">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         @forelse($vehicles as $vehicle)
-                            <tr class="hover:bg-teal-50/40 transition-colors">
-                                <td class="py-2.5 px-3">
-                                    <div class="font-semibold text-slate-900">{{ $vehicle->name }}</div>
+                            <tr>
+                                <td class="py-2 px-3">
+                                    <div class="fw-600 text-slate-900">{{ $vehicle->name }}</div>
                                 </td>
-                                <td class="py-2.5 px-3">
+                                <td class="py-2 px-3">
                                     @if($vehicle->type === 'ambulance')
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-red-100 text-red-800 border border-red-200">Ambulance</span>
+                                        <span class="badge-red">Ambulance</span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-200">Umum</span>
+                                        <span class="badge-blue">Umum</span>
                                     @endif
                                 </td>
-                                <td class="py-2.5 px-3 text-slate-700 font-mono font-medium">{{ $vehicle->plate_number }}</td>
-                                <td class="py-2.5 px-3 text-slate-700">
+                                <td class="py-2 px-3 text-slate-700 font-monospace fw-500">{{ $vehicle->plate_number }}</td>
+                                <td class="py-2 px-3 text-slate-700">
                                     {{ $vehicle->brand ?? '-' }}
                                     @if($vehicle->model)<span class="text-slate-500">/ {{ $vehicle->model }}</span>@endif
                                 </td>
-                                <td class="py-2.5 px-3">
+                                <td class="py-2 px-3">
                                     @if($vehicle->last_km !== null)
-                                        <span class="font-semibold text-slate-800">{{ number_format($vehicle->last_km, 0, ',', '.') }}</span>
-                                        <span class="text-slate-400 text-[10px]"> km</span>
+                                        <span class="fw-600 text-slate-800">{{ number_format($vehicle->last_km, 0, ',', '.') }}</span>
+                                        <span class="text-slate-400 text-xxs"> km</span>
                                     @else
                                         <span class="text-slate-400">-</span>
                                     @endif
                                 </td>
-                                <td class="py-2.5 px-3">
+                                <td class="py-2 px-3">
                                     @if($vehicle->is_active)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">Aktif</span>
+                                        <span class="badge-emerald">Aktif</span>
                                     @else
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">Nonaktif</span>
+                                        <span class="badge-slate">Nonaktif</span>
                                     @endif
                                 </td>
-                                <td class="py-2.5 px-3 text-right">
-                                    <div class="flex items-center justify-end gap-1.5">
+                                <td class="py-2 px-3 text-end">
+                                    <div class="d-flex align-items-center justify-content-end gap-1">
                                         <a href="{{ route('admin.vehicles.edit', $vehicle) }}"
-                                            class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:bg-blue-50 hover:border-blue-400 hover:text-blue-700 transition bg-white">
+                                            class="btn btn-sp-outline text-xxs fw-600 px-2 py-1">
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.vehicles.destroy', $vehicle) }}" method="POST"
@@ -136,7 +113,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="inline-flex items-center justify-center rounded-lg border border-slate-300 px-2.5 py-1 text-[10px] font-semibold text-red-600 hover:bg-red-50 hover:border-red-400 transition bg-white">
+                                                    class="btn btn-sm border border-slate-300 text-xxs fw-600 text-danger bg-white px-2 py-1">
                                                 Hapus
                                             </button>
                                         </form>
@@ -145,13 +122,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="py-8 text-center text-slate-500 text-xs">Tidak ada data kendaraan</td>
+                                <td colspan="7" class="py-5 text-center text-slate-500 text-xs">Tidak ada data kendaraan</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
-            <div class="px-3 py-2.5 bg-slate-50 border-t border-slate-200">
+            <div class="px-3 py-2 bg-slate-50 border-top border-slate-200">
                 {{ $vehicles->links() }}
             </div>
         </div>
@@ -189,229 +166,61 @@
         </script>
 
         <!-- Mobile Cards -->
-        <div class="lg:hidden space-y-2">
+        <div class="d-lg-none">
             @forelse($vehicles as $vehicle)
-                <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-3">
-                    <div class="flex items-start justify-between mb-2">
-                        <div class="flex-1">
-                            <div class="flex items-center gap-2 mb-1">
-                                <h3 class="font-semibold text-slate-900 text-sm">{{ $vehicle->name }}</h3>
+                <div class="sp-card p-3 mb-2">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <div class="flex-grow-1">
+                            <div class="d-flex align-items-center gap-2 mb-1">
+                                <h3 class="fw-600 text-slate-900 text-sm mb-0">{{ $vehicle->name }}</h3>
                                 @if($vehicle->type === 'ambulance')
-                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-red-100 text-red-800">Ambulance</span>
+                                    <span class="badge-red">Ambulance</span>
                                 @else
-                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-800">Umum</span>
+                                    <span class="badge-blue">Umum</span>
                                 @endif
                             </div>
-                            <p class="text-xs font-medium text-slate-700">{{ $vehicle->plate_number }}</p>
-                            <p class="text-xs text-slate-600 mt-0.5">
+                            <p class="text-xs fw-500 text-slate-700 mb-0">{{ $vehicle->plate_number }}</p>
+                            <p class="text-xs text-slate-600 mt-1 mb-0">
                                 {{ $vehicle->brand ?? '-' }}
                                 @if($vehicle->model) / {{ $vehicle->model }}@endif
                                 @if($vehicle->year) ({{ $vehicle->year }})@endif
                             </p>
                             @if($vehicle->last_km !== null)
-                                <p class="text-xs text-slate-700 mt-1 font-medium">
-                                    KM Terkini: <span class="font-semibold">{{ number_format($vehicle->last_km, 0, ',', '.') }} km</span>
+                                <p class="text-xs text-slate-700 mt-1 mb-0 fw-500">
+                                    KM Terkini: <span class="fw-600">{{ number_format($vehicle->last_km, 0, ',', '.') }} km</span>
                                 </p>
                             @endif
                         </div>
                         @if($vehicle->is_active)
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">Aktif</span>
+                            <span class="badge-emerald">Aktif</span>
                         @else
-                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-800">Nonaktif</span>
+                            <span class="badge-slate">Nonaktif</span>
                         @endif
                     </div>
-                    <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                    <div class="d-flex align-items-center gap-2 pt-2 border-top border-slate-100">
                         <a href="{{ route('admin.vehicles.edit', $vehicle) }}"
-                            class="flex-1 inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 hover:border-blue-500 hover:text-blue-700 transition">
+                            class="flex-fill btn btn-sp-outline text-xs fw-600 text-center">
                             Edit
                         </a>
-                        <form action="{{ route('admin.vehicles.destroy', $vehicle) }}" method="POST" class="flex-1"
+                        <form action="{{ route('admin.vehicles.destroy', $vehicle) }}" method="POST" class="flex-fill"
                               onsubmit="return confirm('Yakin ingin menghapus kendaraan ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="w-full inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-3 py-1.5 text-xs font-semibold text-red-700 hover:bg-red-50 hover:border-red-500 transition">
+                                    class="btn w-100 border border-slate-300 text-xs fw-600 text-danger bg-white">
                                 Hapus
                             </button>
                         </form>
                     </div>
                 </div>
             @empty
-                <div class="bg-white rounded-lg shadow-sm ring-1 ring-slate-200 p-6 text-center text-slate-500 text-xs">
+                <div class="sp-card p-5 text-center text-slate-500 text-xs">
                     Tidak ada data kendaraan
                 </div>
             @endforelse
             @if($vehicles->hasPages())
                 <div class="pt-2">{{ $vehicles->links() }}</div>
             @endif
-        </div>
-
-        <!-- CREATE MODAL -->
-        <div x-show="showCreate" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-black/50" @click="showCreate = false"></div>
-            <div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
-                    <h2 class="text-sm font-bold text-slate-800">Tambah Kendaraan Baru</h2>
-                    <button @click="showCreate = false" class="text-slate-400 hover:text-slate-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                <form action="{{ route('admin.vehicles.store') }}" method="POST" class="p-4 space-y-3">
-                    @csrf
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Unit *</label>
-                            <input type="text" name="name" value="{{ old('name') }}" required placeholder="mobil_umum_1"
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-400 @enderror">
-                            @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis *</label>
-                            <select name="type" required
-                                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('type') border-red-400 @enderror">
-                                <option value="">Pilih Jenis</option>
-                                <option value="umum" {{ old('type') === 'umum' ? 'selected' : '' }}>Umum</option>
-                                <option value="ambulance" {{ old('type') === 'ambulance' ? 'selected' : '' }}>Ambulance</option>
-                            </select>
-                            @error('type')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Polisi *</label>
-                        <input type="text" name="plate_number" value="{{ old('plate_number') }}" required placeholder="B 1234 CD"
-                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('plate_number') border-red-400 @enderror">
-                        @error('plate_number')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Merk</label>
-                            <input type="text" name="brand" value="{{ old('brand') }}" placeholder="Toyota"
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Model/Tipe</label>
-                            <input type="text" name="model" value="{{ old('model') }}" placeholder="Avanza"
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
-                        <div class="flex items-center gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="is_active" value="1" {{ old('is_active', '1') === '1' ? 'checked' : '' }}
-                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
-                                <span class="text-sm text-slate-700">Aktif</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="is_active" value="0" {{ old('is_active') === '0' ? 'checked' : '' }}
-                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
-                                <span class="text-sm text-slate-700">Nonaktif</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan</label>
-                        <textarea name="notes" rows="2" placeholder="Catatan tambahan tentang kendaraan"
-                                  class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">{{ old('notes') }}</textarea>
-                    </div>
-                    <div class="flex items-center gap-2 pt-3 border-t border-slate-200">
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition">
-                            Simpan
-                        </button>
-                        <button type="button" @click="showCreate = false"
-                                class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
-                            Batal
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- EDIT MODAL -->
-        <div x-show="showEdit" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-black/50" @click="showEdit = false"></div>
-            <div class="relative bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-                <div class="flex items-center justify-between px-4 py-3 border-b border-slate-200">
-                    <h2 class="text-sm font-bold text-slate-800">Edit Kendaraan</h2>
-                    <button @click="showEdit = false" class="text-slate-400 hover:text-slate-600">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                        </svg>
-                    </button>
-                </div>
-                <form :action="'{{ url('admin/vehicles') }}/' + editId" method="POST" class="p-4 space-y-3">
-                    @csrf
-                    @method('PUT')
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Unit *</label>
-                            <input type="text" name="name" :value="editName" required
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('name') border-red-400 @enderror">
-                            @error('name')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Jenis *</label>
-                            <select name="type" x-model="editType" required
-                                    class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('type') border-red-400 @enderror">
-                                <option value="umum">Umum</option>
-                                <option value="ambulance">Ambulance</option>
-                            </select>
-                            @error('type')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nomor Polisi *</label>
-                        <input type="text" name="plate_number" :value="editPlateNumber" required
-                               class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 @error('plate_number') border-red-400 @enderror">
-                        @error('plate_number')<p class="mt-1 text-xs text-red-600">{{ $message }}</p>@enderror
-                    </div>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Merk</label>
-                            <input type="text" name="brand" :value="editBrand"
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Model/Tipe</label>
-                            <input type="text" name="model" :value="editModel"
-                                   class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Status</label>
-                        <div class="flex items-center gap-4">
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="is_active" value="1" :checked="editIsActive === '1'"
-                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
-                                <span class="text-sm text-slate-700">Aktif</span>
-                            </label>
-                            <label class="flex items-center gap-2 cursor-pointer">
-                                <input type="radio" name="is_active" value="0" :checked="editIsActive === '0'"
-                                       class="w-4 h-4 text-slate-600 focus:ring-slate-500">
-                                <span class="text-sm text-slate-700">Nonaktif</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Catatan</label>
-                        <textarea name="notes" rows="2" x-text="editNotes"
-                                  class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"></textarea>
-                    </div>
-                    <div class="flex items-center gap-2 pt-3 border-t border-slate-200">
-                        <button type="submit"
-                                class="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white hover:bg-emerald-700 transition">
-                            Update
-                        </button>
-                        <button type="button" @click="showEdit = false"
-                                class="inline-flex items-center justify-center rounded-lg bg-white border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-50 transition">
-                            Batal
-                        </button>
-                    </div>
-                </form>
-            </div>
         </div>
 
     </div>

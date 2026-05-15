@@ -10,55 +10,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
-<body class="@if($hideHeader ?? false) h-screen overflow-hidden bg-white @else min-h-screen bg-white text-slate-800 antialiased @endif">
-    <div class="@if($hideHeader ?? false) h-screen flex @else min-h-screen flex flex-col @endif">
+<body class="@if($hideHeader ?? false) overflow-hidden bg-white @else bg-white text-slate-800 antialiased @endif" style="@if($hideHeader ?? false) height:100vh; @else min-height:100vh; @endif">
+    <div class="@if($hideHeader ?? false) d-flex @else d-flex flex-column @endif" style="@if($hideHeader ?? false) height:100vh; @else min-height:100vh; @endif">
 
         @unless($hideHeader ?? false)
-            <header class="bg-emerald-700 
-                           text-white shadow-lg">
-                <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+            <header class="shadow-lg" style="background-color:#059669;">
+                <div class="container-xl px-4 py-3 d-flex align-items-center justify-content-between" style="max-width:72rem;">
                     <div class="min-w-0">
-                        <div class="text-[11px] uppercase tracking-widest text-emerald-100/80 font-semibold">
+                        <div class="text-xxs text-uppercase tracking-widest fw-600" style="color:rgba(209,250,229,0.8);">
                             RS Azra
                         </div>
-                        <!-- <div class="font-semibold truncate text-base sm:text-lg tracking-tight">
-                            Aplikasi Pengajuan Transportasi
-                        </div> -->
                     </div>
                 </div>
             </header>
         @endunless
 
-        <div class="@if($hideHeader ?? false) flex-1 flex w-full @else flex-1 flex items-center justify-center px-4 sm:px-6 py-8 @endif">
+        <div class="@if($hideHeader ?? false) flex-grow-1 d-flex w-100 @else flex-grow-1 d-flex align-items-center justify-content-center px-3 px-sm-4 py-5 @endif">
             @if($hideHeader ?? false)
                 {{ $slot }}
             @else
-                <div class="w-full max-w-md">
-                    <div class="mb-8 text-center">
-                        <!-- <div class="inline-flex items-center gap-2 rounded-full 
-                                    bg-emerald-100 
-                                    text-emerald-700 px-4 py-1.5 text-xs font-semibold 
-                                    shadow-sm mb-3">
-                            Sistem Pengajuan Transportasi
-                        </div> -->
-
-                        <!-- <div class="text-2xl font-semibold text-emerald-900 tracking-tight">
-                            Pengajuan Transportasi RS
-                        </div> -->
-
-                        <!-- <div class="text-sm text-slate-500 mt-2">
-                            Silakan login menggunakan akun unit kerja Anda.
-                        </div> -->
+                <div class="w-100" style="max-width:28rem;">
+                    <div class="mb-4 text-center">
+                        {{-- header content placeholder --}}
                     </div>
 
-                    <div class="bg-white/95 backdrop-blur-md 
-                                shadow-xl shadow-emerald-900/5 
-                                ring-1 ring-slate-200 
-                                rounded-2xl p-7 sm:p-8 transition-all duration-300">
+                    <div class="bg-white shadow-xl border border-slate-200 rounded p-4 p-sm-4 transition">
                         {{ $slot }}
                     </div>
 
-                    <div class="mt-8 text-center text-xs text-slate-400">
+                    <div class="mt-4 text-center text-xs text-slate-400">
                         {{ config('app.name', 'Laravel') }}
                     </div>
                 </div>

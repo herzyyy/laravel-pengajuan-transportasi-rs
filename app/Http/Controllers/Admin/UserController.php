@@ -69,7 +69,7 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = Validator::make($request->all(), [
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'nip' => ['nullable', 'string', 'max:50'],
             'password' => ['required', 'string'],
@@ -80,6 +80,14 @@ class UserController extends Controller
             'role' => ['required', 'in:user,admin,driver'],
             'priority_level' => ['nullable', 'integer', 'in:0,1'],
         ]);
+
+        if ($validator->fails()) {
+            return redirect()->route('admin.users.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = $validator->validated();
 
         $parsed = $this->parseNama($data['nama_lengkap']);
 

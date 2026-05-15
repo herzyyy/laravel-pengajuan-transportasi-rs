@@ -33,7 +33,7 @@ class DriverController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['nullable', 'string', 'max:20'],
             'license_number' => ['nullable', 'string', 'max:50'],
@@ -41,6 +41,13 @@ class DriverController extends Controller
             'is_active' => ['boolean'],
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->route('admin.drivers.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = $validator->validated();
         Driver::create($data);
 
         return redirect()->route('admin.drivers.index')

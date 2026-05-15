@@ -33,7 +33,7 @@ class VehicleController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:umum,ambulance'],
             'plate_number' => ['required', 'string', 'max:20', 'unique:vehicles'],
@@ -45,6 +45,13 @@ class VehicleController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        if ($validator->fails()) {
+            return redirect()->route('admin.vehicles.create')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $data = $validator->validated();
         Vehicle::create($data);
 
         return redirect()->route('admin.vehicles.index')

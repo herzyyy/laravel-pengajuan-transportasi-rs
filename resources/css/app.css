@@ -1,26 +1,2 @@
-@import 'tailwindcss';
-@import './theme.css';
-
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-@source '../../storage/framework/views/*.php';
-@source '../**/*.blade.php';
-@source '../**/*.js';
-
-@theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    
-    /* RS AZRA Custom Colors (tema baru) */
-    --color-azra-yellow: #007774;
-    --color-azra-yellow-light: #1a918d;
-    --color-azra-green: #81bd41;
-    --color-azra-green-light: #a5d762;
-    --color-azra-teal: #007774;
-    --color-azra-teal-light: #1a918d;
-}
-
-html {
-    font-size: 90%;
-}
-
-[x-cloak] { display: none !important; }
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import './sipetrans.css';
