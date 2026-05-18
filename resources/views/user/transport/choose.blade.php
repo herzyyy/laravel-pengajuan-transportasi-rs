@@ -8,7 +8,7 @@
     $rejected = auth()->user()->transportRequests()->where('status', 'tidak_disetujui')->count();
 @endphp
 
-<div class="mx-auto px-3 pt-4 pb-5" style="max-width:42rem;">
+<div class="mx-auto px-4 pt-5 pb-5" style="max-width:42rem;">
 
     <style>
         .sp-choose-card { transition: all 0.25s ease; border: 1px solid #e2e8f0; }
@@ -24,44 +24,46 @@
     </div>
 
     {{-- ── STATS ── --}}
-    <div class="row g-2 mb-4">
+    <div class="rounded-3 border border-slate-200 p-3 mb-4" style="background:#fff;">        <div class="text-xxs fw-600 text-slate-500 mb-2 text-uppercase" style="letter-spacing:.05em;">Ringkasan Pengajuan Anda</div>
+        <div class="row g-2">
         <div class="col-4 col-sm-2">
-            <div class="bg-slate-100 border border-slate-300 rounded text-center px-2 py-2 shadow-sm">
-                <p class="fw-bold text-slate-700 leading-none mb-1" style="font-size:1.25rem;">{{ $total }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Total</p>
+            <div class="rounded text-center px-2 py-2 shadow-sm" style="background:#e0f2fe;border:1px solid #7dd3fc;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#0369a1;">{{ $total }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#0284c7;">Total</p>
             </div>
         </div>
         <div class="col-4 col-sm-2">
-            <div class="bg-amber-50 border border-amber-200 rounded text-center px-2 py-2 shadow-sm">
-                <p class="fw-bold text-amber-700 leading-none mb-1" style="font-size:1.25rem;">{{ $pending }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Menunggu</p>
+            <div class="rounded text-center px-2 py-2 shadow-sm" style="background:#fef9c3;border:1px solid #fde047;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#a16207;">{{ $pending }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#ca8a04;">Menunggu</p>
             </div>
         </div>
         <div class="col-4 col-sm-2">
-            <div class="bg-blue-50 border border-blue-200 rounded text-center px-2 py-2 shadow-sm">
-                <p class="fw-bold text-blue-700 leading-none mb-1" style="font-size:1.25rem;">{{ $approved }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Disetujui</p>
+            <div class="rounded text-center px-2 py-2 shadow-sm" style="background:#dbeafe;border:1px solid #93c5fd;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#1d4ed8;">{{ $approved }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#2563eb;">Disetujui</p>
             </div>
         </div>
         <div class="col-4 col-sm-2">
-            <div class="bg-cyan-50 border border-cyan-200 rounded text-center px-2 py-2 shadow-sm">
-                <p class="fw-bold text-cyan-700 leading-none mb-1" style="font-size:1.25rem;">{{ $inuse }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Digunakan</p>
+            <div class="rounded text-center px-2 py-2 shadow-sm" style="background:#cffafe;border:1px solid #67e8f9;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#0e7490;">{{ $inuse }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#0891b2;">Digunakan</p>
             </div>
         </div>
         <div class="col-4 col-sm-2">
-            <div class="bg-emerald-50 border border-emerald-200 rounded text-center px-2 py-2 shadow-sm">
-                <p class="fw-bold text-emerald-700 leading-none mb-1" style="font-size:1.25rem;">{{ $done }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Selesai</p>
+            <div class="rounded text-center px-2 py-2 shadow-sm" style="background:#dcfce7;border:1px solid #86efac;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#15803d;">{{ $done }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#16a34a;">Selesai</p>
             </div>
         </div>
         <div class="col-4 col-sm-2">
-            <div class="bg-red-50 border border-red-200 rounded text-center px-2 py-2 shadow-sm">
-                <p class="fw-bold text-red-700 leading-none mb-1" style="font-size:1.25rem;">{{ $rejected }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Ditolak</p>
+            <div class="rounded text-center px-2 py-2 shadow-sm" style="background:#fee2e2;border:1px solid #fca5a5;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#b91c1c;">{{ $rejected }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#dc2626;">Ditolak</p>
             </div>
         </div>
     </div>
+    </div>{{-- /stats wrapper --}}
 
     {{-- ── PILIH JENIS ── --}}
     <div class="row g-3 mb-4">

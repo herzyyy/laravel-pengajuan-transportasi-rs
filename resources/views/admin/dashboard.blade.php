@@ -7,7 +7,9 @@
         </div>
 
         <!-- Summary Statistics Cards -->
-        <div class="row g-2 g-sm-3 mb-3 mb-sm-4">
+        <div class="rounded-3 border border-slate-200 p-3 mb-3 mb-sm-4" style="background:linear-gradient(135deg,#f0fdfa 0%,#f8fafc 100%);">
+            <div class="text-xxs fw-600 text-slate-500 mb-2 text-uppercase" style="letter-spacing:.05em;">Ringkasan Pengajuan</div>
+            <div class="row g-2 g-sm-3">
             @foreach([
                 ['label'=>'Total',          'value'=>$summary['total'],                    'color'=>'slate',   'path'=>'M9 2a1 1 0 000 2h2a1 1 0 100-2H9zM4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5z'],
                 ['label'=>'Diajukan',       'value'=>$summary['diajukan'],                 'color'=>'amber',   'path'=>'M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z'],
@@ -71,6 +73,7 @@
             </div>
             @endforeach
         </div>
+        </div>{{-- /stats wrapper --}}
 
         @if($summary['diajukan'] > 0 || ($approvedToday ?? 0) > 0)
         {{-- Pulse animations are already defined in sipetrans.css --}}

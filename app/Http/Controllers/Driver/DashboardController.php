@@ -75,6 +75,31 @@ class DashboardController extends Controller
         return view('admin.transport.print', compact('transportRequest'));
     }
 
+    public function cancel(Request $request, TransportRequest $transportRequest)
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver || $transportRequest->driver_id !== $driver->id) {
+            abort(403);
+        }
+
+        if ($transportRequest->status !== 'digunakan') {
+            return back()->withErrors(['status' => 'Pengajuan tidak dalam status digunakan.']);
+        }
+
+        $data = $request->validate([
+            'rejection_reason' => ['required', 'string', 'max:500'],
+        ]);
+
+        $transportRequest->update([
+            'status' => 'tidak_disetujui',
+            'rejection_reason' => $data['rejection_reason'],
+        ]);
+
+        return redirect()->route('driver.dashboard')
+            ->with('success', 'Perjalanan berhasil dibatalkan.');
+    }
+
     public function complete(Request $request, TransportRequest $transportRequest)
     {
         $driver = auth()->user()->driver;

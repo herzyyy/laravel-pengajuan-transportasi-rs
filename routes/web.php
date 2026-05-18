@@ -103,4 +103,5 @@ Route::middleware(['auth', 'driver'])->prefix('driver')->name('driver.')->group(
     Route::get('/detail/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'detail'])->name('detail');
     Route::get('/detail/{transportRequest}/print', [\App\Http\Controllers\Driver\DashboardController::class, 'print'])->name('print');
     Route::post('/complete/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'complete'])->name('complete');
+    Route::post('/cancel/{transportRequest}', [\App\Http\Controllers\Driver\DashboardController::class, 'cancel'])->name('cancel');
 });

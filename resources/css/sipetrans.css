@@ -134,13 +134,15 @@ body {
 /* ── Form controls ── */
 .form-control, .form-select {
     border-color: #cbd5e1;
-    font-size: 0.8125rem;
+    font-size: 0.75rem;
     transition: border-color .15s, box-shadow .15s;
 }
 .form-control:focus, .form-select:focus {
     border-color: var(--sp-primary);
     box-shadow: 0 0 0 3px rgba(0,119,116,.12);
 }
+.form-label { font-size: 0.75rem; }
+.form-control-sm, .form-select-sm { font-size: 0.75rem !important; }
 
 /* ── Card ── */
 .sp-card {
@@ -167,7 +169,7 @@ body {
     display: inline-flex;
     align-items: center;
     padding: .2em .55em;
-    font-size: .625rem;
+    font-size: 0.625rem;
     font-weight: 700;
     border-radius: 9999px;
     border: 1px solid transparent;
@@ -239,6 +241,7 @@ body {
     z-index: 1045;
     overflow-y: auto;
     transition: transform .3s ease;
+    transform: translateX(-100%); /* hidden by default, no flash */
 }
 .sp-sidebar-hidden { transform: translateX(-100%); }
 @media (min-width: 992px) {
@@ -314,14 +317,14 @@ body {
 .sp-dropdown-item.text-danger:hover { background: #fef2f2; }
 
 /* ── Table ── */
-.sp-table { width: 100%; font-size: .8125rem; }
+.sp-table { width: 100%; font-size: 0.75rem; }
 .sp-table thead tr {
     background: linear-gradient(to right, #007774, #009e9a);
     color: #fff;
 }
 .sp-table thead th {
-    padding: .625rem .75rem;
-    font-size: .6875rem;
+    padding: .5rem .75rem;
+    font-size: 0.6875rem;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: .05em;
@@ -329,7 +332,7 @@ body {
 }
 .sp-table tbody tr { border-bottom: 1px solid #f1f5f9; transition: background .1s; }
 .sp-table tbody tr:hover { background: rgba(0,119,116,.03); }
-.sp-table tbody td { padding: .625rem .75rem; vertical-align: middle; }
+.sp-table tbody td { padding: .5rem .75rem; vertical-align: middle; font-size: 0.75rem; }
 
 /* ── Stat Cards ── */
 .sp-stat-card {
@@ -355,7 +358,7 @@ body {
     justify-content: center;
     flex-shrink: 0;
 }
-.sp-stat-label { font-size: .5625rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
+.sp-stat-label { font-size: 0.6875rem; font-weight: 600; text-transform: uppercase; letter-spacing: .05em; }
 .sp-stat-value { font-size: 1.5rem; font-weight: 700; color: #0f172a; line-height: 1; margin-top: .25rem; }
 
 /* ── Pulse animations (dashboard) ── */
@@ -465,12 +468,29 @@ body {
 .sp-login-brand { border-right: 2px solid var(--sp-primary); }
 
 /* ── Pagination ── */
-.pagination .page-link { color: var(--sp-primary); }
+.pagination .page-link {
+    color: var(--sp-primary);
+    font-size: .75rem;
+    padding: .25rem .5rem;
+    line-height: 1.5;
+}
 .pagination .page-item.active .page-link {
     background-color: var(--sp-primary);
     border-color: var(--sp-primary);
+    color: #fff !important;
 }
 .pagination .page-link:focus { box-shadow: 0 0 0 3px rgba(0,119,116,.2); }
+
+/* Perkecil karakter panah prev/next ‹ › */
+.pagination .page-link[aria-hidden="true"],
+.pagination .page-link[rel="prev"],
+.pagination .page-link[rel="next"] {
+    font-size: .75rem;
+    line-height: 1.5;
+}
+
+/* Teks "Showing X to Y of Z results" */
+.pagination ~ p, nav .small.text-muted { font-size: .7rem; }
 
 /* ── Alert overrides ── */
 .alert-sp-warning { background: #fffbeb; border-color: #fde68a !important; color: #92400e; }

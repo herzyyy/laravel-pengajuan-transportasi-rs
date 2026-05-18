@@ -537,6 +537,11 @@ class TransportRequestController extends Controller
                 'status' => ['required', 'in:tidak_disetujui'],
                 'rejection_reason' => ['required', 'string', 'max:500'],
             ]);
+        } elseif ($currentStatus === 'digunakan' && $newStatus === 'tidak_disetujui') {
+            $data = $request->validate([
+                'status' => ['required', 'in:tidak_disetujui'],
+                'rejection_reason' => ['required', 'string', 'max:500'],
+            ]);
         } else {
             return redirect()->back()->withErrors(['status' => 'Transisi status tidak valid.']);
         }

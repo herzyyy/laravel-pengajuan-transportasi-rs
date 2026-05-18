@@ -12,6 +12,8 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <style>
         [x-cloak]{display:none!important}
+        /* Cegah flash sidebar saat page load */
+        .sp-sidebar-no-transition { transition: none !important; }
         /* UI/UX Enhancements for Menus and Buttons */
         .sp-sidebar-link { transition: all 0.2s ease; }
         .sp-sidebar-link:hover { background-color: rgba(0, 119, 116, 0.06); color: #007774; transform: translateX(4px); }
@@ -25,6 +27,19 @@
         .sp-btn-hover { transition: all 0.2s ease; }
         .sp-btn-hover:hover { transform: translateY(-1px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
     </style>
+    <script>
+        // Nonaktifkan transition sidebar saat page load agar tidak flash
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.sp-sidebar').forEach(function(el) {
+                el.classList.add('sp-sidebar-no-transition');
+                requestAnimationFrame(function() {
+                    requestAnimationFrame(function() {
+                        el.classList.remove('sp-sidebar-no-transition');
+                    });
+                });
+            });
+        });
+    </script>
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased" x-data="{ sidebarOpen: false }">
 <div class="d-flex flex-column min-vh-100">

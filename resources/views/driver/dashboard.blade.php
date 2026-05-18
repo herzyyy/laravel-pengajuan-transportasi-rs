@@ -31,31 +31,33 @@
     @endif
 
     {{-- ── STATS ── --}}
-    <div class="row g-2 mb-3">
+    <div class="rounded-3 border border-slate-200 p-3 mb-3" style="background:#fff;">        <div class="text-xxs fw-600 text-slate-500 mb-2 text-uppercase" style="letter-spacing:.05em;">Ringkasan Tugas Anda</div>
+        <div class="row g-2">
         <div class="col-4">
-            <div class="bg-white border border-slate-200 rounded text-center px-3 py-2 shadow-sm">
-                <p class="fw-bold text-slate-800 leading-none mb-1" style="font-size:1.25rem;">{{ $totalTugas }}</p>
-                <p class="text-xxs fw-500 text-slate-500 mb-0">Total</p>
+            <div class="rounded text-center px-3 py-2 shadow-sm" style="background:#e0f2fe;border:1px solid #7dd3fc;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#0369a1;">{{ $totalTugas }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#0284c7;">Total</p>
             </div>
         </div>
         <div class="col-4">
-            <div class="bg-cyan-50 border border-cyan-200 rounded text-center px-3 py-2 shadow-sm">
-                <p class="fw-bold text-cyan-700 leading-none mb-1" style="font-size:1.25rem;">{{ $tugasSaatIni }}</p>
-                <p class="text-xxs fw-500 text-cyan-600 mb-0">Aktif</p>
+            <div class="rounded text-center px-3 py-2 shadow-sm" style="background:#fef9c3;border:1px solid #fde047;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#a16207;">{{ $tugasSaatIni }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#ca8a04;">Aktif</p>
             </div>
         </div>
         <div class="col-4">
-            <div class="bg-emerald-50 border border-emerald-200 rounded text-center px-3 py-2 shadow-sm">
-                <p class="fw-bold text-emerald-700 leading-none mb-1" style="font-size:1.25rem;">{{ $tugasSelesai }}</p>
-                <p class="text-xxs fw-500 text-emerald-600 mb-0">Selesai</p>
+            <div class="rounded text-center px-3 py-2 shadow-sm" style="background:#dcfce7;border:1px solid #86efac;">
+                <p class="fw-bold leading-none mb-1" style="font-size:1.25rem;color:#15803d;">{{ $tugasSelesai }}</p>
+                <p class="text-xxs fw-600 mb-0" style="color:#16a34a;">Selesai</p>
             </div>
         </div>
-    </div>
+        </div>
+    </div>{{-- /stats wrapper --}}
 
     {{-- ── TUGAS AKTIF ── --}}
     @forelse($activeRequests as $item)
-    <div class="bg-white rounded border border-cyan-200 shadow-sm overflow-hidden mb-3" x-data="{ open: false }">
-
+    <div class="bg-white rounded border border-cyan-200 shadow-sm overflow-hidden mb-3"
+         x-data="{ open: false, cancelOpen: false, resetForms() { this.open = false; this.cancelOpen = false; } }">
         {{-- Card header --}}
         <div class="px-4 pt-3 pb-2">
             <div class="d-flex align-items-start justify-content-between gap-2">
@@ -135,17 +137,17 @@
 
         {{-- Selesaikan --}}
         <div class="px-4 pb-4">
-            <button type="button" @click="open = !open"
-                    class="btn w-100 text-xs fw-600 px-3 py-2 d-flex align-items-center justify-content-center gap-2"
+            <button type="button" @click="open = !open; if(open) cancelOpen = false;"
+                    class="btn w-100 text-xs fw-600 px-3 py-2 d-flex align-items-center justify-content-center gap-2 mb-2"
                     :class="open ? 'btn-outline-secondary' : 'btn-sp-primary'">
                 <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                 </svg>
-                <span x-text="open ? 'Batal' : 'Selesaikan Perjalanan'"></span>
+                <span x-text="open ? 'Tutup' : 'Selesaikan Perjalanan'"></span>
             </button>
 
-            <div x-show="open" x-transition class="mt-2 bg-slate-50 rounded border border-slate-200 p-3">
-                <form method="POST" action="{{ route('driver.complete', $item) }}">
+            <div x-show="open" x-transition class="mb-2 bg-slate-50 rounded border border-slate-200 p-3">
+                <form method="POST" action="{{ route('driver.complete', $item) }}" @submit="$el.querySelectorAll('input').forEach(i => i)">
                     @csrf
                     <div class="row g-2 mb-2">
                         <div class="col-6">
@@ -172,6 +174,31 @@
                     </div>
                     <button type="submit" class="btn btn-sp-primary w-100 text-xs fw-600 py-2">
                         Simpan &amp; Selesai
+                    </button>
+                </form>
+            </div>
+
+            {{-- Batalkan --}}
+            <button type="button" @click="cancelOpen = !cancelOpen; if(cancelOpen) open = false;"
+                    class="btn w-100 text-xs fw-600 px-3 py-2 d-flex align-items-center justify-content-center gap-2"
+                    :class="cancelOpen ? 'btn-outline-secondary' : 'btn-outline-danger'">
+                <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+                <span x-text="cancelOpen ? 'Tutup' : 'Batalkan Perjalanan'"></span>
+            </button>
+
+            <div x-show="cancelOpen" x-transition class="mt-2 bg-red-50 rounded border border-red-200 p-3">
+                <form method="POST" action="{{ route('driver.cancel', $item) }}"
+                      onsubmit="return confirm('Yakin ingin membatalkan perjalanan ini?')">
+                    @csrf
+                    <div class="mb-2">
+                        <label class="form-label text-xxs fw-600 text-red-700 mb-1">Alasan Pembatalan <span class="text-danger">*</span></label>
+                        <textarea name="rejection_reason" rows="2"
+                                  class="form-control form-control-sm text-xs">Dibatalkan</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-danger w-100 text-xs fw-600 py-2">
+                        Konfirmasi Batalkan
                     </button>
                 </form>
             </div>

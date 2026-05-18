@@ -356,6 +356,7 @@
                     @elseif($transportRequest->status === 'digunakan')
                         <option value="digunakan">Digunakan</option>
                         <option value="selesai">&#10003; Tandai Selesai</option>
+                        <option value="tidak_disetujui">&#10007; Batalkan</option>
                     @elseif($transportRequest->status === 'selesai')
                         <option value="selesai">Selesai</option>
                     @elseif($transportRequest->status === 'tidak_disetujui')
@@ -422,6 +423,14 @@
                            value="{{ old('jam_kedatangan', $transportRequest->jam_kedatangan ?? now()->format('H:i')) }}"
                            class="form-control form-control-sm" placeholder="00:00" maxlength="5" inputmode="numeric">
                 </div>
+            </div>
+
+            {{-- Alasan pembatalan (digunakan → tidak_disetujui) --}}
+            <div x-show="currentStatus === 'tidak_disetujui' && '{{ $transportRequest->status }}' === 'digunakan'" class="mb-3" style="display:none;">
+                <label class="d-block text-xxs fw-600 text-slate-600 mb-1 text-uppercase tracking-wide">Alasan Pembatalan <span class="text-danger">*</span></label>
+                <textarea name="rejection_reason" rows="3" class="form-control form-control-sm"
+                          placeholder="Tuliskan alasan...">{{ old('rejection_reason', 'Dibatalkan') }}</textarea>
+                @error('rejection_reason')<p class="text-xxs text-danger mt-1 mb-0">{{ $message }}</p>@enderror
             </div>
 
             <div x-show="'{{ $transportRequest->status }}' === 'digunakan' || '{{ $transportRequest->status }}' === 'selesai'"

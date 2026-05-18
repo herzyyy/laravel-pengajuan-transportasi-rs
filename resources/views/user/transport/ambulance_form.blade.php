@@ -3,7 +3,7 @@
 
 {{-- Error Alert --}}
 @if ($errors->any())
-<div class="alert alert-danger d-flex align-items-start gap-2 py-2 px-3 mb-2" style="font-size:.75rem;">
+<div class="alert alert-danger d-flex align-items-start gap-2 py-2 px-3 mb-2">
     <svg class="flex-shrink-0 mt-0.5" width="14" height="14" fill="currentColor" viewBox="0 0 20 20">
         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
     </svg>
@@ -23,7 +23,7 @@
         <div style="height:.25rem;background:linear-gradient(to right,#007774,#81bd41);"></div>
         <div class="d-flex align-items-center justify-content-between px-3 py-2 border-bottom border-slate-200" style="background:#f8fafc;">
             <div>
-                <div class="fw-700 text-slate-800" style="font-size:.8125rem;">Form Pengajuan Ambulance</div>
+                <div class="fw-700 text-slate-800">Form Pengajuan Ambulance</div>
                 <div class="text-xxs text-slate-500">Lengkapi data antar/jemput pasien</div>
             </div>
             <a href="{{ route('pengajuan.choose') }}" class="text-xxs fw-500 text-slate-500 text-decoration-none">← Kembali</a>
@@ -36,17 +36,17 @@
                 <div class="col-sm-5">
                     <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Unit Kerja</label>
                     <input value="{{ auth()->user()->unit_kerja ?? '-' }}" readonly
-                        class="form-control form-control-sm bg-slate-50 text-slate-700 fw-500" style="font-size:.75rem;">
+                        class="form-control form-control-sm bg-slate-50 text-slate-700 fw-500">
                 </div>
                 <div class="col-sm-7">
                     <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Jenis Layanan <span class="text-danger">*</span></label>
                     <div class="d-flex gap-2">
-                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card" style="font-size:.75rem;">
+                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card">
                             <input type="radio" name="purpose" value="antar" class="form-check-input m-0"
                                 @checked(old('purpose')==='antar') onchange="updateAlamatForm('antar')">
                             <span class="fw-600">Antar</span>
                         </label>
-                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card" style="font-size:.75rem;">
+                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card">
                             <input type="radio" name="purpose" value="jemput" class="form-check-input m-0"
                                 @checked(old('purpose')==='jemput') onchange="updateAlamatForm('jemput')">
                             <span class="fw-600">Jemput</span>
@@ -59,7 +59,7 @@
             {{-- Row 2: Waktu --}}
             <div class="rounded border border-slate-200 p-2 mb-2" style="background:#f8fafc;">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
-                    <span class="fw-600 text-slate-800" style="font-size:.75rem;">Waktu Penggunaan</span>
+                    <span class="fw-600 text-slate-800">Waktu Penggunaan</span>
                     <div class="d-flex align-items-center gap-3">
                         <label class="d-flex align-items-center gap-1 cursor-pointer select-none mb-0">
                             <input type="checkbox" name="is_recurring" value="1" x-model="isRecurring"
@@ -80,26 +80,26 @@
                     <div class="col-6 col-sm-3" x-show="!isRecurring">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Tgl Dari <span class="text-danger">*</span></label>
                         <input type="text" id="tanggal_display" placeholder="dd/mm/yyyy" autocomplete="off"
-                            class="form-control form-control-sm cursor-pointer" style="font-size:.75rem;">
+                            class="form-control form-control-sm cursor-pointer">
                         <input type="hidden" name="tanggal" id="tanggal" value="{{ old('tanggal', date('Y-m-d')) }}">
                     </div>
                     <div class="col-6 col-sm-3">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Jam Dari <span class="text-danger">*</span></label>
                         <input type="text" name="jam" value="{{ old('jam') }}" placeholder="00:00" required
                             pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
-                            class="form-control form-control-sm" style="font-size:.75rem;">
+                            class="form-control form-control-sm">
                     </div>
                     <div class="col-6 col-sm-3" x-show="!sampaiSelesai && !isRecurring">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Tgl Sampai <span class="text-danger">*</span></label>
                         <input type="text" id="tanggal_sampai_display" placeholder="dd/mm/yyyy" autocomplete="off"
-                            class="form-control form-control-sm cursor-pointer" style="font-size:.75rem;">
+                            class="form-control form-control-sm cursor-pointer">
                         <input type="hidden" name="tanggal_sampai" id="tanggal_sampai" value="{{ old('tanggal_sampai', date('Y-m-d')) }}">
                     </div>
                     <div class="col-6 col-sm-3" x-show="!sampaiSelesai">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Jam Sampai <span class="text-danger">*</span></label>
                         <input type="text" name="jam_sampai" value="{{ old('jam_sampai') }}" placeholder="00:00"
                             pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
-                            class="form-control form-control-sm" style="font-size:.75rem;">
+                            class="form-control form-control-sm">
                     </div>
                 </div>
 
@@ -145,12 +145,12 @@
                         <label class="flex-fill d-flex align-items-center gap-1 border rounded cursor-pointer px-2 py-1 sp-radio-card" style="font-size:.6875rem;">
                             <input type="radio" name="prioritas" value="segera" class="form-check-input m-0" @checked(old('prioritas')==='segera')>
                             <div class="flex-fill"><div class="fw-600">Cito</div><div class="text-xxs text-slate-500">Emergency</div></div>
-                            <span class="badge badge-red" style="font-size:.5625rem;">URGENT</span>
+                            <span class="badge-red">URGENT</span>
                         </label>
                         <label class="flex-fill d-flex align-items-center gap-1 border rounded cursor-pointer px-2 py-1 sp-radio-card" style="font-size:.6875rem;">
                             <input type="radio" name="prioritas" value="biasa" class="form-check-input m-0" @checked(old('prioritas')==='biasa')>
                             <div class="flex-fill"><div class="fw-600">Biasa</div><div class="text-xxs text-slate-500">Normal</div></div>
-                            <span class="badge badge-cyan" style="font-size:.5625rem;">NORMAL</span>
+                            <span class="badge-cyan">NORMAL</span>
                         </label>
                     </div>
                     @error('prioritas')<div class="text-xxs text-danger mt-1">{{ $message }}</div>@enderror
@@ -158,12 +158,12 @@
                 <div class="col-sm-7" id="alamatSection">
                     <div id="alamatTujuanDiv" style="display:none;">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Alamat Tujuan <span class="text-danger">*</span></label>
-                        <textarea name="alamat_tujuan" rows="3" class="form-control form-control-sm" style="font-size:.75rem;" placeholder="Alamat lengkap lokasi tujuan">{{ old('alamat_tujuan') }}</textarea>
+                        <textarea name="alamat_tujuan" rows="3" class="form-control form-control-sm" placeholder="Alamat lengkap lokasi tujuan">{{ old('alamat_tujuan') }}</textarea>
                         @error('alamat_tujuan')<div class="text-xxs text-danger mt-1">{{ $message }}</div>@enderror
                     </div>
                     <div id="alamatAsalDiv" style="display:none;">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Alamat Asal (Jemput) <span class="text-danger">*</span></label>
-                        <textarea name="alamat_asal" rows="3" class="form-control form-control-sm" style="font-size:.75rem;" placeholder="Alamat lengkap lokasi penjemputan">{{ old('alamat_asal') }}</textarea>
+                        <textarea name="alamat_asal" rows="3" class="form-control form-control-sm" placeholder="Alamat lengkap lokasi penjemputan">{{ old('alamat_asal') }}</textarea>
                         @error('alamat_asal')<div class="text-xxs text-danger mt-1">{{ $message }}</div>@enderror
                     </div>
                 </div>
@@ -171,23 +171,23 @@
 
             {{-- Row 4: Identitas Pasien --}}
             <div class="rounded border border-slate-200 p-2" style="background:#f8fafc;">
-                <div class="fw-600 text-slate-800 mb-2" style="font-size:.75rem;">Identitas Pasien</div>
+                <div class="fw-600 text-slate-800 mb-2">Identitas Pasien</div>
                 <div class="row g-2">
                     <div class="col-sm-3">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">No. Rekam Medis</label>
                         <input name="pasien_no_rm" value="{{ old('pasien_no_rm') }}" placeholder="No. RM"
-                            class="form-control form-control-sm" style="font-size:.75rem;">
+                            class="form-control form-control-sm">
                     </div>
                     <div class="col-sm-4">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Nama Pasien <span class="text-danger">*</span></label>
                         <input name="pasien_nama" required value="{{ old('pasien_nama') }}" placeholder="Nama lengkap pasien"
-                            class="form-control form-control-sm fw-500" style="font-size:.75rem;">
+                            class="form-control form-control-sm fw-500">
                         @error('pasien_nama')<div class="text-xxs text-danger mt-1">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-sm-5">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Alamat Pasien <span class="text-danger">*</span></label>
                         <input name="alamat_pasien" required value="{{ old('alamat_pasien') }}" placeholder="Alamat lengkap pasien"
-                            class="form-control form-control-sm" style="font-size:.75rem;">
+                            class="form-control form-control-sm">
                         @error('alamat_pasien')<div class="text-xxs text-danger mt-1">{{ $message }}</div>@enderror
                     </div>
                 </div>
