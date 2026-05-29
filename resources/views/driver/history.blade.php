@@ -56,65 +56,89 @@
             @else
 
                 {{-- TABLE: desktop --}}
-                <div class="d-none d-sm-block overflow-x-auto">
-                    <table class="sp-table" style="min-width:640px;">
+                <div class="d-none d-md-block overflow-x-auto">
+                    <table class="sp-table w-100">
                         <thead>
                             <tr>
                                 <th>No. Pengajuan</th>
                                 <th>Pemohon</th>
                                 <th>Jenis</th>
-                                <th>Tanggal</th>
-                                <th>Unit Mobil</th>
+                                <th>Tanggal &amp; Waktu</th>
+                                <th>Kendaraan</th>
                                 <th>Tujuan</th>
                                 <th>Status</th>
-                                <th></th>
+                                <th class="text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($historyRequests as $item)
                                 <tr>
                                     <td>
-                                        <span class="font-mono text-xxs fw-600 text-teal-700 bg-teal-50 border border-slate-200 px-2 py-1 rounded">
-                                            {{ $item->nomor_pengajuan }}
-                                        </span>
-                                    </td>
-                                    <td>
-                                        <p class="fw-600 text-slate-800 truncate mb-0" style="max-width:140px;">
-                                            {{ $item->user->full_name ?? $item->pemohon_nama }}
-                                        </p>
-                                        @if($item->user?->unit_kerja)
-                                            <p class="text-xxs text-slate-400 truncate mb-0" style="max-width:140px;">
-                                                {{ $item->user->unit_kerja }}
-                                            </p>
-                                        @endif
-                                    </td>
-                                    <td>
-                                        <span class="{{ $item->jenis === 'ambulance' ? 'badge-red' : 'badge-blue' }}">
-                                            {{ ucfirst($item->jenis) }}
-                                        </span>
-                                    </td>
-                                    <td class="text-slate-700 fw-500 whitespace-nowrap">
-                                        {{ $item->tanggal->format('d/m/Y') }}
-                                    </td>
-                                    <td class="text-slate-600">{{ $item->unit_mobil ?? '-' }}</td>
-                                    <td class="text-slate-500 truncate" style="max-width:160px;">
-                                        {{ $item->alamat_tujuan ?? '-' }}
-                                    </td>
-                                    <td>
-                                        @if($item->status === 'selesai')
-                                            <span class="badge-emerald">Selesai</span>
-                                        @else
-                                            <span class="badge-red">Ditolak</span>
-                                        @endif
-                                    </td>
-                                    <td>
                                         <a href="{{ route('driver.detail', $item) }}"
-                                           class="d-inline-flex align-items-center gap-1 px-2 py-1 rounded text-xxs fw-600 text-white text-decoration-none whitespace-nowrap"
-                                           style="background:#007774;">
-                                            Detail
-                                            <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                           class="font-mono fw-700 text-teal-700 bg-teal-50 border border-teal-200 px-2 py-1 rounded d-inline-block text-decoration-none"
+                                           style="font-size:.75rem;letter-spacing:.03em;">
+                                            {{ $item->nomor_pengajuan }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <div class="fw-600 text-xs text-slate-900">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
+                                        <div class="text-xxs text-slate-500">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center gap-1">
+                                            <span class="badge status-badge {{ $item->jenis === 'ambulance' ? 'bg-red-100 text-red-700 border border-red-200' : 'badge-emerald' }}">
+                                                {{ ucfirst($item->jenis) }}
+                                            </span>
+                                            @if($item->prioritas === 'segera')
+                                                <span class="badge status-badge badge-red">CITO</span>
+                                            @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="text-xs text-slate-700 fw-500 whitespace-nowrap">{{ $item->tanggal->format('d/m/Y') }}</div>
+                                        <div class="text-xxs text-slate-500 whitespace-nowrap">{{ substr($item->jam, 0, 5) }}
+                                            @if($item->jam_sampai) - {{ substr($item->jam_sampai, 0, 5) }} @else - selesai @endif
+                                        </div>
+                                    </td>
+                                    <td>
+                                        @if($item->unit_mobil)
+                                            <div class="text-xs text-slate-700 fw-500 text-capitalize">{{ str_replace('_', ' ', $item->unit_mobil) }}</div>
+                                            @if($item->plat_nomor)
+                                                <div class="text-xxs text-slate-500 font-mono">{{ $item->plat_nomor }}</div>
+                                            @endif
+                                        @else
+                                            <span class="text-xxs text-slate-400">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($item->alamat_tujuan)
+                                            <div class="text-xs text-slate-600" style="max-width:16rem;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ $item->alamat_tujuan }}</div>
+                                        @else
+                                            <span class="text-xxs text-slate-400">-</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @php
+                                            $badgeMap = ['diajukan' => 'badge-amber', 'diproses' => 'badge-blue', 'digunakan' => 'badge-cyan', 'selesai' => 'badge-emerald', 'tidak_disetujui' => 'badge-red'];
+                                            $badgeClass = $badgeMap[$item->status] ?? 'badge-slate';
+                                            $label = match($item->status) {
+                                                'diproses' => 'Disetujui',
+                                                'digunakan' => 'Digunakan',
+                                                'tidak_disetujui' => 'Ditolak',
+                                                default => ucfirst($item->status)
+                                            };
+                                        @endphp
+                                        <span class="badge status-badge {{ $badgeClass }} whitespace-nowrap">
+                                            {{ $label }}
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ route('driver.detail', $item) }}" class="btn btn-sp-primary btn-sm d-inline-flex align-items-center gap-1 whitespace-nowrap" style="font-size:.625rem;">
+                                            <svg style="width:.75rem;height:.75rem;" fill="none" stroke="white" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                             </svg>
+                                            Detail
                                         </a>
                                     </td>
                                 </tr>
@@ -124,47 +148,80 @@
                 </div>
 
                 {{-- CARDS: mobile --}}
-                <div class="d-sm-none divide-y divide-slate-100">
+                <div class="d-md-none divide-y divide-slate-200">
                     @foreach($historyRequests as $item)
-                        <div class="px-3 py-3">
-                            <div class="d-flex align-items-start justify-content-between gap-2">
+                        <div class="p-3" style="transition:background .1s;">
+                            <!-- Header -->
+                            <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
                                 <div class="flex-grow-1 min-w-0">
-                                    <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
-                                        <span class="font-mono text-xxs fw-600 text-slate-500 bg-slate-100 px-2 py-1 rounded">
-                                            {{ $item->nomor_pengajuan }}
-                                        </span>
-                                        @if($item->status === 'selesai')
-                                            <span class="badge-emerald">Selesai</span>
-                                        @else
-                                            <span class="badge-red">Ditolak</span>
-                                        @endif
-                                        <span class="{{ $item->jenis === 'ambulance' ? 'badge-red' : 'badge-blue' }}">
-                                            {{ ucfirst($item->jenis) }}
-                                        </span>
-                                    </div>
-                                    <p class="text-xs fw-600 text-slate-800 truncate mb-0">
-                                        {{ $item->user->full_name ?? $item->pemohon_nama }}
-                                    </p>
-                                    @if($item->user?->unit_kerja)
-                                        <p class="text-xxs text-slate-400 truncate mb-0">{{ $item->user->unit_kerja }}</p>
-                                    @endif
-                                    <div class="d-flex align-items-center gap-3 mt-1 text-xxs text-slate-500 flex-wrap">
-                                        <span>{{ $item->tanggal->format('d/m/Y') }}</span>
-                                        @if($item->unit_mobil)
-                                            <span class="fw-500 text-slate-700">{{ $item->unit_mobil }}</span>
-                                        @endif
-                                        @if($item->alamat_tujuan)
-                                            <span class="truncate" style="max-width:160px;">→ {{ $item->alamat_tujuan }}</span>
-                                        @endif
-                                    </div>
+                                    <div class="fw-600 text-sm text-slate-900 truncate">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
+                                    <div class="text-xs text-slate-500 truncate">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>
                                 </div>
-                                <a href="{{ route('driver.detail', $item) }}"
-                                   class="d-inline-flex align-items-center gap-1 text-xxs fw-600 text-decoration-none shrink-0 mt-1"
-                                   style="color:#007774;">
-                                    Detail
-                                    <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                                @php
+                                    $badgeMap2 = ['diajukan' => 'badge-amber', 'diproses' => 'badge-blue', 'digunakan' => 'badge-cyan', 'selesai' => 'badge-emerald', 'tidak_disetujui' => 'badge-red'];
+                                    $badgeClass2 = $badgeMap2[$item->status] ?? 'badge-slate';
+                                    $label2 = match($item->status) {
+                                        'diproses' => 'Disetujui',
+                                        'digunakan' => 'Digunakan',
+                                        'tidak_disetujui' => 'Ditolak',
+                                        default => ucfirst($item->status)
+                                    };
+                                @endphp
+                                <span class="badge status-badge {{ $badgeClass2 }} whitespace-nowrap">
+                                    {{ $label2 }}
+                                </span>
+                            </div>
+
+                            <!-- Badges -->
+                            <div class="d-flex align-items-center gap-2 mb-3">
+                                <span class="font-mono text-xs fw-600 text-teal-700 bg-teal-50 border border-teal-200 px-2 py-0.5 rounded">
+                                    {{ $item->nomor_pengajuan }}
+                                </span>
+                                <span class="badge status-badge {{ $item->jenis === 'ambulance' ? 'bg-red-100 text-red-700' : 'badge-emerald' }}">
+                                    {{ ucfirst($item->jenis) }}
+                                </span>
+                                @if($item->prioritas === 'segera')
+                                    <span class="badge status-badge badge-red">CITO</span>
+                                @endif
+                            </div>
+
+                            <!-- Details -->
+                            <div class="mb-3 text-xs">
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <svg style="width:1rem;height:1rem;" class="text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
+                                    <span class="text-slate-700 fw-500">{{ $item->tanggal->format('d M Y') }}</span>
+                                    <span class="text-slate-500">{{ substr($item->jam, 0, 5) }} - {{ $item->jam_sampai ? substr($item->jam_sampai, 0, 5) : 'selesai' }}</span>
+                                </div>
+
+                                @if($item->unit_mobil)
+                                    <div class="d-flex align-items-center gap-2 mb-2">
+                                        <svg style="width:1rem;height:1rem;" class="text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                                        </svg>
+                                        <span class="text-slate-700 text-capitalize">{{ str_replace('_', ' ', $item->unit_mobil) }}</span>
+                                        @if($item->plat_nomor)
+                                            <span class="text-slate-500 font-mono text-xxs">({{ $item->plat_nomor }})</span>
+                                        @endif
+                                    </div>
+                                @endif
+
+                                @if($item->alamat_tujuan)
+                                    <div class="d-flex align-items-start gap-2">
+                                        <svg style="width:1rem;height:1rem;" class="text-slate-400 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        <span class="text-slate-600 flex-grow-1" style="overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ $item->alamat_tujuan }}</span>
+                                    </div>
+                                @endif
+                            </div>
+
+                            <!-- Action Button -->
+                            <div class="d-flex flex-column gap-2">
+                                <a href="{{ route('driver.detail', $item) }}" class="btn btn-sp-primary btn-sm w-100 text-center text-xs fw-600">
+                                    Lihat Detail
                                 </a>
                             </div>
                         </div>

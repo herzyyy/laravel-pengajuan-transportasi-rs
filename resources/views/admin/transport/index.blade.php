@@ -51,6 +51,7 @@
                     <table class="sp-table w-100">
                         <thead>
                             <tr>
+                                <th>No. Pengajuan</th>
                                 <th>Pemohon</th>
                                 <th>Jenis</th>
                                 <th>Tanggal &amp; Waktu</th>
@@ -64,6 +65,13 @@
                         <tbody>
                             @forelse($items as $item)
                                 <tr>
+                                    <td>
+                                        <a href="{{ route('admin.transport.show', $item) }}"
+                                           class="font-mono fw-700 text-teal-700 bg-teal-50 border border-teal-200 px-2 py-1 rounded d-inline-block text-decoration-none"
+                                           style="font-size:.75rem;letter-spacing:.03em;">
+                                            {{ $item->nomor_pengajuan }}
+                                        </a>
+                                    </td>
                                     <td>
                                         <div class="fw-600 text-xs text-slate-900">{{ $item->user->full_name ?? $item->pemohon_nama }}</div>
                                         <div class="text-xxs text-slate-500">{{ $item->user->unit_kerja ?? $item->pemohon_unit }}</div>

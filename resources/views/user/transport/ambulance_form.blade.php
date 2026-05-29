@@ -15,7 +15,7 @@
 @endif
 
 <form method="POST" action="{{ route('pengajuan.ambulance.store') }}" id="ambulanceForm"
-      x-data="{ sampaiSelesai: {{ old('sampai_selesai') ? 'true' : 'false' }}, isRecurring: {{ old('is_recurring') ? 'true' : 'false' }} }">
+      x-data="{ sampaiSelesai: {{ old('sampai_selesai') ? 'true' : 'false' }} }">
     @csrf
 
     <div class="sp-card overflow-hidden">
@@ -41,12 +41,12 @@
                 <div class="col-sm-7">
                     <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Jenis Layanan <span class="text-danger">*</span></label>
                     <div class="d-flex gap-2">
-                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card">
+                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card" style="font-size:0.75rem;">
                             <input type="radio" name="purpose" value="antar" class="form-check-input m-0"
                                 @checked(old('purpose')==='antar') onchange="updateAlamatForm('antar')">
                             <span class="fw-600">Antar</span>
                         </label>
-                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card">
+                        <label class="flex-fill d-flex align-items-center justify-content-center gap-1 border rounded cursor-pointer py-1 px-2 sp-radio-card" style="font-size:0.75rem;">
                             <input type="radio" name="purpose" value="jemput" class="form-check-input m-0"
                                 @checked(old('purpose')==='jemput') onchange="updateAlamatForm('jemput')">
                             <span class="fw-600">Jemput</span>
@@ -60,24 +60,15 @@
             <div class="rounded border border-slate-200 p-2 mb-2" style="background:#f8fafc;">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-2">
                     <span class="fw-600 text-slate-800">Waktu Penggunaan</span>
-                    <div class="d-flex align-items-center gap-3">
-                        <label class="d-flex align-items-center gap-1 cursor-pointer select-none mb-0">
-                            <input type="checkbox" name="is_recurring" value="1" x-model="isRecurring"
-                                class="form-check-input m-0" style="width:.875rem;height:.875rem;"
-                                @change="if($event.target.checked && !confirm('Koordinasikan dengan pengelola transportasi jika ingin membuat pengajuan berulang. Lanjutkan?')) { isRecurring = false; }"
-                                {{ old('is_recurring') ? 'checked' : '' }}>
-                            <span class="text-xxs fw-600 text-indigo-700">Berulang</span>
-                        </label>
-                        <label class="d-flex align-items-center gap-1 cursor-pointer select-none mb-0">
-                            <input type="checkbox" name="sampai_selesai" value="1" x-model="sampaiSelesai"
-                                class="form-check-input m-0" style="width:.875rem;height:.875rem;"
-                                {{ old('sampai_selesai') ? 'checked' : '' }}>
-                            <span class="text-xxs fw-600 text-slate-700">Sampai Selesai</span>
-                        </label>
-                    </div>
+                    <label class="d-flex align-items-center gap-1 cursor-pointer select-none mb-0">
+                        <input type="checkbox" name="sampai_selesai" value="1" x-model="sampaiSelesai"
+                            class="form-check-input m-0" style="width:.875rem;height:.875rem;"
+                            {{ old('sampai_selesai') ? 'checked' : '' }}>
+                        <span class="text-xxs fw-600 text-slate-700">Sampai Selesai</span>
+                    </label>
                 </div>
                 <div class="row g-2">
-                    <div class="col-6 col-sm-3" x-show="!isRecurring">
+                    <div class="col-6 col-sm-3">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Tgl Dari <span class="text-danger">*</span></label>
                         <input type="text" id="tanggal_display" placeholder="dd/mm/yyyy" autocomplete="off"
                             class="form-control form-control-sm cursor-pointer">
@@ -89,7 +80,7 @@
                             pattern="^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$" maxlength="5" inputmode="numeric"
                             class="form-control form-control-sm">
                     </div>
-                    <div class="col-6 col-sm-3" x-show="!sampaiSelesai && !isRecurring">
+                    <div class="col-6 col-sm-3" x-show="!sampaiSelesai && true">
                         <label class="form-label text-xxs fw-600 text-slate-600 mb-1">Tgl Sampai <span class="text-danger">*</span></label>
                         <input type="text" id="tanggal_sampai_display" placeholder="dd/mm/yyyy" autocomplete="off"
                             class="form-control form-control-sm cursor-pointer">
@@ -109,25 +100,9 @@
                     Waktu selesai dicatat otomatis saat kendaraan kembali
                 </div>
 
-                {{-- Recurring days --}}
-                <div x-show="isRecurring" class="mt-2 pt-2 border-top border-slate-200" style="display:none;">
-                    <div class="text-xxs fw-600 text-indigo-800 mb-1">Pilih Hari <span class="text-danger">*</span></div>
-                    <div class="d-flex flex-wrap gap-1">
-                        @php $days=[1=>'Sen',2=>'Sel',3=>'Rab',4=>'Kam',5=>'Jum',6=>'Sab',7=>'Min']; $oldDays=old('recurring_hari',[]); @endphp
-                        @foreach($days as $num => $day)
-                        <label class="d-flex align-items-center gap-1 border rounded px-2 py-1 cursor-pointer sp-day-chip" style="font-size:.6875rem;">
-                            <input type="checkbox" name="recurring_hari[]" value="{{ $num }}"
-                                class="form-check-input m-0" style="width:.75rem;height:.75rem;"
-                                {{ in_array($num, $oldDays) ? 'checked' : '' }}>
-                            <span class="fw-500">{{ $day }}</span>
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-
                 {{-- Cek ketersediaan --}}
                 <div class="mt-2 d-flex align-items-center gap-2">
-                    <button id="checkAvailabilityBtn" type="button" x-show="!isRecurring"
+                    <button id="checkAvailabilityBtn" type="button"
                         class="d-inline-flex align-items-center gap-1 rounded px-2 py-1 text-white fw-600 border-0"
                         style="font-size:.6875rem;background:#007774;">
                         <svg width="11" height="11" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
@@ -228,18 +203,11 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!btn) return;
 
     function isSampaiSelesai() { const c = document.querySelector('input[name="sampai_selesai"]'); return c && c.checked; }
-    function isRecurring()     { const c = document.querySelector('input[name="is_recurring"]');   return c && c.checked; }
 
     function resetCheck() {
-        if (isRecurring()) {
-            submitBtn.disabled = false;
-            statusEl.textContent = 'Jadwal berulang tidak memerlukan cek ketersediaan';
-            statusEl.className = 'text-xxs fw-600 text-indigo-700';
-        } else {
-            submitBtn.disabled = true;
-            statusEl.textContent = 'Cek ketersediaan diperlukan';
-            statusEl.className = 'text-xxs fw-600 text-amber-600';
-        }
+        submitBtn.disabled = true;
+        statusEl.textContent = 'Cek ketersediaan diperlukan';
+        statusEl.className = 'text-xxs fw-600 text-amber-600';
     }
 
     const form = btn.closest('form');
@@ -248,16 +216,15 @@ document.addEventListener('DOMContentLoaded', function() {
         if (el) { el.addEventListener('change', resetCheck); el.addEventListener('input', resetCheck); }
     });
     form.querySelector('input[name="sampai_selesai"]')?.addEventListener('change', resetCheck);
-    form.querySelector('input[name="is_recurring"]')?.addEventListener('change', resetCheck);
 
     btn.addEventListener('click', async function() {
-        const tanggal = isRecurring() ? null : form.querySelector('input[name="tanggal"]').value;
+        const tanggal = form.querySelector('input[name="tanggal"]').value;
         const jam = form.querySelector('input[name="jam"]').value;
         const ss = isSampaiSelesai();
-        const tanggal_sampai = isRecurring() ? null : (ss ? tanggal : form.querySelector('input[name="tanggal_sampai"]').value);
+        const tanggal_sampai = ss ? tanggal : form.querySelector('input[name="tanggal_sampai"]').value;
         const jam_sampai = ss ? '23:59' : form.querySelector('input[name="jam_sampai"]').value;
 
-        if (!isRecurring() && (!tanggal || !jam || !tanggal_sampai || !jam_sampai)) {
+        if (!tanggal || !jam || !tanggal_sampai || !jam_sampai) {
             statusEl.textContent = 'Lengkapi tanggal dan jam terlebih dahulu';
             statusEl.className = 'text-xxs fw-600 text-amber-600';
             return;
@@ -266,9 +233,9 @@ document.addEventListener('DOMContentLoaded', function() {
         statusEl.className = 'text-xxs fw-600 text-slate-600';
 
         const url = new URL('{{ route('pengajuan.ambulance.check') }}', window.location.origin);
-        if (tanggal) url.searchParams.set('tanggal', tanggal);
+        url.searchParams.set('tanggal', tanggal);
         url.searchParams.set('jam', jam);
-        if (tanggal_sampai) url.searchParams.set('tanggal_sampai', tanggal_sampai);
+        url.searchParams.set('tanggal_sampai', tanggal_sampai);
         url.searchParams.set('jam_sampai', jam_sampai);
 
         try {
@@ -342,9 +309,8 @@ document.addEventListener('DOMContentLoaded', function() {
     function enforceMinJam(jamInput, tanggalId) {
         const tanggalHidden = document.getElementById(tanggalId);
         jamInput.addEventListener('blur', function() {
-            const isRec = document.querySelector('input[name="is_recurring"]')?.checked;
             const minJam = getMinJam(tanggalHidden?.value || '');
-            if (!isRec && minJam && jamInput.value && jamInput.value < minJam) {
+            if (minJam && jamInput.value && jamInput.value < minJam) {
                 showJamError(jamInput, 'Jam tidak boleh kurang dari jam sekarang'); return;
             } else { clearJamError(jamInput); }
             if (jamInput.name === 'jam_sampai') {

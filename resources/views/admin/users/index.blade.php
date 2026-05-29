@@ -68,7 +68,7 @@
                                     <option value="">Semua</option>
                                     <option value="user" @selected(request('role') === 'user')>User</option>
                                     <option value="admin" @selected(request('role') === 'admin')>Admin</option>
-                                    <option value="driver" @selected(request('role') === 'driver')>Supir</option>
+                                    <option value="driver" @selected(request('role') === 'driver')>Driver</option>
                                 </select>
                             </th>
                             <th class="py-2 px-3"></th>
@@ -92,8 +92,8 @@
                                 <td class="py-2 px-3">
                                     <div class="fw-600 text-slate-900">{{ $user->first_name }} {{ $user->last_name }}</div>
                                 </td>
-                                <td class="py-2 px-3 text-slate-600 font-monospace text-xxs">{{ $user->username ?? '-' }}</td>
-                                <td class="py-2 px-3 text-slate-700 font-monospace">{{ $user->nip ?? '-' }}</td>
+                                <td class="py-2 px-3 text-slate-600 font-monospace text-sm">{{ $user->username ?? '-' }}</td>
+                                <td class="py-2 px-3 text-slate-700 font-monospace text-sm">{{ $user->nip ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700">{{ $user->unit_kerja ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700">{{ $user->posisi_pekerjaan ?? '-' }}</td>
                                 <td class="py-2 px-3 text-slate-700">{{ $user->profesi ?? '-' }}</td>
@@ -102,7 +102,7 @@
                                     @if($user->role === 'admin')
                                         <span class="badge-indigo">Admin</span>
                                     @elseif($user->role === 'driver')
-                                        <span class="badge-amber">Supir</span>
+                                        <span class="badge-amber">Driver</span>
                                     @else
                                         <span class="badge-slate">User</span>
                                     @endif
@@ -110,7 +110,10 @@
                                 <td class="py-2 px-3 text-end">
                                     <div class="d-flex align-items-center justify-content-end gap-1">
                                         <a href="{{ route('admin.users.edit', $user) }}"
-                                            class="btn btn-sp-outline text-xxs fw-600 px-2 py-1">
+                                            class="btn-action-edit">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                            </svg>
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST"
@@ -118,7 +121,10 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="btn btn-sm border border-slate-300 text-xxs fw-600 text-danger bg-white px-2 py-1">
+                                                    class="btn-action-delete">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
                                                 Hapus
                                             </button>
                                         </form>
@@ -151,14 +157,17 @@
                         @if($user->role === 'admin')
                             <span class="badge-indigo">Admin</span>
                         @elseif($user->role === 'driver')
-                            <span class="badge-amber">Supir</span>
+                            <span class="badge-amber">Driver</span>
                         @else
                             <span class="badge-slate">User</span>
                         @endif
                     </div>
                     <div class="d-flex align-items-center gap-2 pt-2 border-top border-slate-100">
                         <a href="{{ route('admin.users.edit', $user) }}"
-                            class="flex-fill btn btn-sp-outline text-xs fw-600 text-center">
+                            class="btn-action-edit flex-fill">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
                             Edit
                         </a>
                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="flex-fill"
@@ -166,7 +175,10 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="btn w-100 border border-slate-300 text-xs fw-600 text-danger bg-white">
+                                    class="btn-action-delete w-100">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
                                 Hapus
                             </button>
                         </form>

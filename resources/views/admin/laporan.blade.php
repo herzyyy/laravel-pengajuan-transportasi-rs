@@ -119,8 +119,8 @@
                             <th class="whitespace-nowrap">Tujuan</th>
                             <th class="whitespace-nowrap">Unit Kendaraan</th>
                             <th class="whitespace-nowrap">Plat Nomor</th>
-                            <th class="whitespace-nowrap">NIP Supir</th>
-                            <th class="whitespace-nowrap">Nama Supir</th>
+                            <th class="whitespace-nowrap">NIP Driver</th>
+                            <th class="whitespace-nowrap">Nama Driver</th>
                             <th class="whitespace-nowrap">KM Awal</th>
                             <th class="whitespace-nowrap">KM Akhir</th>
                             <th class="whitespace-nowrap">Jarak</th>

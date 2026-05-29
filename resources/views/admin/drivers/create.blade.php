@@ -1,4 +1,4 @@
-<x-app-layout title="Tambah Supir — SIPETRANS">
+<x-app-layout title="Tambah Driver — SIPETRANS">
     <div class="px-3 pt-3 pb-4" style="max-width:42rem;margin:0 auto;">
 
         <div class="d-flex align-items-center gap-2 mb-3">
@@ -9,7 +9,7 @@
                 </svg>
                 Kembali
             </a>
-            <h1 class="text-sm fw-bold text-slate-800 mb-0">Tambah Supir Baru</h1>
+            <h1 class="text-sm fw-bold text-slate-800 mb-0">Tambah Driver Baru</h1>
         </div>
 
         <div class="sp-card p-4">
@@ -34,14 +34,14 @@
                     </div>
                 </div>
                 <div class="mb-2">
-                    <label class="form-label text-xxs fw-600 text-slate-600">Akun Login Supir</label>
+                    <label class="form-label text-xxs fw-600 text-slate-600">Akun Login Driver</label>
                     <select name="user_id" class="form-select form-select-sm">
                         <option value="">-- Tidak dihubungkan --</option>
                         @foreach($driverUsers as $u)
                             <option value="{{ $u->id }}" {{ old('user_id') == $u->id ? 'selected' : '' }}>{{ $u->full_name }}</option>
                         @endforeach
                     </select>
-                    <p class="mt-1 text-xxs text-slate-400">Hubungkan ke akun dengan role "driver" agar supir bisa login</p>
+                    <p class="mt-1 text-xxs text-slate-400">Hubungkan ke akun dengan role "driver" agar driver bisa login</p>
                 </div>
                 <div class="mb-2">
                     <label class="form-label text-xxs fw-600 text-slate-600">Status</label>

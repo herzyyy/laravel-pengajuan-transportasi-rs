@@ -84,86 +84,90 @@
 
         {{-- Desktop Table --}}
         <div class="d-none d-md-block overflow-x-auto">
-            <table class="sp-table" style="min-width:640px; table-layout:fixed;">
+            <table class="sp-table w-100">
                 <thead>
                     <tr>
-                        <th style="width:5.5rem;">No. Pengajuan</th>
-                        <th style="width:22%;">Jenis &amp; Keperluan</th>
-                        <th style="width:22%;">Jadwal</th>
-                        <th style="width:6rem;">Dibuat</th>
-                        <th style="width:6rem;">Status</th>
-                        <th style="width:3.5rem; text-align:center;">Aksi</th>
+                        <th>No. Pengajuan</th>
+                        <th>Jenis & Keperluan</th>
+                        <th>Jadwal</th>
+                        <th>Dibuat</th>
+                        <th>Status</th>
+                        <th class="text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($items as $item)
                     <tr>
                         <td>
-                            <span class="font-mono text-xxs fw-600 text-teal-700 bg-teal-50 border border-slate-200 px-1 py-0.5 rounded">
+                            <a href="{{ route('pengajuan.success', $item) }}"
+                               class="font-mono fw-700 text-teal-700 bg-teal-50 border border-teal-200 px-2 py-1 rounded d-inline-block text-decoration-none"
+                               style="font-size:.75rem;letter-spacing:.03em;">
                                 {{ $item->nomor_pengajuan }}
-                            </span>
+                            </a>
                         </td>
                         <td>
                             <div class="d-flex align-items-center gap-1 flex-wrap mb-1">
-                                @if($item->jenis === 'ambulance')
-                                    <span class="badge-emerald">Ambulance</span>
-                                @else
-                                    <span class="badge-amber">Umum</span>
-                                @endif
+                                <span class="badge status-badge {{ $item->jenis === 'ambulance' ? 'bg-red-100 text-red-700 border border-red-200' : 'badge-emerald' }}">
+                                    {{ ucfirst($item->jenis) }}
+                                </span>
                                 @if($item->prioritas === 'segera')
-                                    <span class="badge-red">⚡ CITO</span>
+                                    <span class="badge status-badge badge-red">CITO</span>
                                 @endif
                             </div>
                             @if($item->keperluan)
-                                <div class="text-xxs text-slate-600 fw-500 truncate" title="{{ ucfirst($item->keperluan) }}">
+                                <div class="text-xs text-slate-600 fw-500 truncate" title="{{ ucfirst($item->keperluan) }}" style="max-width:16rem;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">
                                     {{ ucfirst($item->keperluan) }}
                                 </div>
                             @endif
                         </td>
                         <td>
-                            <div class="text-xxs text-slate-800 fw-500 whitespace-nowrap">
-                                {{ $item->tanggal?->format('d M Y') }} {{ substr($item->jam, 0, 5) }}
+                            <div class="text-xs text-slate-700 fw-500 whitespace-nowrap">
+                                {{ $item->tanggal?->format('d/m/Y') }} {{ substr($item->jam, 0, 5) }}
                             </div>
-                            <div class="text-xxs text-slate-400 whitespace-nowrap">
+                            <div class="text-xxs text-slate-500 whitespace-nowrap">
                                 @if($item->tanggal_sampai && $item->jam_sampai)
-                                    s/d {{ $item->tanggal_sampai?->format('d M Y') }} {{ substr($item->jam_sampai, 0, 5) }}
+                                    s/d {{ $item->tanggal_sampai?->format('d/m/Y') }} {{ substr($item->jam_sampai, 0, 5) }}
                                 @else
                                     s/d selesai
                                 @endif
                             </div>
                         </td>
                         <td>
-                            <div class="text-xxs text-slate-700 fw-500 whitespace-nowrap">{{ $item->created_at->format('d M Y') }}</div>
-                            <div class="text-xxs text-slate-400 whitespace-nowrap">{{ $item->created_at->format('H:i') }}</div>
+                            <div class="text-xs text-slate-700 fw-500 whitespace-nowrap">{{ $item->created_at->format('d/m/Y') }}</div>
+                            <div class="text-xxs text-slate-500 whitespace-nowrap">{{ $item->created_at->format('H:i') }}</div>
                         </td>
                         <td>
                             @php
-                                $sc = match($item->status) {
-                                    'diajukan'        => ['badge-amber',   'Diajukan'],
-                                    'diproses'        => ['badge-blue',    'Disetujui'],
-                                    'digunakan'       => ['badge-cyan',    'Digunakan'],
-                                    'selesai'         => ['badge-emerald', 'Selesai'],
-                                    'tidak_disetujui' => ['badge-red',     'Ditolak'],
-                                    default           => ['badge-slate',   ucfirst($item->status)],
+                                $badgeMap = ['diajukan' => 'badge-amber', 'diproses' => 'badge-blue', 'digunakan' => 'badge-cyan', 'selesai' => 'badge-emerald', 'tidak_disetujui' => 'badge-red'];
+                                $badgeClass = $badgeMap[$item->status] ?? 'badge-slate';
+                                $label = match($item->status) {
+                                    'diproses' => 'Disetujui',
+                                    'digunakan' => 'Digunakan',
+                                    'tidak_disetujui' => 'Ditolak',
+                                    default => ucfirst($item->status)
                                 };
                             @endphp
-                            <span class="{{ $sc[0] }}">{{ $sc[1] }}</span>
+                            <span class="badge status-badge {{ $badgeClass }} whitespace-nowrap">
+                                {{ $label }}
+                            </span>
                         </td>
                         <td class="text-center">
-                            <a href="{{ route('pengajuan.success', $item) }}"
-                               class="d-inline-flex align-items-center gap-1 text-xxs fw-600 text-decoration-none"
-                               style="color:#007774;">
-                                Detail
-                                <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                            <a href="{{ route('pengajuan.success', $item) }}" class="btn btn-sp-primary btn-sm d-inline-flex align-items-center gap-1 whitespace-nowrap" style="font-size:.625rem;">
+                                <svg style="width:.75rem;height:.75rem;" fill="none" stroke="white" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
                                 </svg>
+                                Detail
                             </a>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="py-4 text-center text-xxs text-slate-500">
-                            Belum ada pengajuan
+                        <td colspan="6" class="px-3 py-5 text-center">
+                            <svg style="width:2.5rem;height:2.5rem;" class="text-slate-300 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <p class="text-slate-500 text-xs fw-500 mb-0">Belum ada pengajuan transportasi.</p>
                         </td>
                     </tr>
                     @endforelse
@@ -172,56 +176,74 @@
         </div>
 
         {{-- Mobile Cards --}}
-        <div class="d-md-none divide-y divide-slate-100">
+        <div class="d-md-none divide-y divide-slate-200">
             @forelse ($items as $item)
-            <div class="px-3 py-2 min-w-0">
-                <div class="d-flex align-items-start justify-content-between gap-2">
-                    <div class="flex-grow-1 min-w-0">
-                        <div class="d-flex align-items-center gap-1 flex-wrap mb-1">
-                            <span class="font-mono text-xxs fw-600 text-slate-500 bg-slate-100 px-1 rounded">{{ $item->nomor_pengajuan }}</span>
-                            @php
-                                $sc = match($item->status) {
-                                    'diajukan'        => ['badge-amber',   'Diajukan'],
-                                    'diproses'        => ['badge-blue',    'Disetujui'],
-                                    'digunakan'       => ['badge-cyan',    'Digunakan'],
-                                    'selesai'         => ['badge-emerald', 'Selesai'],
-                                    'tidak_disetujui' => ['badge-red',     'Ditolak'],
-                                    default           => ['badge-slate',   ucfirst($item->status)],
-                                };
-                            @endphp
-                            <span class="{{ $sc[0] }}">{{ $sc[1] }}</span>
-                            @if($item->jenis === 'ambulance')
-                                <span class="badge-emerald">Ambulance</span>
-                            @else
-                                <span class="badge-amber">Umum</span>
-                            @endif
-                            @if($item->prioritas === 'segera')
-                                <span class="badge-red">⚡ CITO</span>
-                            @endif
+                <div class="p-3" style="transition:background .1s;">
+                    <!-- Header -->
+                    <div class="d-flex align-items-start justify-content-between gap-3 mb-3">
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-600 text-sm text-slate-900 truncate">{{ $item->nomor_pengajuan }}</div>
                         </div>
-                        @if($item->keperluan)
-                            <div class="text-xxs fw-600 text-slate-800 truncate">{{ ucfirst($item->keperluan) }}</div>
-                        @endif
-                        <div class="text-xxs text-slate-500 mt-1">
-                            {{ $item->tanggal?->format('d/m/Y') }} {{ substr($item->jam, 0, 5) }}
-                            @if($item->tanggal_sampai && $item->jam_sampai)
-                                → {{ $item->tanggal_sampai?->format('d/m/Y') }} {{ substr($item->jam_sampai, 0, 5) }}
-                            @endif
-                        </div>
-                        <div class="text-xxs text-slate-400">Dibuat: {{ $item->created_at->format('d/m/Y H:i') }}</div>
+                        @php
+                            $badgeMap2 = ['diajukan' => 'badge-amber', 'diproses' => 'badge-blue', 'digunakan' => 'badge-cyan', 'selesai' => 'badge-emerald', 'tidak_disetujui' => 'badge-red'];
+                            $badgeClass2 = $badgeMap2[$item->status] ?? 'badge-slate';
+                            $label2 = match($item->status) {
+                                'diproses' => 'Disetujui',
+                                'digunakan' => 'Digunakan',
+                                'tidak_disetujui' => 'Ditolak',
+                                default => ucfirst($item->status)
+                            };
+                        @endphp
+                        <span class="badge status-badge {{ $badgeClass2 }} whitespace-nowrap">
+                            {{ $label2 }}
+                        </span>
                     </div>
-                    <a href="{{ route('pengajuan.success', $item) }}"
-                       class="d-inline-flex align-items-center gap-1 text-xxs fw-600 text-decoration-none shrink-0 mt-1"
-                       style="color:#007774;">
-                        Detail
-                        <svg width="11" height="11" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-                        </svg>
-                    </a>
+
+                    <!-- Badges -->
+                    <div class="d-flex align-items-center gap-2 mb-3">
+                        <span class="badge status-badge {{ $item->jenis === 'ambulance' ? 'bg-red-100 text-red-700' : 'badge-emerald' }}">
+                            {{ ucfirst($item->jenis) }}
+                        </span>
+                        @if($item->prioritas === 'segera')
+                            <span class="badge status-badge badge-red">CITO</span>
+                        @endif
+                    </div>
+
+                    <!-- Details -->
+                    <div class="mb-3 text-xs">
+                        <div class="d-flex align-items-center gap-2 mb-2">
+                            <svg style="width:1rem;height:1rem;" class="text-slate-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <span class="text-slate-700 fw-500">{{ $item->tanggal->format('d M Y') }}</span>
+                            <span class="text-slate-500">{{ $item->jam }} - {{ $item->jam_sampai ?? 'selesai' }}</span>
+                        </div>
+                        <div class="text-xxs text-slate-400 mb-2">Dibuat: {{ $item->created_at->format('d M Y, H:i') }}</div>
+
+                        @if($item->keperluan)
+                            <div class="d-flex align-items-start gap-2">
+                                <svg style="width:1rem;height:1rem;" class="text-slate-400 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                                <span class="text-slate-600 flex-grow-1" style="overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;">{{ ucfirst($item->keperluan) }}</span>
+                            </div>
+                        @endif
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="d-flex flex-column gap-2">
+                        <a href="{{ route('pengajuan.success', $item) }}" class="btn btn-sp-primary btn-sm w-100 text-center text-xs fw-600">
+                            Lihat Detail
+                        </a>
+                    </div>
                 </div>
-            </div>
             @empty
-            <div class="p-4 text-center text-xxs text-slate-500">Belum ada pengajuan</div>
+                <div class="p-5 text-center">
+                    <svg style="width:3rem;height:3rem;" class="text-slate-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <p class="text-slate-500 text-sm fw-500 mb-0">Belum ada pengajuan transportasi.</p>
+                </div>
             @endforelse
         </div>
 

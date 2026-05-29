@@ -14,39 +14,50 @@ class AutoRejectExpiredRequests extends Command
 
     public function handle()
     {
-        $now = Carbon::now();
+        $now      = Carbon::now(config('app.timezone'));
         $deadline = $now->copy()->subHours(24);
-        $count = 0;
+        $count    = 0;
 
-        // 1. Status "diajukan" yang sudah lebih dari 24 jam sejak dibuat tanpa diproses admin
+        // ── 1. Status "diajukan" ──────────────────────────────────────────────
+        // Tolak jika sudah lebih dari 24 jam sejak dibuat dan belum diproses admin.
         $pendingExpired = TransportRequest::where('status', 'diajukan')
-            ->where('created_at', '<=', $deadline)
+            ->where('created_at', '<=', $deadline->toDateTimeString())
             ->get();
 
-        foreach ($pendingExpired as $request) {
-            $request->update([
+        foreach ($pendingExpired as $req) {
+            $req->update([
                 'status'           => 'tidak_disetujui',
                 'rejection_reason' => 'Pengajuan otomatis ditolak karena tidak diproses oleh admin dalam 24 jam sejak pengajuan dibuat.',
             ]);
             $count++;
-            $nama = $request->user?->full_name ?? $request->pemohon_nama;
-            $this->info("Ditolak (tidak diproses) #{$request->nomor_pengajuan} — {$nama}");
+            $nama = $req->user?->full_name ?? $req->pemohon_nama;
+            $this->info("Ditolak (tidak diproses) #{$req->nomor_pengajuan} — {$nama}");
         }
 
-        // 2. Status "diproses" (disetujui) yang tanggal+jam transportasi sudah lewat 24 jam tanpa dieksekusi
-        $approvedExpired = TransportRequest::where('status', 'diproses')
-            ->whereRaw("CONCAT(tanggal, ' ', jam) <= ?", [$deadline->format('Y-m-d H:i:s')])
-            ->get();
+        // ── 2. Status "diproses" ──────────────────────────────────────────────
+        // Tolak jika waktu keberangkatan (tanggal + jam) sudah lewat lebih dari 24 jam
+        // dan belum ditandai digunakan oleh admin.
+        $approvedAll = TransportRequest::where('status', 'diproses')->get();
 
-        foreach ($approvedExpired as $request) {
-            $jadwal = $request->tanggal->format('d/m/Y') . ' ' . $request->jam;
-            $request->update([
-                'status'           => 'tidak_disetujui',
-                'rejection_reason' => "Pengajuan otomatis ditolak karena transportasi yang dijadwalkan pada {$jadwal} tidak dieksekusi dalam 24 jam setelah waktu keberangkatan.",
-            ]);
-            $count++;
-            $nama = $request->user?->full_name ?? $request->pemohon_nama;
-            $this->info("Ditolak (tidak dieksekusi) #{$request->nomor_pengajuan} — {$nama} (jadwal: {$jadwal})");
+        foreach ($approvedAll as $req) {
+            // Bangun datetime keberangkatan dengan timezone yang benar
+            $jadwalDt = Carbon::createFromFormat(
+                'Y-m-d H:i:s',
+                $req->tanggal->format('Y-m-d') . ' ' . substr($req->jam, 0, 5) . ':00',
+                config('app.timezone')
+            );
+
+            // Lewat 24 jam sejak jadwal keberangkatan?
+            if ($now->gt($jadwalDt->copy()->addHours(24))) {
+                $jadwal = $req->tanggal->format('d/m/Y') . ' ' . substr($req->jam, 0, 5);
+                $req->update([
+                    'status'           => 'tidak_disetujui',
+                    'rejection_reason' => "Pengajuan otomatis ditolak karena transportasi yang dijadwalkan pada {$jadwal} tidak dieksekusi dalam 24 jam setelah waktu keberangkatan.",
+                ]);
+                $count++;
+                $nama = $req->user?->full_name ?? $req->pemohon_nama;
+                $this->info("Ditolak (tidak dieksekusi) #{$req->nomor_pengajuan} — {$nama} (jadwal: {$jadwal})");
+            }
         }
 
         if ($count > 0) {

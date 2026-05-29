@@ -1,10 +1,10 @@
-<x-app-layout title="Manajemen Supir — SIPETRANS">
+<x-app-layout title="Manajemen Driver — SIPETRANS">
     <div class="container-fluid px-3 pt-4 pb-6">
 
         <div class="d-flex align-items-center justify-content-between mb-3">
             <div>
-                <h1 class="fw-bold text-slate-800 mb-0" style="font-size:1.1rem;">Master Supir</h1>
-                <p class="text-slate-500 text-xs mt-1 mb-0">Kelola data supir/pengemudi</p>
+                <h1 class="fw-bold text-slate-800 mb-0" style="font-size:1.1rem;">Master Driver</h1>
+                <p class="text-slate-500 text-xs mt-1 mb-0">Kelola data driver/pengemudi</p>
             </div>
             <a href="{{ route('admin.drivers.create') }}"
                class="btn btn-sp-primary d-inline-flex align-items-center gap-2 text-xs">
@@ -77,15 +77,21 @@
                                 <td class="py-2 px-3 text-end">
                                     <div class="d-flex align-items-center justify-content-end gap-1">
                                         <a href="{{ route('admin.drivers.edit', $driver) }}"
-                                            class="btn btn-sp-outline text-xxs fw-600 px-2 py-1">
+                                            class="btn-action-edit">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                                            </svg>
                                             Edit
                                         </a>
                                         <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST"
-                                              onsubmit="return confirm('Yakin ingin menghapus supir ini?')">
+                                              onsubmit="return confirm('Yakin ingin menghapus driver ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
-                                                    class="btn btn-sm border border-slate-300 text-xxs fw-600 text-danger bg-white px-2 py-1">
+                                                    class="btn-action-delete">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                                </svg>
                                                 Hapus
                                             </button>
                                         </form>
@@ -94,7 +100,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="py-5 text-center text-slate-500 text-xs">Tidak ada data supir</td>
+                                <td colspan="5" class="py-5 text-center text-slate-500 text-xs">Tidak ada data driver</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -155,15 +161,21 @@
                     </div>
                     <div class="d-flex align-items-center gap-2 pt-2 border-top border-slate-100">
                         <a href="{{ route('admin.drivers.edit', $driver) }}"
-                            class="flex-fill btn btn-sp-outline text-xs fw-600 text-center">
+                            class="btn-action-edit flex-fill">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"/>
+                            </svg>
                             Edit
                         </a>
                         <form action="{{ route('admin.drivers.destroy', $driver) }}" method="POST" class="flex-fill"
-                              onsubmit="return confirm('Yakin ingin menghapus supir ini?')">
+                              onsubmit="return confirm('Yakin ingin menghapus driver ini?')">
                             @csrf
                             @method('DELETE')
                             <button type="submit"
-                                    class="btn w-100 border border-slate-300 text-xs fw-600 text-danger bg-white">
+                                    class="btn-action-delete w-100">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                </svg>
                                 Hapus
                             </button>
                         </form>
@@ -171,7 +183,7 @@
                 </div>
             @empty
                 <div class="sp-card p-5 text-center text-slate-500 text-xs">
-                    Tidak ada data supir
+                    Tidak ada data driver
                 </div>
             @endforelse
             @if($drivers->hasPages())

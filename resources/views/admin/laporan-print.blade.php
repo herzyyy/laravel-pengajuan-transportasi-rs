@@ -76,7 +76,7 @@
                 <th>Tujuan</th>
                 <th>Unit Kendaraan</th>
                 <th>Plat</th>
-                <th>Nama Supir</th>
+                <th>Nama Driver</th>
                 <th>KM Awal</th>
                 <th>KM Akhir</th>
                 <th>Jarak</th>

@@ -17,6 +17,8 @@
         /* UI/UX Enhancements for Menus and Buttons */
         .sp-sidebar-link { transition: all 0.2s ease; }
         .sp-sidebar-link:hover { background-color: rgba(0, 119, 116, 0.06); color: #007774; transform: translateX(4px); }
+        .sp-sidebar-link:hover .sp-sidebar-icon { background-color: rgba(0,119,116,0.12); color: #007774; }
+        .sp-sidebar-link:hover .sp-sidebar-icon svg { stroke: #007774; }
         .sp-user-btn { transition: transform 0.2s ease, box-shadow 0.2s ease; }
         .sp-user-btn:hover { transform: scale(1.05); }
         .sp-nav-btn { transition: transform 0.2s ease, background-color 0.2s ease; border-radius: 50%; }
@@ -46,12 +48,12 @@
 
     {{-- Header --}}
     <header class="sp-navbar">
-        <div class="px-3 py-2 d-flex align-items-center justify-content-between gap-3">
+        <div class="px-3 py-3 d-flex align-items-center justify-content-between gap-3">
 
             @if(auth()->user()->isAdmin())
             <button @click="sidebarOpen = !sidebarOpen" type="button"
                     class="sp-nav-btn d-lg-none shrink-0">
-                <svg style="width:1.25rem;height:1.25rem;color:#007774;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg style="width:1.25rem;height:1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
                 </svg>
             </button>
@@ -86,7 +88,7 @@
                 @endphp
                 <div class="position-relative" x-data="{ open: false }">
                     <button @click="open = !open" type="button" class="sp-nav-btn position-relative">
-                        <svg style="width:1.25rem;height:1.25rem;color:#007774;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg style="width:1.25rem;height:1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
                         @if($totalNotifications > 0)
@@ -173,7 +175,7 @@
                 @endphp
                 <div class="position-relative" x-data="{ open: false }">
                     <button @click="open = !open" type="button" class="sp-nav-btn position-relative">
-                        <svg style="width:1.25rem;height:1.25rem;color:#007774;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg style="width:1.25rem;height:1.25rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
                         </svg>
                         @if($approvedCount > 0)
@@ -233,8 +235,8 @@
                 @endif
 
                 @if(!auth()->user()->isAdmin())
-                {{-- User / Driver Dropdown --}}
-                <div class="position-relative" x-data="{ open: false }">
+                {{-- Mobile User / Driver Dropdown (Garis 3) --}}
+                <div class="position-relative d-lg-none" x-data="{ open: false }">
                     <button @click="open = !open" type="button" class="sp-user-btn">
                         <svg style="width:1.25rem;height:1.25rem;color:white;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
@@ -255,7 +257,7 @@
                                 <div class="min-w-0">
                                     <div class="text-sm fw-600 text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
                                     @if(auth()->user()->isDriver())
-                                    <div class="text-xs fw-500" style="color:#007774;">Supir</div>
+                                    <div class="text-xs fw-500" style="color:#007774;">Driver</div>
                                     @else
                                     <div class="text-xs text-slate-500 truncate">{{ auth()->user()->unit_kerja ?? auth()->user()->email }}</div>
                                     @endif
@@ -291,13 +293,53 @@
                         </div>
                     </div>
                 </div>
+
+                {{-- Desktop User / Driver Navigation (Web Mode) --}}
+                <div class="d-none d-lg-flex align-items-center gap-3">
+                    {{-- User Name / Info --}}
+                    <div class="d-flex align-items-center gap-2 px-3 rounded" style="height:2.5rem; background:rgba(0,119,116,0.06); border:1px solid rgba(0,119,116,0.1);">
+                        <div class="d-flex align-items-center justify-content-center rounded-circle shrink-0"
+                             style="width:1.75rem;height:1.75rem;background-color:#007774;">
+                            <svg style="width:0.875rem;height:0.875rem;" class="text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="text-xs fw-600 text-slate-800" style="line-height:1.2;">{{ auth()->user()->full_name }}</div>
+                            <div class="text-xxs text-slate-500" style="line-height:1.2;">{{ auth()->user()->isDriver() ? 'Driver' : (auth()->user()->unit_kerja ?? auth()->user()->email) }}</div>
+                        </div>
+                    </div>
+
+                    {{-- Riwayat Button --}}
+                    @php
+                        $historyRoute = auth()->user()->isDriver() ? route('driver.history') : route('pengajuan.index');
+                    @endphp
+                    <a href="{{ $historyRoute }}" class="sp-admin-logout-btn d-flex align-items-center gap-2 px-3 text-xs fw-500 rounded text-decoration-none" style="height:2rem;">
+                        <svg style="width:1rem;height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 7h12M6 12h12M6 17h8"/>
+                        </svg>
+                        Riwayat
+                    </a>
+
+                    {{-- Keluar Button --}}
+                    <form method="POST" action="{{ route('logout') }}" class="m-0">
+                        @csrf
+                        <button type="submit" class="btn d-flex align-items-center gap-2 px-3 text-xs fw-500 rounded text-decoration-none text-white" style="height:2rem; background:#ef4444;border:1px solid #ef4444;transition:all 0.2s;"
+                                onmouseover="this.style.background='#dc2626'; this.style.borderColor='#dc2626';"
+                                onmouseout="this.style.background='#ef4444'; this.style.borderColor='#ef4444';">
+                            <svg style="width:1rem;height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                            </svg>
+                            Keluar
+                        </button>
+                    </form>
+                </div>
                 @endif
 
                 @if(auth()->user()->isAdmin())
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="d-flex align-items-center gap-2 px-3 py-1 text-xs fw-500 rounded"
-                            style="color:#007774;border:1px solid rgba(0,119,116,0.3);background:rgba(0,119,116,0.06);">
+                    <button type="submit" class="sp-admin-logout-btn d-flex align-items-center gap-2 px-3 py-1 text-xs fw-500 rounded">
                         <svg style="width:1rem;height:1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                         </svg>
@@ -414,7 +456,7 @@
                             <circle cx="12" cy="8" r="4"/><path d="M6 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/>
                         </svg>
                     </span>
-                    <span>Supir</span>
+                    <span>Driver</span>
                 </a>
 
                 <a href="{{ route('admin.recurring-templates.index') }}" @click="sidebarOpen = false"
@@ -472,7 +514,7 @@
                     </div>
                     <div class="min-w-0">
                         <div class="text-sm fw-600 text-slate-800 truncate">{{ auth()->user()->full_name }}</div>
-                        <div class="text-xs fw-500" style="color:#007774;">Supir</div>
+                        <div class="text-xs fw-500" style="color:#007774;">Driver</div>
                     </div>
                 </div>
             </div>

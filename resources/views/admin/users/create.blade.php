@@ -85,7 +85,7 @@
                                 class="form-select form-select-sm">
                             <option value="user">User</option>
                             <option value="admin">Admin</option>
-                            <option value="driver">Supir</option>
+                            <option value="driver">Driver</option>
                         </select>
                     </div>
                     <div class="col-6" x-show="createRole === 'user'">

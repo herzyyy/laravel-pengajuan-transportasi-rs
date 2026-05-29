@@ -157,11 +157,11 @@
                 </div>
             </div>
 
-            {{-- Kendaraan & Supir --}}
+            {{-- Kendaraan & Driver --}}
             <div class="col-12 col-lg-6">
                 <div class="sp-card overflow-hidden h-100">
                     <div class="sp-card-header">
-                        <h2 class="text-xs fw-600 text-slate-800 mb-0">Kendaraan &amp; Supir</h2>
+                        <h2 class="text-xs fw-600 text-slate-800 mb-0">Kendaraan &amp; Driver</h2>
                     </div>
                     <dl class="px-3 py-2 text-xs mb-0">
                         <div class="d-flex gap-2 mb-2">
@@ -175,7 +175,7 @@
                             <dd class="text-slate-700 font-mono mb-0">{{ $transportRequest->plat_nomor ?? '-' }}</dd>
                         </div>
                         <div class="d-flex gap-2 mb-2">
-                            <dt class="text-slate-500 flex-shrink-0" style="width:7rem;">Supir</dt>
+                            <dt class="text-slate-500 flex-shrink-0" style="width:7rem;">Driver</dt>
                             <dd class="text-slate-800 fw-500 mb-0">{{ $transportRequest->driver->name ?? '-' }}</dd>
                         </div>
                     </dl>
@@ -223,7 +223,7 @@
                     @foreach([
                         ['label' => 'Pemohon',     'signed' => $transportRequest->signature_pemohon,     'at' => $transportRequest->signature_pemohon_at,     'name' => $transportRequest->user->full_name ?? $transportRequest->pemohon_nama],
                         ['label' => 'Pengelola 1', 'signed' => $transportRequest->signature_pengelola_1, 'at' => $transportRequest->signature_pengelola_1_at, 'name' => $transportRequest->signature_pengelola_1_name],
-                        ['label' => 'Supir',       'signed' => $transportRequest->signature_driver,      'at' => $transportRequest->signature_driver_at,      'name' => $transportRequest->driver->name ?? null],
+                        ['label' => 'Driver',       'signed' => $transportRequest->signature_driver,      'at' => $transportRequest->signature_driver_at,      'name' => $transportRequest->driver->name ?? null],
                         ['label' => 'Pengelola 2', 'signed' => $transportRequest->signature_pengelola_2, 'at' => $transportRequest->signature_pengelola_2_at, 'name' => $transportRequest->signature_pengelola_2_name],
                     ] as $ttd)
                     <div class="col-6 col-sm-3">
