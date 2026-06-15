@@ -22,8 +22,7 @@
                         <label class="form-label text-xxs fw-600 text-slate-600">Nama Lengkap *</label>
                         <input type="text" name="nama_lengkap" value="{{ old('nama_lengkap') }}" required
                                x-model="namaLengkap" @input="generateUsername()"
-                               placeholder="Budi Santoso, S.Kom."
-                               class="form-control form-control-sm @error('nama_lengkap') is-invalid @enderror">
+                                               class="form-control form-control-sm @error('nama_lengkap') is-invalid @enderror">
                         <p class="mt-1 text-xxs text-slate-400">Gelar belakang dipisah koma. Contoh: Budi, S.Kom.</p>
                     </div>
                     <div class="col-6">
@@ -43,7 +42,7 @@
                     </div>
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Password *</label>
-                        <input type="password" name="password" required
+                        <input type="password" name="password" value="{{ old('password', 'rsazra') }}" required
                                class="form-control form-control-sm @error('password') is-invalid @enderror">
                         @error('password')<div class="invalid-feedback text-xxs">{{ $message }}</div>@enderror
                     </div>
@@ -67,8 +66,11 @@
                 <div class="row g-3 mb-2">
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Profesi</label>
-                        <input type="text" name="profesi" value="{{ old('profesi') }}"
-                               class="form-control form-control-sm">
+                        <select name="profesi" class="form-select form-select-sm">
+                            <option value="">-- Pilih Profesi --</option>
+                            <option value="MEDIS" {{ old('profesi') == 'MEDIS' ? 'selected' : '' }}>MEDIS</option>
+                            <option value="NON MEDIS" {{ old('profesi') == 'NON MEDIS' ? 'selected' : '' }}>NON MEDIS</option>
+                        </select>
                     </div>
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Jabatan</label>

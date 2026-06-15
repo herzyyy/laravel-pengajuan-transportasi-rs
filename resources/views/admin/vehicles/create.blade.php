@@ -18,7 +18,7 @@
                 <div class="row g-3 mb-2">
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Nama Unit *</label>
-                        <input type="text" name="name" value="{{ old('name') }}" required placeholder="mobil_umum_1"
+                        <input type="text" name="name" value="{{ old('name') }}" required
                                class="form-control form-control-sm @error('name') is-invalid @enderror">
                         @error('name')<div class="invalid-feedback text-xxs">{{ $message }}</div>@enderror
                     </div>
@@ -36,20 +36,20 @@
                 <div class="row g-3 mb-2">
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Nomor Polisi *</label>
-                        <input type="text" name="plate_number" value="{{ old('plate_number') }}" required placeholder="B 1234 CD"
+                        <input type="text" name="plate_number" value="{{ old('plate_number') }}" required
                                class="form-control form-control-sm @error('plate_number') is-invalid @enderror">
                         @error('plate_number')<div class="invalid-feedback text-xxs">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Merk</label>
-                        <input type="text" name="brand" value="{{ old('brand') }}" placeholder="Toyota"
+                        <input type="text" name="brand" value="{{ old('brand') }}"
                                class="form-control form-control-sm">
                     </div>
                 </div>
                 <div class="row g-3 mb-2">
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Model/Tipe</label>
-                        <input type="text" name="model" value="{{ old('model') }}" placeholder="Avanza"
+                        <input type="text" name="model" value="{{ old('model') }}"
                                class="form-control form-control-sm">
                     </div>
                     <div class="col-6">

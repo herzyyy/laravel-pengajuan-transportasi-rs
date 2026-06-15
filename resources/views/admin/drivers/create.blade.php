@@ -24,12 +24,12 @@
                 <div class="row g-3 mb-2">
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Nomor Telepon</label>
-                        <input type="text" name="phone" value="{{ old('phone') }}" placeholder="081234567890"
+                        <input type="text" name="phone" value="{{ old('phone') }}"
                                class="form-control form-control-sm">
                     </div>
                     <div class="col-6">
                         <label class="form-label text-xxs fw-600 text-slate-600">Nomor SIM</label>
-                        <input type="text" name="license_number" value="{{ old('license_number') }}" placeholder="A-1234-5678"
+                        <input type="text" name="license_number" value="{{ old('license_number') }}"
                                class="form-control form-control-sm">
                     </div>
                 </div>
