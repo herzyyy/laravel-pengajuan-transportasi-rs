@@ -1,5 +1,5 @@
 <x-app-layout title="Riwayat Tugas — SIPETRANS">
-    <div class="mx-auto px-3 pt-3 pb-5" style="max-width:64rem;">
+    <div class="mx-auto px-3 pt-3 pb-20" style="max-width:64rem;" data-driver-page>
 
         {{-- Header --}}
         <div class="d-flex align-items-center justify-content-between mb-3">

@@ -448,5 +448,15 @@ class TransportRequestController extends Controller
             'item' => $transportRequest,
         ]);
     }
+
+    public function profil()
+    {
+        $user = auth()->user();
+        $totalPengajuan = $user->transportRequests()->count();
+        $totalDisetujui = $user->transportRequests()->whereIn('status', ['diproses', 'digunakan', 'selesai'])->count();
+        $totalDitolak   = $user->transportRequests()->where('status', 'ditolak')->count();
+
+        return view('user.profil', compact('user', 'totalPengajuan', 'totalDisetujui', 'totalDitolak'));
+    }
 }
 

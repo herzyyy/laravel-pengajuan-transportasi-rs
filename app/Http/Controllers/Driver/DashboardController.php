@@ -9,6 +9,21 @@ use Illuminate\Validation\ValidationException;
 
 class DashboardController extends Controller
 {
+    public function profil()
+    {
+        $driver = auth()->user()->driver;
+
+        if (!$driver) {
+            return view('driver.no_driver');
+        }
+
+        $totalTugas   = TransportRequest::where('driver_id', $driver->id)->count();
+        $tugasSelesai = TransportRequest::where('driver_id', $driver->id)->where('status', 'selesai')->count();
+        $tugasAktif   = TransportRequest::where('driver_id', $driver->id)->where('status', 'digunakan')->count();
+
+        return view('driver.profil', compact('driver', 'totalTugas', 'tugasSelesai', 'tugasAktif'));
+    }
+
     public function history(Request $request)
     {
         $driver = auth()->user()->driver;
