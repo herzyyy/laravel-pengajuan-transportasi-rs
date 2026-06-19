@@ -396,16 +396,6 @@
                                     </div>
                                 </div>
                                 <div class="p-2">
-                                    @if(!auth()->user()->isDriver())
-                                        <a href="{{ route('pengajuan.index') }}" class="sp-dropdown-item rounded">
-                                            <svg style="width:1rem;height:1rem;" class="text-slate-400" fill="none"
-                                                stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                                <path stroke-linecap="round" stroke-linejoin="round"
-                                                    d="M6 7h12M6 12h12M6 17h8" />
-                                            </svg>
-                                            Riwayat
-                                        </a>
-                                    @endif
                                     <hr class="my-1" style="border-color:#f1f5f9;">
                                     <form method="POST" action="{{ route('logout') }}">
                                         @csrf
