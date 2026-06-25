@@ -1247,8 +1247,10 @@ body {
 
 /* ── Bottom Navigation Padding ── */
 @media (max-width: 768px) {
-    .mx-auto.px-3 {
-        padding-bottom: 5rem !important;
+
+    .mx-auto.px-3,
+    .pb-mobile-nav {
+        padding-bottom: 5.5rem !important;
     }
 }
 

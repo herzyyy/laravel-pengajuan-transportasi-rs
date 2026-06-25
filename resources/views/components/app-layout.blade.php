@@ -708,7 +708,7 @@
 
             {{-- Main Content --}}
             <main
-                class="flex-grow-1 min-w-0 px-3 px-sm-4 py-3 py-sm-4 bg-slate-50 {{ auth()->user()->isAdmin() ? 'sp-main-with-sidebar' : '' }}">
+                class="flex-grow-1 min-w-0 px-3 px-sm-4 py-3 py-sm-4 bg-slate-50 {{ auth()->user()->isAdmin() ? 'sp-main-with-sidebar' : 'pb-mobile-nav' }}">
                 <div class="container-xl px-0">
                     @if(session('status'))
                         <div class="mb-3 rounded border px-3 py-2 text-xs shadow-sm alert-sp-success">
